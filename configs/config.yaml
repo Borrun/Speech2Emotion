@@ -1,0 +1,55 @@
+data:
+  wav_dir: "wavs"
+  label_path: "labels.jsonl"
+  sample_rate: 16000
+  fps: 30
+  hop_sec: 0.02        # 20ms feature hop
+  max_events: 3
+
+train:
+  seed: 42
+  device: "cuda"       # or "cpu"
+  epochs: 80
+  batch_size: 6
+  lr: 1e-3
+  weight_decay: 1e-4
+  val_ratio: 0.2
+  grad_clip: 5.0
+  amp: true
+
+target:
+  sigma_steps: 2.0     # gaussian sigma in feature steps
+  pos_weight: 4.0      # BCE positive class weight (helps sparse targets)
+
+augment:
+  enable: true
+  gain_db: 6.0
+  noise_prob: 0.7
+  snr_db_min: 20
+  snr_db_max: 35
+  specaug_prob: 0.5
+  time_mask_min: 5
+  time_mask_max: 12
+  freq_mask_min: 6
+  freq_mask_max: 12
+
+model:
+  backbone: "tcn"      # "tcn" or "wavlm"
+  # tcn params
+  tcn_channels: 128
+  tcn_layers: 6
+  dropout: 0.1
+  # wavlm params (need transformers)
+  wavlm_name: "microsoft/wavlm-base-plus"
+  freeze_backbone: true
+
+post:
+  tau_global: 0.65
+  tau_online: 0.85
+  min_gap_sec: 0.60
+  margin_sec: 0.30
+  confirm_sec: 0.20
+  max_events: 3
+
+eval:
+  tol_sec: 0.15        # match tolerance

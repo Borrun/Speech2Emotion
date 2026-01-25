@@ -1,0 +1,480 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Audio Key Annotator (3 slots, 30fps, select-then-rightclick)</title>
+  <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; }
+    .wrap { display: grid; grid-template-columns: 340px 1fr; height: 100vh; }
+    .left { border-right: 1px solid #ddd; overflow: auto; }
+    .right { padding: 14px 18px; }
+    .hdr { padding: 12px 12px; border-bottom: 1px solid #eee; display:flex; gap:10px; align-items:center; }
+    .hdr b { font-size: 14px; }
+    .list { padding: 0; margin: 0; list-style: none; }
+    .item { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+    .item:hover { background: #fafafa; }
+    .item.active { background: #eef6ff; }
+    .meta { font-size: 12px; color: #666; margin-top: 4px; display:flex; gap:10px; flex-wrap:wrap;}
+    .pill { font-size: 12px; padding: 2px 6px; border-radius: 999px; background:#f3f3f3; display:inline-block; }
+    .pill.ok { background:#e6f7e6; }
+    .pill.no { background:#ffecec; }
+    #wave { border: 1px solid #ddd; border-radius: 8px; padding: 10px; }
+    .controls { margin-top: 10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    button { padding: 8px 10px; border: 1px solid #ccc; background:#fff; border-radius: 8px; cursor:pointer; }
+    button:hover { background:#fafafa; }
+    button.sel { border-color:#0b57d0; box-shadow: 0 0 0 2px rgba(11,87,208,0.15); }
+    .stat { margin-top: 10px; font-size: 14px; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+           font-size: 12px; border: 1px solid #ddd; padding: 2px 6px; border-radius: 6px; background:#fafafa; }
+    .row { display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
+    .muted { color:#666; }
+    .danger { color:#b00020; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="left">
+    <div class="hdr">
+      <b>Files</b>
+      <span class="pill" id="countPill">0</span>
+      <span class="pill ok" id="donePill">done: 0</span>
+    </div>
+    <ul class="list" id="fileList"></ul>
+  </div>
+
+  <div class="right">
+    <div class="row">
+      <div><b id="curName">No file</b></div>
+      <div class="muted">fps: <b id="fps">30</b></div>
+      <div class="muted">keys(slot1/2/3): <b id="keysText">—</b></div>
+      <div class="muted">selected slot: <b id="selText">1</b></div>
+      <div class="muted">duration(s): <b id="dur">—</b></div>
+    </div>
+
+    <div style="margin-top:10px" id="wave"></div>
+
+    <div class="controls">
+      <button id="btnPlay">Play/Pause <span class="kbd">Space</span></button>
+      <button id="btnPrev">Prev <span class="kbd">P</span></button>
+      <button id="btnNext">Next <span class="kbd">N</span></button>
+
+      <button id="btnSel1">Slot 1 <span class="kbd">1</span></button>
+      <button id="btnSel2">Slot 2 <span class="kbd">2</span></button>
+      <button id="btnSel3">Slot 3 <span class="kbd">3</span></button>
+
+      <button id="btnDel">Delete slot <span class="kbd">Backspace</span></button>
+      <button id="btnClear">Clear all <span class="kbd">X</span></button>
+
+      <button id="btnBack1s">-1s <span class="kbd">←</span></button>
+      <button id="btnFwd1s">+1s <span class="kbd">→</span></button>
+      <button id="btnBack01">-0.1s <span class="kbd">Shift</span>+<span class="kbd">←</span></button>
+      <button id="btnFwd01">+0.1s <span class="kbd">Shift</span>+<span class="kbd">→</span></button>
+
+      <button id="btnFrameDec">Frame -1 <span class="kbd">,</span></button>
+      <button id="btnFrameInc">Frame +1 <span class="kbd">.</span></button>
+    </div>
+
+    <div class="stat">
+      <div class="muted">
+        Workflow: <b>select slot</b> (Slot 1/2/3) → <b>right-click</b> waveform to set that slot’s frame.
+      </div>
+      <div class="muted">
+        Right-click does <b>not</b> append; it <b>overwrites the selected slot</b>. Output keeps slot order.
+      </div>
+      <div class="danger" id="err"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const FPS = 30;
+  const MAX_KEYS = 3;
+
+  let files = [];
+  let curIndex = -1;
+
+  let wave = null;
+  let markerEls = [null, null, null];
+
+  // selected slot: 0/1/2
+  let selectedSlot = 0;
+
+  const elList = document.getElementById('fileList');
+  const elName = document.getElementById('curName');
+  const elFps = document.getElementById('fps');
+  const elKeysText = document.getElementById('keysText');
+  const elSelText = document.getElementById('selText');
+  const elDur = document.getElementById('dur');
+  const elErr = document.getElementById('err');
+  const elCount = document.getElementById('countPill');
+  const elDone = document.getElementById('donePill');
+
+  const btnSel1 = document.getElementById('btnSel1');
+  const btnSel2 = document.getElementById('btnSel2');
+  const btnSel3 = document.getElementById('btnSel3');
+
+  function setErr(msg) { elErr.textContent = msg || ""; }
+
+  async function fetchJSON(url, opts) {
+    const res = await fetch(url, opts);
+    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    return await res.json();
+  }
+
+  function normalizeKeepOrder(arr) {
+    // keep order, unique, length <= 3
+    if (!Array.isArray(arr)) return [];
+    const out = [];
+    const seen = new Set();
+    for (const x of arr) {
+      const v = parseInt(x, 10);
+      if (!Number.isFinite(v)) continue;
+      if (seen.has(v)) continue;
+      seen.add(v);
+      out.push(v);
+      if (out.length >= MAX_KEYS) break;
+    }
+    return out;
+  }
+
+  function renderList() {
+    elList.innerHTML = "";
+    let done = 0;
+    files.forEach((f, i) => {
+      const li = document.createElement('li');
+      li.className = 'item' + (i === curIndex ? ' active' : '');
+      if (f.labeled) done += 1;
+
+      const kf = normalizeKeepOrder(f.key_frames || []);
+      const slot1 = (kf[0] ?? "—");
+      const slot2 = (kf[1] ?? "—");
+      const slot3 = (kf[2] ?? "—");
+
+      li.innerHTML = `
+        <div><b>${f.wav}</b></div>
+        <div class="meta">
+          <span class="pill ${f.labeled ? 'ok':'no'}">${f.labeled ? 'labeled':'unlabeled'}</span>
+          <span class="pill">1:${slot1} 2:${slot2} 3:${slot3}</span>
+        </div>
+      `;
+      li.onclick = () => loadIndex(i);
+      elList.appendChild(li);
+    });
+    elCount.textContent = files.length;
+    elDone.textContent = `done: ${done}`;
+  }
+
+  function destroyWave() {
+    if (wave) {
+      wave.destroy();
+      wave = null;
+    }
+    markerEls = [null, null, null];
+    document.getElementById('wave').innerHTML = "";
+  }
+
+  function ensureWave() {
+    return !!wave && curIndex >= 0;
+  }
+
+  function durationSec() {
+    if (!wave) return null;
+    return wave.getDuration();
+  }
+
+  function clampFrame(frame, dur) {
+    const n = Math.max(1, Math.round(dur * FPS));
+    return Math.max(0, Math.min(frame, n - 1));
+  }
+
+  function updateSlotButtons() {
+    btnSel1.classList.toggle('sel', selectedSlot === 0);
+    btnSel2.classList.toggle('sel', selectedSlot === 1);
+    btnSel3.classList.toggle('sel', selectedSlot === 2);
+    elSelText.textContent = String(selectedSlot + 1);
+  }
+
+  function refreshHeader() {
+    const f = (curIndex >= 0) ? files[curIndex] : null;
+    elName.textContent = f ? f.wav : "No file";
+    elFps.textContent = FPS;
+
+    const kf = normalizeKeepOrder(f ? (f.key_frames || []) : []);
+    const slot1 = (kf[0] ?? "—");
+    const slot2 = (kf[1] ?? "—");
+    const slot3 = (kf[2] ?? "—");
+    elKeysText.textContent = `1:${slot1}  2:${slot2}  3:${slot3}`;
+
+    const dur = durationSec();
+    elDur.textContent = (dur == null) ? "—" : dur.toFixed(3);
+
+    updateSlotButtons();
+  }
+
+  function showMarkerBase(wrapper, index) {
+    wrapper.style.position = 'relative';
+    const el = document.createElement('div');
+    el.style.position = 'absolute';
+    el.style.top = '0';
+    el.style.bottom = '0';
+    el.style.width = '2px';
+    el.style.pointerEvents = 'none';
+    el.style.background = '#d00';
+    el.style.opacity = (index === 0 ? '1.0' : index === 1 ? '0.75' : '0.55');
+    markerEls[index] = el;
+    wrapper.appendChild(el);
+  }
+
+  function hideAllMarkers() {
+    for (let i = 0; i < MAX_KEYS; i++) {
+      if (markerEls[i]) markerEls[i].style.display = 'none';
+    }
+  }
+
+  function setMarkerAt(index, t) {
+    if (!wave) return;
+    const wrapper = wave.getWrapper();
+    const dur = wave.getDuration() || 1;
+    if (!markerEls[index]) showMarkerBase(wrapper, index);
+
+    const pct = Math.min(Math.max(t / dur, 0), 1);
+    markerEls[index].style.left = `calc(${(pct * 100).toFixed(4)}% - 1px)`;
+    markerEls[index].style.display = 'block';
+  }
+
+  function drawMarkersFromSlots(frames) {
+    hideAllMarkers();
+    const kf = normalizeKeepOrder(frames);
+    for (let i = 0; i < MAX_KEYS; i++) {
+      if (kf[i] != null) setMarkerAt(i, kf[i] / FPS);
+    }
+  }
+
+  async function saveLabel(wav, key_frames) {
+    key_frames = normalizeKeepOrder(key_frames);
+    await fetchJSON('/api/label', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ wav, fps: FPS, key_frames })
+    });
+
+    const f = files[curIndex];
+    f.labeled = true;
+    f.key_frames = key_frames;
+    renderList();
+  }
+
+  async function loadFiles() {
+    setErr("");
+    files = await fetchJSON('/api/files');
+    files = files.map(f => ({ ...f, key_frames: normalizeKeepOrder(f.key_frames || []) }));
+    renderList();
+
+    const firstUnlabeled = files.findIndex(f => !f.labeled);
+    await loadIndex(firstUnlabeled >= 0 ? firstUnlabeled : (files.length ? 0 : -1));
+  }
+
+  async function loadIndex(i) {
+    if (i < 0 || i >= files.length) {
+      curIndex = -1;
+      destroyWave();
+      refreshHeader();
+      return;
+    }
+
+    curIndex = i;
+    selectedSlot = 0;
+    setErr("");
+    renderList();
+    destroyWave();
+
+    const wav = files[curIndex].wav;
+
+    wave = WaveSurfer.create({
+      container: '#wave',
+      height: 180,
+      waveColor: '#8aa',
+      progressColor: '#446',
+      cursorColor: '#111',
+      url: `/audio/${encodeURIComponent(wav)}`,
+      normalize: true,
+      backend: 'WebAudio',
+    });
+
+    wave.on('ready', async () => {
+      const lbl = await fetchJSON(`/api/label/${encodeURIComponent(wav)}`);
+      const kf = normalizeKeepOrder(lbl.key_frames || []);
+      files[curIndex].key_frames = kf;
+      drawMarkersFromSlots(kf);
+      refreshHeader();
+    });
+
+    wave.on('decode', () => {
+      const wrapper = wave.getWrapper();
+      wrapper.oncontextmenu = (e) => e.preventDefault();
+
+      // Right-click: write into selected slot
+      wrapper.addEventListener('contextmenu', async (ev) => {
+        ev.preventDefault();
+        if (!ensureWave()) return;
+
+        const rect = wrapper.getBoundingClientRect();
+        const x = ev.clientX - rect.left;
+        const pct = Math.min(Math.max(x / rect.width, 0), 1);
+        const dur = wave.getDuration() || 1;
+        const t = pct * dur;
+
+        await setSlotByTime(selectedSlot, t);
+      });
+    });
+
+    refreshHeader();
+  }
+
+  async function setSlotByTime(slotIndex, t) {
+    if (!ensureWave()) return;
+    const dur = wave.getDuration() || 1;
+    const frame = clampFrame(Math.round(t * FPS), dur);
+
+    let kf = normalizeKeepOrder(files[curIndex].key_frames || []);
+
+    // Ensure array length up to slotIndex
+    while (kf.length < slotIndex) kf.push(null);
+
+    // Write into slotIndex
+    if (slotIndex < kf.length) {
+      kf[slotIndex] = frame;
+    } else {
+      // slotIndex == kf.length: append
+      kf.push(frame);
+    }
+
+    // Clean: drop nulls but keep order; limit 3; unique keep first
+    kf = normalizeKeepOrder(kf.filter(v => v != null));
+
+    files[curIndex].key_frames = kf;
+    drawMarkersFromSlots(kf);
+    refreshHeader();
+    await saveLabel(files[curIndex].wav, kf);
+  }
+
+  async function clearAllKeys() {
+    if (!ensureWave()) return;
+    files[curIndex].key_frames = [];
+    drawMarkersFromSlots([]);
+    refreshHeader();
+    await saveLabel(files[curIndex].wav, []);
+  }
+
+  async function deleteSelectedSlot() {
+    if (!ensureWave()) return;
+    let kf = normalizeKeepOrder(files[curIndex].key_frames || []);
+    if (kf.length === 0) return;
+
+    if (selectedSlot < kf.length) {
+      // remove that slot value (shift left for later slots)
+      kf.splice(selectedSlot, 1);
+    }
+    kf = normalizeKeepOrder(kf);
+
+    files[curIndex].key_frames = kf;
+    drawMarkersFromSlots(kf);
+    refreshHeader();
+    await saveLabel(files[curIndex].wav, kf);
+  }
+
+  async function nudgeSelectedSlot(delta) {
+    if (!ensureWave()) return;
+    const dur = wave.getDuration() || 1;
+    let kf = normalizeKeepOrder(files[curIndex].key_frames || []);
+    if (kf.length === 0) return;
+    if (selectedSlot >= kf.length) return;
+
+    kf[selectedSlot] = clampFrame(kf[selectedSlot] + delta, dur);
+    kf = normalizeKeepOrder(kf);
+
+    files[curIndex].key_frames = kf;
+    drawMarkersFromSlots(kf);
+    refreshHeader();
+    await saveLabel(files[curIndex].wav, kf);
+  }
+
+  function seekBy(sec) {
+    if (!ensureWave()) return;
+    const dur = wave.getDuration() || 1;
+    const t = wave.getCurrentTime() + sec;
+    wave.setTime(Math.min(Math.max(t, 0), dur));
+  }
+
+  function togglePlay() {
+    if (!ensureWave()) return;
+    wave.playPause();
+  }
+
+  async function nextFile() {
+    if (files.length === 0) return;
+    await loadIndex(Math.min(curIndex + 1, files.length - 1));
+  }
+
+  async function prevFile() {
+    if (files.length === 0) return;
+    await loadIndex(Math.max(curIndex - 1, 0));
+  }
+
+  function selectSlot(i) {
+    selectedSlot = Math.max(0, Math.min(i, 2));
+    updateSlotButtons();
+    refreshHeader();
+  }
+
+  // Buttons
+  document.getElementById('btnPlay').onclick = togglePlay;
+  document.getElementById('btnNext').onclick = nextFile;
+  document.getElementById('btnPrev').onclick = prevFile;
+
+  btnSel1.onclick = () => selectSlot(0);
+  btnSel2.onclick = () => selectSlot(1);
+  btnSel3.onclick = () => selectSlot(2);
+
+  document.getElementById('btnDel').onclick = deleteSelectedSlot;
+  document.getElementById('btnClear').onclick = clearAllKeys;
+
+  document.getElementById('btnBack1s').onclick = () => seekBy(-1.0);
+  document.getElementById('btnFwd1s').onclick = () => seekBy(+1.0);
+  document.getElementById('btnBack01').onclick = () => seekBy(-0.1);
+  document.getElementById('btnFwd01').onclick = () => seekBy(+0.1);
+
+  document.getElementById('btnFrameDec').onclick = () => nudgeSelectedSlot(-1);
+  document.getElementById('btnFrameInc').onclick = () => nudgeSelectedSlot(+1);
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', async (e) => {
+    if (e.target && ['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+
+    if (e.code === 'Space') { e.preventDefault(); togglePlay(); return; }
+    if (e.key === 'n' || e.key === 'N') { await nextFile(); return; }
+    if (e.key === 'p' || e.key === 'P') { await prevFile(); return; }
+
+    if (e.key === '1') { selectSlot(0); return; }
+    if (e.key === '2') { selectSlot(1); return; }
+    if (e.key === '3') { selectSlot(2); return; }
+
+    if (e.key === 'Backspace') { e.preventDefault(); await deleteSelectedSlot(); return; }
+    if (e.key === 'x' || e.key === 'X') { await clearAllKeys(); return; }
+
+    if (e.key === 'ArrowLeft' && e.shiftKey) { seekBy(-0.1); return; }
+    if (e.key === 'ArrowRight' && e.shiftKey) { seekBy(+0.1); return; }
+    if (e.key === 'ArrowLeft' && !e.shiftKey) { seekBy(-1.0); return; }
+    if (e.key === 'ArrowRight' && !e.shiftKey) { seekBy(+1.0); return; }
+
+    if (e.key === ',') { await nudgeSelectedSlot(-1); return; }
+    if (e.key === '.') { await nudgeSelectedSlot(+1); return; }
+  });
+
+  // init
+  loadFiles().catch(err => setErr(String(err)));
+</script>
+</body>
+</html>
