@@ -9,10 +9,10 @@ data:
 train:
   seed: 42
   device: "cuda"       # or "cpu"
-  epochs: 80
+  epochs: 20
   batch_size: 6
-  lr: 1e-3
-  weight_decay: 1e-4
+  lr: 0.001
+  weight_decay: 0.0001
   val_ratio: 0.2
   grad_clip: 5.0
   amp: true
@@ -27,7 +27,7 @@ augment:
   noise_prob: 0.7
   snr_db_min: 20
   snr_db_max: 35
-  specaug_prob: 0.5
+  specaug_prob: 0.0
   time_mask_min: 5
   time_mask_max: 12
   freq_mask_min: 6
@@ -44,12 +44,17 @@ model:
   freeze_backbone: true
 
 post:
-  tau_global: 0.65
-  tau_online: 0.85
-  min_gap_sec: 0.60
-  margin_sec: 0.30
-  confirm_sec: 0.20
   max_events: 3
+  min_gap_sec: 0.8
+
+  # dynamic thresholding (recommended)
+  dynamic: true
+  tau_global: 0.30      # only used when dynamic=false
+  tau_min: 0.20
+  tau_frac_of_max: 0.75
+
+
+  
 
 eval:
   tol_sec: 0.15        # match tolerance

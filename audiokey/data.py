@@ -1,11 +1,13 @@
 import os, json
 from dataclasses import dataclass
 from typing import List, Dict, Any
+
 import torch
 import torchaudio
 
-from .targets import build_heatmap
 from .augment import random_gain, add_noise, specaugment
+from .targets import build_sparse_targets
+
 
 @dataclass
 class DataConfig:
@@ -16,10 +18,13 @@ class DataConfig:
     hop_sec: float = 0.02
     max_events: int = 3
 
+
 @dataclass
 class TargetConfig:
+    # kept for compatibility; not used by sparse target
     sigma_steps: float = 2.0
     pos_weight: float = 4.0
+
 
 @dataclass
 class AugConfig:
@@ -28,11 +33,12 @@ class AugConfig:
     noise_prob: float = 0.7
     snr_db_min: int = 20
     snr_db_max: int = 35
-    specaug_prob: float = 0.5
+    specaug_prob: float = 0.0  # IMPORTANT: default off for tiny dataset
     time_mask_min: int = 5
     time_mask_max: int = 12
     freq_mask_min: int = 6
     freq_mask_max: int = 12
+
 
 class LogMelFeaturizer(torch.nn.Module):
     def __init__(self, sample_rate=16000, n_mels=80, hop_sec=0.02, win_sec=0.05):
@@ -45,7 +51,7 @@ class LogMelFeaturizer(torch.nn.Module):
             hop_length=hop_length,
             n_mels=n_mels,
             f_min=40,
-            f_max=min(7600, sample_rate//2 - 100),
+            f_max=min(7600, sample_rate // 2 - 100),
             power=2.0,
         )
 
@@ -55,11 +61,13 @@ class LogMelFeaturizer(torch.nn.Module):
         x = x.squeeze(0).transpose(0, 1)      # [T, M]
         return x
 
+
 class AudioKeyDataset(torch.utils.data.Dataset):
     def __init__(self, data_cfg: DataConfig, target_cfg: TargetConfig, aug_cfg: AugConfig):
         self.data_cfg = data_cfg
         self.target_cfg = target_cfg
         self.aug_cfg = aug_cfg
+
         self.items = []
         with open(data_cfg.label_path, "r", encoding="utf-8") as f:
             for line in f:
@@ -70,7 +78,8 @@ class AudioKeyDataset(torch.utils.data.Dataset):
                 self.items.append(obj)
 
         self.feat = LogMelFeaturizer(
-            sample_rate=data_cfg.sample_rate, hop_sec=data_cfg.hop_sec
+            sample_rate=data_cfg.sample_rate,
+            hop_sec=data_cfg.hop_sec
         )
 
     def __len__(self):
@@ -92,7 +101,7 @@ class AudioKeyDataset(torch.utils.data.Dataset):
 
         wav = self._load_wav(wav_name)
 
-        # waveform-level aug (safe)
+        # waveform-level augmentation (safe)
         if self.aug_cfg.enable:
             wav = random_gain(wav, self.aug_cfg.gain_db)
             import random
@@ -101,7 +110,7 @@ class AudioKeyDataset(torch.utils.data.Dataset):
 
         mel = self.feat(wav)  # [T, M]
 
-        # feature-level aug (safe)
+        # feature-level augmentation (disable by default for tiny dataset)
         if self.aug_cfg.enable:
             import random
             if random.random() < self.aug_cfg.specaug_prob:
@@ -112,27 +121,30 @@ class AudioKeyDataset(torch.utils.data.Dataset):
                 )
 
         T = mel.size(0)
-        y = build_heatmap(
-            T, key_frames,
+
+        # IMPORTANT: sparse one-hot targets
+        y = build_sparse_targets(
+            T,
+            key_frames,
             fps=self.data_cfg.fps,
             hop_sec=self.data_cfg.hop_sec,
-            sigma_steps=self.target_cfg.sigma_steps
+            max_events=self.data_cfg.max_events
         )  # [T]
 
         return {
             "wav": wav_name,
-            "mel": mel,        # [T, M]
-            "target": y,       # [T]
+            "mel": mel,            # [T, M]
+            "target": y,           # [T]
             "key_frames": key_frames
         }
 
+
 def collate_fn(batch: List[Dict[str, Any]]):
-    # pad mel and target to max T in batch
     maxT = max(x["mel"].size(0) for x in batch)
     M = batch[0]["mel"].size(1)
 
-    mel_pad = torch.zeros(len(batch), maxT, M)
-    tgt_pad = torch.zeros(len(batch), maxT)
+    mel_pad = torch.zeros(len(batch), maxT, M, dtype=torch.float32)
+    tgt_pad = torch.zeros(len(batch), maxT, dtype=torch.float32)
     attn_mask = torch.zeros(len(batch), maxT, dtype=torch.bool)
 
     wav_names = []
@@ -150,6 +162,6 @@ def collate_fn(batch: List[Dict[str, Any]]):
         "wav": wav_names,
         "mel": mel_pad,          # [B, T, M]
         "target": tgt_pad,       # [B, T]
-        "mask": attn_mask,       # [B, T] True for valid
+        "mask": attn_mask,       # [B, T]
         "key_frames": key_frames
     }
