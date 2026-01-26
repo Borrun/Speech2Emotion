@@ -1,0 +1,4 @@
+{"wav": "utt_0001.wav", "fps": 30, "duration": 6.0934375, "base": {"type": "calm", "value": 60.0}, "events": [], "curve": [{"t": 0.0, "type": "calm", "value": 60.0}, {"t": 6.0934375, "type": "calm", "value": 60.0}]}
+{"wav": "utt_0002.wav", "fps": 30, "key_frames": [92, 182]}
+{"wav": "utt_0003.wav", "fps": 30, "key_frames": [26, 89, 142]}
+{"wav": "utt_0035.wav", "fps": 30, "key_frames": [27]}

@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Audio Key Annotator (3 slots, 30fps, select-then-rightclick)</title>
+  <title>Speech2Emotion Curve Annotator</title>
   <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
   <style>
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; }
-    .wrap { display: grid; grid-template-columns: 340px 1fr; height: 100vh; }
+    .wrap { display: grid; grid-template-columns: 360px 1fr; height: 100vh; }
     .left { border-right: 1px solid #ddd; overflow: auto; }
     .right { padding: 14px 18px; }
     .hdr { padding: 12px 12px; border-bottom: 1px solid #eee; display:flex; gap:10px; align-items:center; }
@@ -20,17 +20,47 @@
     .pill { font-size: 12px; padding: 2px 6px; border-radius: 999px; background:#f3f3f3; display:inline-block; }
     .pill.ok { background:#e6f7e6; }
     .pill.no { background:#ffecec; }
-    #wave { border: 1px solid #ddd; border-radius: 8px; padding: 10px; }
+
+    #waveBox { border: 1px solid #ddd; border-radius: 10px; padding: 10px; position: relative; }
+    #wave { position: relative; }
+    #curveOverlay {
+      position:absolute; left:10px; right:10px;
+      top:10px;
+      height:160px;
+      pointer-events: none;
+    }
+    #curveOverlay svg { width:100%; height:100%; display:block; }
+    #selectRect {
+      position:absolute;
+      border: 1px dashed #0b57d0;
+      background: rgba(11,87,208,0.10);
+      display:none;
+      pointer-events:none;
+      z-index: 20;
+    }
     .controls { margin-top: 10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    button, select, input, textarea {
+      font: inherit;
+    }
     button { padding: 8px 10px; border: 1px solid #ccc; background:#fff; border-radius: 8px; cursor:pointer; }
     button:hover { background:#fafafa; }
-    button.sel { border-color:#0b57d0; box-shadow: 0 0 0 2px rgba(11,87,208,0.15); }
-    .stat { margin-top: 10px; font-size: 14px; }
-    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-           font-size: 12px; border: 1px solid #ddd; padding: 2px 6px; border-radius: 6px; background:#fafafa; }
     .row { display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
     .muted { color:#666; }
     .danger { color:#b00020; }
+    .panel {
+      margin-top: 10px;
+      border:1px solid #eee; border-radius: 10px;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .panel .full { grid-column: 1 / -1; }
+    textarea { width:100%; height: 90px; padding:8px; border:1px solid #ddd; border-radius: 8px; }
+    input[type="number"], input[type="text"], select { padding:6px 8px; border:1px solid #ddd; border-radius: 8px; }
+    .hint { font-size: 12px; color:#666; line-height: 1.4; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+           font-size: 12px; border: 1px solid #ddd; padding: 2px 6px; border-radius: 6px; background:#fafafa; }
   </style>
 </head>
 <body>
@@ -48,72 +78,127 @@
     <div class="row">
       <div><b id="curName">No file</b></div>
       <div class="muted">fps: <b id="fps">30</b></div>
-      <div class="muted">keys(slot1/2/3): <b id="keysText">—</b></div>
-      <div class="muted">selected slot: <b id="selText">1</b></div>
       <div class="muted">duration(s): <b id="dur">—</b></div>
+      <div class="muted">points: <b id="ptCount">—</b></div>
     </div>
 
-    <div style="margin-top:10px" id="wave"></div>
+    <div id="waveBox" style="margin-top:10px">
+      <div id="wave"></div>
+
+      <div id="curveOverlay">
+        <svg id="svg"></svg>
+      </div>
+      <div id="selectRect"></div>
+    </div>
 
     <div class="controls">
       <button id="btnPlay">Play/Pause <span class="kbd">Space</span></button>
       <button id="btnPrev">Prev <span class="kbd">P</span></button>
       <button id="btnNext">Next <span class="kbd">N</span></button>
 
-      <button id="btnSel1">Slot 1 <span class="kbd">1</span></button>
-      <button id="btnSel2">Slot 2 <span class="kbd">2</span></button>
-      <button id="btnSel3">Slot 3 <span class="kbd">3</span></button>
+      <button id="btnSave">Save</button>
+      <button id="btnExport">Export (JSON)</button>
 
-      <button id="btnDel">Delete slot <span class="kbd">Backspace</span></button>
-      <button id="btnClear">Clear all <span class="kbd">X</span></button>
-
-      <button id="btnBack1s">-1s <span class="kbd">←</span></button>
-      <button id="btnFwd1s">+1s <span class="kbd">→</span></button>
-      <button id="btnBack01">-0.1s <span class="kbd">Shift</span>+<span class="kbd">←</span></button>
-      <button id="btnFwd01">+0.1s <span class="kbd">Shift</span>+<span class="kbd">→</span></button>
-
-      <button id="btnFrameDec">Frame -1 <span class="kbd">,</span></button>
-      <button id="btnFrameInc">Frame +1 <span class="kbd">.</span></button>
+      <label class="muted">Batch type:
+        <select id="batchType">
+          <option>happy</option>
+          <option>sad</option>
+          <option>angry</option>
+          <option>fear</option>
+          <option selected>calm</option>
+          <option>confused</option>
+        </select>
+      </label>
+      <button id="btnApplyType">Apply to selected</button>
     </div>
 
-    <div class="stat">
-      <div class="muted">
-        Workflow: <b>select slot</b> (Slot 1/2/3) → <b>right-click</b> waveform to set that slot’s frame.
+    <div class="panel">
+      <div>
+        <div class="muted"><b>Base</b></div>
+        <div class="row" style="margin-top:6px">
+          <select id="baseType">
+            <option>happy</option><option>sad</option><option>angry</option><option>fear</option>
+            <option selected>calm</option><option>confused</option>
+          </select>
+          <label class="muted">value <input id="baseValue" type="number" min="0" max="150" value="60" style="width:90px"></label>
+        </div>
       </div>
-      <div class="muted">
-        Right-click does <b>not</b> append; it <b>overwrites the selected slot</b>. Output keeps slot order.
+
+      <div>
+        <div class="muted"><b>Spike τ</b> (回落秒)</div>
+        <div class="row" style="margin-top:6px">
+          <input id="spikeTau" type="number" step="0.1" min="0.0" value="0.5" style="width:110px">
+          <span class="hint">默认 0.5s</span>
+        </div>
       </div>
-      <div class="danger" id="err"></div>
+
+      <div class="full">
+        <div class="muted"><b>Events</b>（一行一个事件）</div>
+        <div class="hint">
+          switch: <span class="kbd">switch 2.10 happy</span>；spike: <span class="kbd">spike 3.80 135</span>
+        </div>
+        <textarea id="eventsText" placeholder="switch 2.10 happy
+spike 3.80 135"></textarea>
+        <div class="row" style="margin-top:8px">
+          <button id="btnGenerate">Generate curve from base/events</button>
+          <span class="hint">生成后你可拖点修正；Shift 框选 + Apply 批量改 type。</span>
+        </div>
+      </div>
+
+      <div class="full hint">
+        操作说明：
+        <ul>
+          <li>拖动点：左键按住点拖动（x=时间，y=value）。</li>
+          <li>新增点：<span class="kbd">Ctrl</span> + 左键点击曲线区域。</li>
+          <li>框选点：按住 <span class="kbd">Shift</span> 拖拽框选；然后 Apply 批量改 type。</li>
+          <li>删除点：选中点后按 <span class="kbd">Delete</span>（不会删 t=0 和 t=duration）。</li>
+        </ul>
+      </div>
     </div>
+
+    <div class="danger" id="err" style="margin-top:10px"></div>
   </div>
 </div>
 
 <script>
   const FPS = 30;
-  const MAX_KEYS = 3;
+  const ALLOWED_TYPES = ["happy","sad","angry","fear","calm","confused"];
 
   let files = [];
   let curIndex = -1;
-
   let wave = null;
-  let markerEls = [null, null, null];
 
-  // selected slot: 0/1/2
-  let selectedSlot = 0;
+  // labeling state
+  let duration = null;
+  let base = { type: "calm", value: 60 };
+  let events = [];
+  let curve = []; // [{t,type,value}]
 
+  // selection/drag
+  let selected = new Set(); // indices of curve points
+  let draggingIndex = null;
+  let dragOffset = {dx:0, dy:0};
+
+  // DOM
   const elList = document.getElementById('fileList');
   const elName = document.getElementById('curName');
   const elFps = document.getElementById('fps');
-  const elKeysText = document.getElementById('keysText');
-  const elSelText = document.getElementById('selText');
   const elDur = document.getElementById('dur');
+  const elPtCount = document.getElementById('ptCount');
   const elErr = document.getElementById('err');
   const elCount = document.getElementById('countPill');
   const elDone = document.getElementById('donePill');
 
-  const btnSel1 = document.getElementById('btnSel1');
-  const btnSel2 = document.getElementById('btnSel2');
-  const btnSel3 = document.getElementById('btnSel3');
+  const svg = document.getElementById('svg');
+  const selectRect = document.getElementById('selectRect');
+  const waveBox = document.getElementById('waveBox');
+
+  const baseTypeEl = document.getElementById('baseType');
+  const baseValueEl = document.getElementById('baseValue');
+  const eventsTextEl = document.getElementById('eventsText');
+  const spikeTauEl = document.getElementById('spikeTau');
+
+  const batchTypeEl = document.getElementById('batchType');
 
   function setErr(msg) { elErr.textContent = msg || ""; }
 
@@ -123,20 +208,15 @@
     return await res.json();
   }
 
-  function normalizeKeepOrder(arr) {
-    // keep order, unique, length <= 3
-    if (!Array.isArray(arr)) return [];
-    const out = [];
-    const seen = new Set();
-    for (const x of arr) {
-      const v = parseInt(x, 10);
-      if (!Number.isFinite(v)) continue;
-      if (seen.has(v)) continue;
-      seen.add(v);
-      out.push(v);
-      if (out.length >= MAX_KEYS) break;
-    }
-    return out;
+  function clamp(v, lo, hi) {
+    v = Number(v);
+    if (!Number.isFinite(v)) v = lo;
+    return Math.max(lo, Math.min(hi, v));
+  }
+
+  function normType(t) {
+    t = (t || "").toLowerCase().trim();
+    return ALLOWED_TYPES.includes(t) ? t : "calm";
   }
 
   function renderList() {
@@ -147,16 +227,10 @@
       li.className = 'item' + (i === curIndex ? ' active' : '');
       if (f.labeled) done += 1;
 
-      const kf = normalizeKeepOrder(f.key_frames || []);
-      const slot1 = (kf[0] ?? "—");
-      const slot2 = (kf[1] ?? "—");
-      const slot3 = (kf[2] ?? "—");
-
       li.innerHTML = `
         <div><b>${f.wav}</b></div>
         <div class="meta">
           <span class="pill ${f.labeled ? 'ok':'no'}">${f.labeled ? 'labeled':'unlabeled'}</span>
-          <span class="pill">1:${slot1} 2:${slot2} 3:${slot3}</span>
         </div>
       `;
       li.onclick = () => loadIndex(i);
@@ -171,241 +245,210 @@
       wave.destroy();
       wave = null;
     }
-    markerEls = [null, null, null];
     document.getElementById('wave').innerHTML = "";
+    svg.innerHTML = "";
   }
 
   function ensureWave() {
-    return !!wave && curIndex >= 0;
+    return !!wave && curIndex >= 0 && duration != null;
   }
 
-  function durationSec() {
-    if (!wave) return null;
-    return wave.getDuration();
+  function wrapperRect() {
+    const wrapper = wave.getWrapper();
+    return wrapper.getBoundingClientRect();
   }
 
-  function clampFrame(frame, dur) {
-    const n = Math.max(1, Math.round(dur * FPS));
-    return Math.max(0, Math.min(frame, n - 1));
+  function overlayRect() {
+    return document.getElementById('curveOverlay').getBoundingClientRect();
   }
 
-  function updateSlotButtons() {
-    btnSel1.classList.toggle('sel', selectedSlot === 0);
-    btnSel2.classList.toggle('sel', selectedSlot === 1);
-    btnSel3.classList.toggle('sel', selectedSlot === 2);
-    elSelText.textContent = String(selectedSlot + 1);
+  function tToX(t) {
+    const r = overlayRect();
+    const w = r.width;
+    const pct = duration > 0 ? (t / duration) : 0;
+    return clamp(pct, 0, 1) * w;
   }
 
-  function refreshHeader() {
+  function xToT(x) {
+    const r = overlayRect();
+    const w = r.width;
+    const pct = w > 0 ? (x / w) : 0;
+    return clamp(pct, 0, 1) * duration;
+  }
+
+  function vToY(v) {
+    const r = overlayRect();
+    const h = r.height;
+    const pct = 1 - (clamp(v, 0, 150) / 150);
+    return clamp(pct, 0, 1) * h;
+  }
+
+  function yToV(y) {
+    const r = overlayRect();
+    const h = r.height;
+    const pct = h > 0 ? (y / h) : 1;
+    return clamp((1 - clamp(pct, 0, 1)) * 150, 0, 150);
+  }
+
+  function sortCurve() {
+    curve.sort((a,b) => a.t - b.t);
+  }
+
+  function protectEndpoints() {
+    if (!curve || curve.length < 2) return;
+    // lock first and last (t=0 and t=duration)
+    curve[0].t = 0;
+    curve[curve.length-1].t = duration;
+  }
+
+  function updateHeader() {
     const f = (curIndex >= 0) ? files[curIndex] : null;
     elName.textContent = f ? f.wav : "No file";
     elFps.textContent = FPS;
-
-    const kf = normalizeKeepOrder(f ? (f.key_frames || []) : []);
-    const slot1 = (kf[0] ?? "—");
-    const slot2 = (kf[1] ?? "—");
-    const slot3 = (kf[2] ?? "—");
-    elKeysText.textContent = `1:${slot1}  2:${slot2}  3:${slot3}`;
-
-    const dur = durationSec();
-    elDur.textContent = (dur == null) ? "—" : dur.toFixed(3);
-
-    updateSlotButtons();
+    elDur.textContent = (duration == null) ? "—" : duration.toFixed(3);
+    elPtCount.textContent = curve ? String(curve.length) : "—";
   }
 
-  function showMarkerBase(wrapper, index) {
-    wrapper.style.position = 'relative';
-    const el = document.createElement('div');
-    el.style.position = 'absolute';
-    el.style.top = '0';
-    el.style.bottom = '0';
-    el.style.width = '2px';
-    el.style.pointerEvents = 'none';
-    el.style.background = '#d00';
-    el.style.opacity = (index === 0 ? '1.0' : index === 1 ? '0.75' : '0.55');
-    markerEls[index] = el;
-    wrapper.appendChild(el);
+  function drawCurve() {
+    svg.innerHTML = "";
+    if (!ensureWave()) return;
+
+    const r = overlayRect();
+    const w = r.width, h = r.height;
+
+    // background grid
+    const bg = document.createElementNS("http://www.w3.org/2000/svg","rect");
+    bg.setAttribute("x","0"); bg.setAttribute("y","0");
+    bg.setAttribute("width", String(w)); bg.setAttribute("height", String(h));
+    bg.setAttribute("fill","rgba(0,0,0,0.02)");
+    svg.appendChild(bg);
+
+    // polyline
+    const pts = curve.map(p => `${tToX(p.t)},${vToY(p.value)}`).join(" ");
+    const pl = document.createElementNS("http://www.w3.org/2000/svg","polyline");
+    pl.setAttribute("points", pts);
+    pl.setAttribute("fill","none");
+    pl.setAttribute("stroke","#0b57d0");
+    pl.setAttribute("stroke-width","2");
+    svg.appendChild(pl);
+
+    // points
+    curve.forEach((p, idx) => {
+      const cx = tToX(p.t);
+      const cy = vToY(p.value);
+
+      const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+      c.setAttribute("cx", String(cx));
+      c.setAttribute("cy", String(cy));
+      c.setAttribute("r", "6");
+      c.setAttribute("fill", selected.has(idx) ? "#ffb300" : "#ffffff");
+      c.setAttribute("stroke", "#111");
+      c.setAttribute("stroke-width", "1.5");
+      c.style.pointerEvents = "all";
+      c.style.cursor = "grab";
+
+      c.addEventListener("mousedown", (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+        draggingIndex = idx;
+
+        // selection behavior: click selects single unless already shift-selected
+        if (!ev.shiftKey) {
+          selected.clear();
+          selected.add(idx);
+          drawCurve();
+        } else {
+          // shift+click toggle
+          if (selected.has(idx)) selected.delete(idx);
+          else selected.add(idx);
+          drawCurve();
+        }
+
+        const o = overlayRect();
+        const localX = ev.clientX - o.left;
+        const localY = ev.clientY - o.top;
+        dragOffset.dx = localX - tToX(curve[idx].t);
+        dragOffset.dy = localY - vToY(curve[idx].value);
+      });
+
+      svg.appendChild(c);
+
+      // label
+      const tx = document.createElementNS("http://www.w3.org/2000/svg","text");
+      tx.setAttribute("x", String(cx + 8));
+      tx.setAttribute("y", String(cy - 8));
+      tx.setAttribute("font-size","12");
+      tx.setAttribute("fill","#111");
+      tx.textContent = `${p.type}:${Math.round(p.value)}@${p.t.toFixed(2)}s`;
+      svg.appendChild(tx);
+    });
+
+    updateHeader();
   }
 
-  function hideAllMarkers() {
-    for (let i = 0; i < MAX_KEYS; i++) {
-      if (markerEls[i]) markerEls[i].style.display = 'none';
-    }
-  }
-
-  function setMarkerAt(index, t) {
-    if (!wave) return;
-    const wrapper = wave.getWrapper();
-    const dur = wave.getDuration() || 1;
-    if (!markerEls[index]) showMarkerBase(wrapper, index);
-
-    const pct = Math.min(Math.max(t / dur, 0), 1);
-    markerEls[index].style.left = `calc(${(pct * 100).toFixed(4)}% - 1px)`;
-    markerEls[index].style.display = 'block';
-  }
-
-  function drawMarkersFromSlots(frames) {
-    hideAllMarkers();
-    const kf = normalizeKeepOrder(frames);
-    for (let i = 0; i < MAX_KEYS; i++) {
-      if (kf[i] != null) setMarkerAt(i, kf[i] / FPS);
-    }
-  }
-
-  async function saveLabel(wav, key_frames) {
-    key_frames = normalizeKeepOrder(key_frames);
-    await fetchJSON('/api/label', {
+  async function saveCurve() {
+    if (curIndex < 0) return;
+    const wav = files[curIndex].wav;
+    await fetchJSON('/api/curve', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ wav, fps: FPS, key_frames })
+      body: JSON.stringify({
+        wav, fps: FPS, duration,
+        base, events, curve
+      })
     });
-
-    const f = files[curIndex];
-    f.labeled = true;
-    f.key_frames = key_frames;
+    files[curIndex].labeled = Array.isArray(curve) && curve.length >= 2;
     renderList();
   }
 
-  async function loadFiles() {
-    setErr("");
-    files = await fetchJSON('/api/files');
-    files = files.map(f => ({ ...f, key_frames: normalizeKeepOrder(f.key_frames || []) }));
-    renderList();
+  function parseEvents(text) {
+    const lines = (text || "").split("\n").map(s => s.trim()).filter(Boolean);
+    const out = [];
+    for (const ln of lines) {
+      const parts = ln.split(/\s+/);
+      if (parts.length < 3) continue;
+      const kind = parts[0].toLowerCase();
+      const t = Number(parts[1]);
+      if (!Number.isFinite(t)) continue;
 
-    const firstUnlabeled = files.findIndex(f => !f.labeled);
-    await loadIndex(firstUnlabeled >= 0 ? firstUnlabeled : (files.length ? 0 : -1));
+      if (kind === "switch") {
+        const ty = normType(parts[2]);
+        out.push({ kind: "switch", t: clamp(t, 0, duration), type: ty });
+      } else if (kind === "spike") {
+        const v = Number(parts[2]);
+        if (!Number.isFinite(v)) continue;
+        out.push({ kind: "spike", t: clamp(t, 0, duration), value: clamp(v, 0, 150) });
+      }
+    }
+    out.sort((a,b) => a.t - b.t);
+    return out;
   }
 
-  async function loadIndex(i) {
-    if (i < 0 || i >= files.length) {
-      curIndex = -1;
-      destroyWave();
-      refreshHeader();
-      return;
-    }
+  async function generateFromBaseEvents() {
+    if (!ensureWave()) return;
 
-    curIndex = i;
-    selectedSlot = 0;
-    setErr("");
-    renderList();
-    destroyWave();
+    base = { type: normType(baseTypeEl.value), value: clamp(baseValueEl.value, 0, 150) };
+    events = parseEvents(eventsTextEl.value);
 
-    const wav = files[curIndex].wav;
-
-    wave = WaveSurfer.create({
-      container: '#wave',
-      height: 180,
-      waveColor: '#8aa',
-      progressColor: '#446',
-      cursorColor: '#111',
-      url: `/audio/${encodeURIComponent(wav)}`,
-      normalize: true,
-      backend: 'WebAudio',
+    const spike_tau = Number(spikeTauEl.value);
+    const res = await fetchJSON('/api/generate_curve', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        wav: files[curIndex].wav,
+        fps: FPS,
+        duration,
+        spike_tau: Number.isFinite(spike_tau) ? spike_tau : 0.5,
+        base, events
+      })
     });
 
-    wave.on('ready', async () => {
-      const lbl = await fetchJSON(`/api/label/${encodeURIComponent(wav)}`);
-      const kf = normalizeKeepOrder(lbl.key_frames || []);
-      files[curIndex].key_frames = kf;
-      drawMarkersFromSlots(kf);
-      refreshHeader();
-    });
-
-    wave.on('decode', () => {
-      const wrapper = wave.getWrapper();
-      wrapper.oncontextmenu = (e) => e.preventDefault();
-
-      // Right-click: write into selected slot
-      wrapper.addEventListener('contextmenu', async (ev) => {
-        ev.preventDefault();
-        if (!ensureWave()) return;
-
-        const rect = wrapper.getBoundingClientRect();
-        const x = ev.clientX - rect.left;
-        const pct = Math.min(Math.max(x / rect.width, 0), 1);
-        const dur = wave.getDuration() || 1;
-        const t = pct * dur;
-
-        await setSlotByTime(selectedSlot, t);
-      });
-    });
-
-    refreshHeader();
-  }
-
-  async function setSlotByTime(slotIndex, t) {
-    if (!ensureWave()) return;
-    const dur = wave.getDuration() || 1;
-    const frame = clampFrame(Math.round(t * FPS), dur);
-
-    let kf = normalizeKeepOrder(files[curIndex].key_frames || []);
-
-    // Ensure array length up to slotIndex
-    while (kf.length < slotIndex) kf.push(null);
-
-    // Write into slotIndex
-    if (slotIndex < kf.length) {
-      kf[slotIndex] = frame;
-    } else {
-      // slotIndex == kf.length: append
-      kf.push(frame);
-    }
-
-    // Clean: drop nulls but keep order; limit 3; unique keep first
-    kf = normalizeKeepOrder(kf.filter(v => v != null));
-
-    files[curIndex].key_frames = kf;
-    drawMarkersFromSlots(kf);
-    refreshHeader();
-    await saveLabel(files[curIndex].wav, kf);
-  }
-
-  async function clearAllKeys() {
-    if (!ensureWave()) return;
-    files[curIndex].key_frames = [];
-    drawMarkersFromSlots([]);
-    refreshHeader();
-    await saveLabel(files[curIndex].wav, []);
-  }
-
-  async function deleteSelectedSlot() {
-    if (!ensureWave()) return;
-    let kf = normalizeKeepOrder(files[curIndex].key_frames || []);
-    if (kf.length === 0) return;
-
-    if (selectedSlot < kf.length) {
-      // remove that slot value (shift left for later slots)
-      kf.splice(selectedSlot, 1);
-    }
-    kf = normalizeKeepOrder(kf);
-
-    files[curIndex].key_frames = kf;
-    drawMarkersFromSlots(kf);
-    refreshHeader();
-    await saveLabel(files[curIndex].wav, kf);
-  }
-
-  async function nudgeSelectedSlot(delta) {
-    if (!ensureWave()) return;
-    const dur = wave.getDuration() || 1;
-    let kf = normalizeKeepOrder(files[curIndex].key_frames || []);
-    if (kf.length === 0) return;
-    if (selectedSlot >= kf.length) return;
-
-    kf[selectedSlot] = clampFrame(kf[selectedSlot] + delta, dur);
-    kf = normalizeKeepOrder(kf);
-
-    files[curIndex].key_frames = kf;
-    drawMarkersFromSlots(kf);
-    refreshHeader();
-    await saveLabel(files[curIndex].wav, kf);
-  }
-
-  function seekBy(sec) {
-    if (!ensureWave()) return;
-    const dur = wave.getDuration() || 1;
-    const t = wave.getCurrentTime() + sec;
-    wave.setTime(Math.min(Math.max(t, 0), dur));
+    curve = res.curve || curve;
+    selected.clear();
+    sortCurve();
+    protectEndpoints();
+    drawCurve();
+    await saveCurve();
   }
 
   function togglePlay() {
@@ -423,54 +466,301 @@
     await loadIndex(Math.max(curIndex - 1, 0));
   }
 
-  function selectSlot(i) {
-    selectedSlot = Math.max(0, Math.min(i, 2));
-    updateSlotButtons();
-    refreshHeader();
+  async function exportJSON() {
+    if (curIndex < 0) return;
+    await saveCurve();
+    const wav = files[curIndex].wav;
+    const data = await fetchJSON(`/api/export/${encodeURIComponent(wav)}`);
+
+    // 下载为文件
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = wav.replace(/\.wav$/i, "") + ".frames.json";
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  async function loadFiles() {
+    setErr("");
+    files = await fetchJSON('/api/files');
+    renderList();
+
+    const firstUnlabeled = files.findIndex(f => !f.labeled);
+    await loadIndex(firstUnlabeled >= 0 ? firstUnlabeled : (files.length ? 0 : -1));
+  }
+
+  async function loadIndex(i) {
+    if (i < 0 || i >= files.length) {
+      curIndex = -1;
+      destroyWave();
+      duration = null;
+      curve = [];
+      selected.clear();
+      updateHeader();
+      return;
+    }
+
+    curIndex = i;
+    setErr("");
+    renderList();
+    destroyWave();
+
+    duration = null;
+    curve = [];
+    selected.clear();
+    draggingIndex = null;
+
+    const wav = files[curIndex].wav;
+
+    wave = WaveSurfer.create({
+      container: '#wave',
+      height: 180,
+      waveColor: '#8aa',
+      progressColor: '#446',
+      cursorColor: '#111',
+      url: `/audio/${encodeURIComponent(wav)}`,
+      normalize: true,
+      backend: 'WebAudio',
+    });
+
+    wave.on('ready', async () => {
+      duration = wave.getDuration();
+      updateHeader();
+
+      // load curve label
+      const lbl = await fetchJSON(`/api/curve/${encodeURIComponent(wav)}`);
+      base = lbl.base || {type:"calm", value:60};
+      events = Array.isArray(lbl.events) ? lbl.events : [];
+      curve = Array.isArray(lbl.curve) ? lbl.curve : [];
+
+      // sync ui
+      baseTypeEl.value = normType(base.type);
+      baseValueEl.value = clamp(base.value, 0, 150);
+
+      // render events to textarea
+      const lines = [];
+      for (const e of events) {
+        if (e.kind === "switch") lines.push(`switch ${Number(e.t).toFixed(2)} ${normType(e.type)}`);
+        if (e.kind === "spike") lines.push(`spike ${Number(e.t).toFixed(2)} ${clamp(e.value,0,150)}`);
+      }
+      eventsTextEl.value = lines.join("\n");
+
+      if (!curve || curve.length < 2) {
+        // default minimal curve
+        curve = [
+          {t:0, type:normType(base.type), value: clamp(base.value,0,150)},
+          {t:duration, type:normType(base.type), value: clamp(base.value,0,150)},
+        ];
+      }
+
+      sortCurve();
+      protectEndpoints();
+
+      // store duration back to server (so export works even if user only loads)
+      await fetchJSON('/api/curve', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ wav, fps: FPS, duration, base, events, curve })
+      });
+
+      drawCurve();
+    });
+
+    // global mousemove/up for dragging
+    window.onmousemove = async (ev) => {
+      if (draggingIndex == null) return;
+      if (!ensureWave()) return;
+
+      const o = overlayRect();
+      const localX = ev.clientX - o.left - dragOffset.dx;
+      const localY = ev.clientY - o.top - dragOffset.dy;
+
+      let t = xToT(localX);
+      let v = yToV(localY);
+
+      // endpoint locks
+      if (draggingIndex === 0) t = 0;
+      if (draggingIndex === curve.length - 1) t = duration;
+
+      curve[draggingIndex].t = t;
+      curve[draggingIndex].value = v;
+
+      sortCurve();
+      protectEndpoints();
+
+      // keep selection indices consistent after sort: easiest approach—reselect by nearest point
+      // (lightweight: clear selection except for the dragged point)
+      selected.clear();
+      selected.add(Math.min(curve.length-1, Math.max(0, draggingIndex)));
+
+      drawCurve();
+    };
+
+    window.onmouseup = async () => {
+      if (draggingIndex != null) {
+        draggingIndex = null;
+        await saveCurve();
+      }
+    };
+
+    // Ctrl+Click add point; Shift+drag box select
+    const overlay = document.getElementById('curveOverlay');
+    let boxing = false;
+    let boxStart = null;
+
+    overlay.addEventListener("mousedown", (ev) => {
+      if (!ensureWave()) return;
+
+      const o = overlayRect();
+      const x = ev.clientX - o.left;
+      const y = ev.clientY - o.top;
+
+      if (ev.ctrlKey) {
+        // add point
+        const t = xToT(x);
+        const v = yToV(y);
+
+        // inherit type from nearest-left point
+        sortCurve();
+        let ty = curve[0].type;
+        for (let i=0;i<curve.length;i++){
+          if (curve[i].t <= t) ty = curve[i].type;
+          else break;
+        }
+
+        curve.push({t, type: ty, value: v});
+        sortCurve();
+        protectEndpoints();
+
+        selected.clear();
+        // select the new point by nearest
+        let best = 0, bestD = 1e9;
+        for (let i=0;i<curve.length;i++){
+          const d = Math.abs(curve[i].t - t);
+          if (d < bestD) { bestD = d; best = i; }
+        }
+        selected.add(best);
+
+        drawCurve();
+        saveCurve().catch(err => setErr(String(err)));
+        return;
+      }
+
+      if (ev.shiftKey) {
+        boxing = true;
+        boxStart = {x: ev.clientX, y: ev.clientY};
+        const wb = waveBox.getBoundingClientRect();
+        selectRect.style.left = (boxStart.x - wb.left) + "px";
+        selectRect.style.top  = (boxStart.y - wb.top) + "px";
+        selectRect.style.width = "0px";
+        selectRect.style.height = "0px";
+        selectRect.style.display = "block";
+        ev.preventDefault();
+        return;
+      }
+
+      // click blank area clears selection
+      selected.clear();
+      drawCurve();
+    });
+
+    window.addEventListener("mousemove", (ev) => {
+      if (!boxing) return;
+      const wb = waveBox.getBoundingClientRect();
+      const x0 = boxStart.x - wb.left;
+      const y0 = boxStart.y - wb.top;
+      const x1 = ev.clientX - wb.left;
+      const y1 = ev.clientY - wb.top;
+
+      const left = Math.min(x0, x1);
+      const top  = Math.min(y0, y1);
+      const w = Math.abs(x1 - x0);
+      const h = Math.abs(y1 - y0);
+
+      selectRect.style.left = left + "px";
+      selectRect.style.top = top + "px";
+      selectRect.style.width = w + "px";
+      selectRect.style.height = h + "px";
+    });
+
+    window.addEventListener("mouseup", (ev) => {
+      if (!boxing) return;
+      boxing = false;
+      selectRect.style.display = "none";
+
+      const wb = waveBox.getBoundingClientRect();
+      const box = {
+        left: parseFloat(selectRect.style.left) + wb.left,
+        top: parseFloat(selectRect.style.top) + wb.top,
+        right: parseFloat(selectRect.style.left) + parseFloat(selectRect.style.width) + wb.left,
+        bottom: parseFloat(selectRect.style.top) + parseFloat(selectRect.style.height) + wb.top,
+      };
+
+      // select points whose screen coords are inside box
+      selected.clear();
+      const o = overlayRect();
+      curve.forEach((p, idx) => {
+        const px = o.left + tToX(p.t);
+        const py = o.top + vToY(p.value);
+        if (px >= box.left && px <= box.right && py >= box.top && py <= box.bottom) {
+          selected.add(idx);
+        }
+      });
+
+      drawCurve();
+    });
+
+    updateHeader();
+  }
+
+  function applyTypeToSelected() {
+    const ty = normType(batchTypeEl.value);
+    if (!ty) return;
+    for (const idx of selected) {
+      if (idx === 0 || idx === curve.length - 1) continue; // allow? 你也可开放
+      if (curve[idx]) curve[idx].type = ty;
+    }
+    drawCurve();
+    saveCurve().catch(err => setErr(String(err)));
+  }
+
+  function deleteSelectedPoints() {
+    if (selected.size === 0) return;
+    // do not delete endpoints
+    const keep = [];
+    curve.forEach((p, idx) => {
+      if (idx === 0 || idx === curve.length - 1) { keep.push(p); return; }
+      if (!selected.has(idx)) keep.push(p);
+    });
+    curve = keep;
+    selected.clear();
+    sortCurve();
+    protectEndpoints();
+    drawCurve();
+    saveCurve().catch(err => setErr(String(err)));
   }
 
   // Buttons
   document.getElementById('btnPlay').onclick = togglePlay;
   document.getElementById('btnNext').onclick = nextFile;
   document.getElementById('btnPrev').onclick = prevFile;
-
-  btnSel1.onclick = () => selectSlot(0);
-  btnSel2.onclick = () => selectSlot(1);
-  btnSel3.onclick = () => selectSlot(2);
-
-  document.getElementById('btnDel').onclick = deleteSelectedSlot;
-  document.getElementById('btnClear').onclick = clearAllKeys;
-
-  document.getElementById('btnBack1s').onclick = () => seekBy(-1.0);
-  document.getElementById('btnFwd1s').onclick = () => seekBy(+1.0);
-  document.getElementById('btnBack01').onclick = () => seekBy(-0.1);
-  document.getElementById('btnFwd01').onclick = () => seekBy(+0.1);
-
-  document.getElementById('btnFrameDec').onclick = () => nudgeSelectedSlot(-1);
-  document.getElementById('btnFrameInc').onclick = () => nudgeSelectedSlot(+1);
+  document.getElementById('btnSave').onclick = () => saveCurve().catch(err => setErr(String(err)));
+  document.getElementById('btnExport').onclick = () => exportJSON().catch(err => setErr(String(err)));
+  document.getElementById('btnGenerate').onclick = () => generateFromBaseEvents().catch(err => setErr(String(err)));
+  document.getElementById('btnApplyType').onclick = applyTypeToSelected;
 
   // Keyboard shortcuts
   document.addEventListener('keydown', async (e) => {
-    if (e.target && ['INPUT','TEXTAREA'].includes(e.target.tagName)) return;
+    if (e.target && ['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
 
     if (e.code === 'Space') { e.preventDefault(); togglePlay(); return; }
     if (e.key === 'n' || e.key === 'N') { await nextFile(); return; }
     if (e.key === 'p' || e.key === 'P') { await prevFile(); return; }
-
-    if (e.key === '1') { selectSlot(0); return; }
-    if (e.key === '2') { selectSlot(1); return; }
-    if (e.key === '3') { selectSlot(2); return; }
-
-    if (e.key === 'Backspace') { e.preventDefault(); await deleteSelectedSlot(); return; }
-    if (e.key === 'x' || e.key === 'X') { await clearAllKeys(); return; }
-
-    if (e.key === 'ArrowLeft' && e.shiftKey) { seekBy(-0.1); return; }
-    if (e.key === 'ArrowRight' && e.shiftKey) { seekBy(+0.1); return; }
-    if (e.key === 'ArrowLeft' && !e.shiftKey) { seekBy(-1.0); return; }
-    if (e.key === 'ArrowRight' && !e.shiftKey) { seekBy(+1.0); return; }
-
-    if (e.key === ',') { await nudgeSelectedSlot(-1); return; }
-    if (e.key === '.') { await nudgeSelectedSlot(+1); return; }
+    if (e.key === 'Delete') { deleteSelectedPoints(); return; }
   });
 
   // init
