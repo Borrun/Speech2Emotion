@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Speech2Emotion Curve Annotator</title>
+  <title>Speech2Emotion Curve Annotator (Triggers → Curve)</title>
   <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
   <style>
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; }
@@ -23,13 +23,13 @@
 
     #waveBox { border: 1px solid #ddd; border-radius: 10px; padding: 10px; position: relative; }
     #wave { position: relative; }
-    #curveOverlay {
+    #overlay {
       position:absolute; left:10px; right:10px;
       top:10px;
       height:160px;
-      pointer-events: none;
+      z-index: 5;
     }
-    #curveOverlay svg { width:100%; height:100%; display:block; }
+    #overlay svg { width:100%; height:100%; display:block; }
     #selectRect {
       position:absolute;
       border: 1px dashed #0b57d0;
@@ -38,10 +38,9 @@
       pointer-events:none;
       z-index: 20;
     }
+
     .controls { margin-top: 10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    button, select, input, textarea {
-      font: inherit;
-    }
+    button, select, input { font: inherit; }
     button { padding: 8px 10px; border: 1px solid #ccc; background:#fff; border-radius: 8px; cursor:pointer; }
     button:hover { background:#fafafa; }
     .row { display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
@@ -56,11 +55,13 @@
       gap: 10px;
     }
     .panel .full { grid-column: 1 / -1; }
-    textarea { width:100%; height: 90px; padding:8px; border:1px solid #ddd; border-radius: 8px; }
-    input[type="number"], input[type="text"], select { padding:6px 8px; border:1px solid #ddd; border-radius: 8px; }
     .hint { font-size: 12px; color:#666; line-height: 1.4; }
+    input[type="number"], select { padding:6px 8px; border:1px solid #ddd; border-radius: 8px; }
     .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
            font-size: 12px; border: 1px solid #ddd; padding: 2px 6px; border-radius: 6px; background:#fafafa; }
+    .table { width:100%; border-collapse: collapse; font-size: 12px; }
+    .table th, .table td { border-bottom: 1px solid #eee; padding: 6px 6px; text-align:left; vertical-align: top; }
+    .table td button { padding: 4px 6px; border-radius: 6px; }
   </style>
 </head>
 <body>
@@ -79,15 +80,12 @@
       <div><b id="curName">No file</b></div>
       <div class="muted">fps: <b id="fps">30</b></div>
       <div class="muted">duration(s): <b id="dur">—</b></div>
-      <div class="muted">points: <b id="ptCount">—</b></div>
+      <div class="muted">curve pts: <b id="ptCount">—</b></div>
     </div>
 
     <div id="waveBox" style="margin-top:10px">
       <div id="wave"></div>
-
-      <div id="curveOverlay">
-        <svg id="svg"></svg>
-      </div>
+      <div id="overlay"><svg id="svg"></svg></div>
       <div id="selectRect"></div>
     </div>
 
@@ -97,24 +95,13 @@
       <button id="btnNext">Next <span class="kbd">N</span></button>
 
       <button id="btnSave">Save</button>
+      <button id="btnGenerate">Generate Curve</button>
       <button id="btnExport">Export (JSON)</button>
-
-      <label class="muted">Batch type:
-        <select id="batchType">
-          <option>happy</option>
-          <option>sad</option>
-          <option>angry</option>
-          <option>fear</option>
-          <option selected>calm</option>
-          <option>confused</option>
-        </select>
-      </label>
-      <button id="btnApplyType">Apply to selected</button>
     </div>
 
     <div class="panel">
       <div>
-        <div class="muted"><b>Base</b></div>
+        <div class="muted"><b>Base (fallback)</b></div>
         <div class="row" style="margin-top:6px">
           <select id="baseType">
             <option>happy</option><option>sad</option><option>angry</option><option>fear</option>
@@ -122,36 +109,70 @@
           </select>
           <label class="muted">value <input id="baseValue" type="number" min="0" max="150" value="60" style="width:90px"></label>
         </div>
+        <div class="hint">如果没有 anchor/switch 覆盖到某段，就用 base。</div>
       </div>
 
       <div>
-        <div class="muted"><b>Spike τ</b> (回落秒)</div>
+        <div class="muted"><b>Spike τ</b>（回落秒）</div>
         <div class="row" style="margin-top:6px">
-          <input id="spikeTau" type="number" step="0.1" min="0.0" value="0.5" style="width:110px">
+          <input id="defaultTau" type="number" step="0.1" min="0.0" value="0.5" style="width:110px">
           <span class="hint">默认 0.5s</span>
         </div>
       </div>
 
       <div class="full">
-        <div class="muted"><b>Events</b>（一行一个事件）</div>
-        <div class="hint">
-          switch: <span class="kbd">switch 2.10 happy</span>；spike: <span class="kbd">spike 3.80 135</span>
+        <div class="row">
+          <div class="muted"><b>Trigger Mode</b></div>
+          <select id="mode">
+            <option value="edit">Edit curve (drag/select)</option>
+            <option value="anchor">Add Anchor (type,value)</option>
+            <option value="switch">Add Switch (type)</option>
+            <option value="spike">Add Spike (value)</option>
+          </select>
+
+          <select id="modeType">
+            <option>happy</option><option>sad</option><option>angry</option><option>fear</option>
+            <option selected>calm</option><option>confused</option>
+          </select>
+          <input id="modeValue" type="number" min="0" max="150" value="120" style="width:110px">
+          <span class="hint">在波形上左键点一下，就插入触发点。</span>
         </div>
-        <textarea id="eventsText" placeholder="switch 2.10 happy
-spike 3.80 135"></textarea>
-        <div class="row" style="margin-top:8px">
-          <button id="btnGenerate">Generate curve from base/events</button>
-          <span class="hint">生成后你可拖点修正；Shift 框选 + Apply 批量改 type。</span>
+        <div class="hint">
+          Anchor：直接指定某时刻 (type,value)。Switch：只切换 type。Spike：只给峰值 value，自动回落到基线。
         </div>
       </div>
 
+      <div class="full">
+        <div class="row">
+          <div class="muted"><b>Range Type Edit</b></div>
+          <select id="rangeType">
+            <option>happy</option><option>sad</option><option selected>angry</option><option>fear</option>
+            <option>calm</option><option>confused</option>
+          </select>
+          <button id="btnApplyRangeType">Apply type to selected range</button>
+          <span class="hint">Shift + 拖拽框选一个时间段，然后应用。</span>
+        </div>
+        <div class="hint">
+          框选是“时间区间”语义：会自动在区间边界插入点，保证“这一段”type 精准生效。
+        </div>
+      </div>
+
+      <div class="full">
+        <div class="muted"><b>Triggers</b></div>
+        <table class="table" id="triggerTable">
+          <thead>
+            <tr><th>#</th><th>kind</th><th>t(s)</th><th>payload</th><th></th></tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
       <div class="full hint">
-        操作说明：
+        曲线编辑：
         <ul>
-          <li>拖动点：左键按住点拖动（x=时间，y=value）。</li>
-          <li>新增点：<span class="kbd">Ctrl</span> + 左键点击曲线区域。</li>
-          <li>框选点：按住 <span class="kbd">Shift</span> 拖拽框选；然后 Apply 批量改 type。</li>
-          <li>删除点：选中点后按 <span class="kbd">Delete</span>（不会删 t=0 和 t=duration）。</li>
+          <li>拖点：左键按住点拖（x=时间，y=value）。</li>
+          <li>Shift 框选：选择一个时间段（用于段级 type 修改）。</li>
+          <li>提示：Generate 后再拖点微调最省事。</li>
         </ul>
       </div>
     </div>
@@ -162,20 +183,21 @@ spike 3.80 135"></textarea>
 
 <script>
   const FPS = 30;
-  const ALLOWED_TYPES = ["happy","sad","angry","fear","calm","confused"];
+  const TYPES = ["happy","sad","angry","fear","calm","confused"];
 
   let files = [];
   let curIndex = -1;
   let wave = null;
 
-  // labeling state
   let duration = null;
-  let base = { type: "calm", value: 60 };
-  let events = [];
-  let curve = []; // [{t,type,value}]
+  let base = { type:"calm", value:60 };
+  let triggers = []; // [{kind,t,type?,value?,tau?}]
+  let curve = [];    // [{t,type,value}]
 
-  // selection/drag
-  let selected = new Set(); // indices of curve points
+  // range selection (time interval)
+  let rangeSel = null; // {t0,t1}
+
+  // drag point
   let draggingIndex = null;
   let dragOffset = {dx:0, dy:0};
 
@@ -190,141 +212,180 @@ spike 3.80 135"></textarea>
   const elDone = document.getElementById('donePill');
 
   const svg = document.getElementById('svg');
-  const selectRect = document.getElementById('selectRect');
   const waveBox = document.getElementById('waveBox');
+  const selectRect = document.getElementById('selectRect');
 
   const baseTypeEl = document.getElementById('baseType');
   const baseValueEl = document.getElementById('baseValue');
-  const eventsTextEl = document.getElementById('eventsText');
-  const spikeTauEl = document.getElementById('spikeTau');
+  const defaultTauEl = document.getElementById('defaultTau');
 
-  const batchTypeEl = document.getElementById('batchType');
+  const modeEl = document.getElementById('mode');
+  const modeTypeEl = document.getElementById('modeType');
+  const modeValueEl = document.getElementById('modeValue');
 
-  function setErr(msg) { elErr.textContent = msg || ""; }
+  const rangeTypeEl = document.getElementById('rangeType');
 
-  async function fetchJSON(url, opts) {
+  const triggerTableBody = document.querySelector('#triggerTable tbody');
+
+  function setErr(msg){ elErr.textContent = msg || ""; }
+
+  async function fetchJSON(url, opts){
     const res = await fetch(url, opts);
-    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+    if(!res.ok) throw new Error(`${res.status} ${res.statusText}`);
     return await res.json();
   }
 
-  function clamp(v, lo, hi) {
+  function clamp(v, lo, hi){
     v = Number(v);
-    if (!Number.isFinite(v)) v = lo;
+    if(!Number.isFinite(v)) v = lo;
     return Math.max(lo, Math.min(hi, v));
   }
 
-  function normType(t) {
-    t = (t || "").toLowerCase().trim();
-    return ALLOWED_TYPES.includes(t) ? t : "calm";
+  function normType(t){
+    t = (t||"").toLowerCase().trim();
+    return TYPES.includes(t) ? t : "calm";
   }
 
-  function renderList() {
-    elList.innerHTML = "";
-    let done = 0;
-    files.forEach((f, i) => {
-      const li = document.createElement('li');
-      li.className = 'item' + (i === curIndex ? ' active' : '');
-      if (f.labeled) done += 1;
+  function ensureWave(){
+    return !!wave && curIndex >= 0 && duration != null;
+  }
 
+  function overlayRect(){
+    return document.getElementById('overlay').getBoundingClientRect();
+  }
+
+  function tToX(t){
+    const r = overlayRect();
+    const w = r.width;
+    const pct = duration > 0 ? (t / duration) : 0;
+    return clamp(pct,0,1)*w;
+  }
+  function xToT(x){
+    const r = overlayRect();
+    const w = r.width;
+    const pct = w>0 ? (x/w) : 0;
+    return clamp(pct,0,1)*duration;
+  }
+  function vToY(v){
+    const r = overlayRect();
+    const h = r.height;
+    const pct = 1 - (clamp(v,0,150)/150);
+    return clamp(pct,0,1)*h;
+  }
+  function yToV(y){
+    const r = overlayRect();
+    const h = r.height;
+    const pct = h>0 ? (y/h) : 1;
+    return clamp((1-clamp(pct,0,1))*150,0,150);
+  }
+
+  function sortCurve(){
+    curve.sort((a,b)=>a.t-b.t);
+  }
+
+  function normalizeCurveEndpoints(){
+    if(!duration) return;
+    if(!curve || curve.length<2){
+      curve = [
+        {t:0, type:base.type, value:base.value},
+        {t:duration, type:base.type, value:base.value},
+      ];
+    }
+    sortCurve();
+    curve[0].t = 0;
+    curve[curve.length-1].t = duration;
+  }
+
+  function valueAt(t){
+    if(!curve || curve.length===0) return base.value;
+    if(t<=curve[0].t) return curve[0].value;
+    if(t>=curve[curve.length-1].t) return curve[curve.length-1].value;
+    for(let i=0;i<curve.length-1;i++){
+      const a=curve[i], b=curve[i+1];
+      if(a.t<=t && t<=b.t){
+        if(Math.abs(b.t-a.t)<1e-9) return a.value;
+        const k=(t-a.t)/(b.t-a.t);
+        return (1-k)*a.value+k*b.value;
+      }
+    }
+    return curve[curve.length-1].value;
+  }
+
+  function typeAt(t){
+    if(!curve || curve.length===0) return base.type;
+    if(t<=curve[0].t) return curve[0].type;
+    for(let i=0;i<curve.length-1;i++){
+      const a=curve[i], b=curve[i+1];
+      if(a.t<=t && t<b.t) return a.type;
+    }
+    return curve[curve.length-1].type;
+  }
+
+  function renderList(){
+    elList.innerHTML = "";
+    let done=0;
+    files.forEach((f,i)=>{
+      const li=document.createElement('li');
+      li.className='item'+(i===curIndex?' active':'');
+      if(f.labeled) done++;
       li.innerHTML = `
         <div><b>${f.wav}</b></div>
         <div class="meta">
-          <span class="pill ${f.labeled ? 'ok':'no'}">${f.labeled ? 'labeled':'unlabeled'}</span>
+          <span class="pill ${f.labeled?'ok':'no'}">${f.labeled?'labeled':'unlabeled'}</span>
         </div>
       `;
-      li.onclick = () => loadIndex(i);
+      li.onclick=()=>loadIndex(i);
       elList.appendChild(li);
     });
     elCount.textContent = files.length;
     elDone.textContent = `done: ${done}`;
   }
 
-  function destroyWave() {
-    if (wave) {
-      wave.destroy();
-      wave = null;
-    }
-    document.getElementById('wave').innerHTML = "";
-    svg.innerHTML = "";
-  }
-
-  function ensureWave() {
-    return !!wave && curIndex >= 0 && duration != null;
-  }
-
-  function wrapperRect() {
-    const wrapper = wave.getWrapper();
-    return wrapper.getBoundingClientRect();
-  }
-
-  function overlayRect() {
-    return document.getElementById('curveOverlay').getBoundingClientRect();
-  }
-
-  function tToX(t) {
-    const r = overlayRect();
-    const w = r.width;
-    const pct = duration > 0 ? (t / duration) : 0;
-    return clamp(pct, 0, 1) * w;
-  }
-
-  function xToT(x) {
-    const r = overlayRect();
-    const w = r.width;
-    const pct = w > 0 ? (x / w) : 0;
-    return clamp(pct, 0, 1) * duration;
-  }
-
-  function vToY(v) {
-    const r = overlayRect();
-    const h = r.height;
-    const pct = 1 - (clamp(v, 0, 150) / 150);
-    return clamp(pct, 0, 1) * h;
-  }
-
-  function yToV(y) {
-    const r = overlayRect();
-    const h = r.height;
-    const pct = h > 0 ? (y / h) : 1;
-    return clamp((1 - clamp(pct, 0, 1)) * 150, 0, 150);
-  }
-
-  function sortCurve() {
-    curve.sort((a,b) => a.t - b.t);
-  }
-
-  function protectEndpoints() {
-    if (!curve || curve.length < 2) return;
-    // lock first and last (t=0 and t=duration)
-    curve[0].t = 0;
-    curve[curve.length-1].t = duration;
-  }
-
-  function updateHeader() {
-    const f = (curIndex >= 0) ? files[curIndex] : null;
-    elName.textContent = f ? f.wav : "No file";
+  function updateHeader(){
+    const f = (curIndex>=0)?files[curIndex]:null;
+    elName.textContent = f?f.wav:"No file";
     elFps.textContent = FPS;
-    elDur.textContent = (duration == null) ? "—" : duration.toFixed(3);
-    elPtCount.textContent = curve ? String(curve.length) : "—";
+    elDur.textContent = (duration==null)?"—":duration.toFixed(3);
+    elPtCount.textContent = curve?String(curve.length):"—";
   }
 
-  function drawCurve() {
+  function destroyWave(){
+    if(wave){ wave.destroy(); wave=null; }
+    document.getElementById('wave').innerHTML="";
+    svg.innerHTML="";
+    duration=null;
+    rangeSel=null;
+  }
+
+  function draw(){
     svg.innerHTML = "";
-    if (!ensureWave()) return;
+    if(!ensureWave()) return;
 
     const r = overlayRect();
-    const w = r.width, h = r.height;
+    const w=r.width, h=r.height;
 
-    // background grid
+    // bg
     const bg = document.createElementNS("http://www.w3.org/2000/svg","rect");
     bg.setAttribute("x","0"); bg.setAttribute("y","0");
-    bg.setAttribute("width", String(w)); bg.setAttribute("height", String(h));
+    bg.setAttribute("width",String(w)); bg.setAttribute("height",String(h));
     bg.setAttribute("fill","rgba(0,0,0,0.02)");
     svg.appendChild(bg);
 
+    // range selection indicator (optional)
+    if(rangeSel){
+      const x0 = tToX(rangeSel.t0);
+      const x1 = tToX(rangeSel.t1);
+      const rr = document.createElementNS("http://www.w3.org/2000/svg","rect");
+      rr.setAttribute("x", String(Math.min(x0,x1)));
+      rr.setAttribute("y", "0");
+      rr.setAttribute("width", String(Math.abs(x1-x0)));
+      rr.setAttribute("height", String(h));
+      rr.setAttribute("fill", "rgba(255,179,0,0.12)");
+      svg.appendChild(rr);
+    }
+
     // polyline
-    const pts = curve.map(p => `${tToX(p.t)},${vToY(p.value)}`).join(" ");
+    const pts = curve.map(p=>`${tToX(p.t)},${vToY(p.value)}`).join(" ");
     const pl = document.createElementNS("http://www.w3.org/2000/svg","polyline");
     pl.setAttribute("points", pts);
     pl.setAttribute("fill","none");
@@ -333,50 +394,36 @@ spike 3.80 135"></textarea>
     svg.appendChild(pl);
 
     // points
-    curve.forEach((p, idx) => {
-      const cx = tToX(p.t);
-      const cy = vToY(p.value);
+    curve.forEach((p, idx)=>{
+      const cx=tToX(p.t), cy=vToY(p.value);
 
       const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
       c.setAttribute("cx", String(cx));
       c.setAttribute("cy", String(cy));
       c.setAttribute("r", "6");
-      c.setAttribute("fill", selected.has(idx) ? "#ffb300" : "#ffffff");
+      c.setAttribute("fill", "#fff");
       c.setAttribute("stroke", "#111");
       c.setAttribute("stroke-width", "1.5");
-      c.style.pointerEvents = "all";
       c.style.cursor = "grab";
+      c.style.pointerEvents = "all";
 
-      c.addEventListener("mousedown", (ev) => {
-        ev.preventDefault();
-        ev.stopPropagation();
+      c.addEventListener("mousedown", (ev)=>{
+        if(modeEl.value !== "edit") return;
+        ev.preventDefault(); ev.stopPropagation();
         draggingIndex = idx;
 
-        // selection behavior: click selects single unless already shift-selected
-        if (!ev.shiftKey) {
-          selected.clear();
-          selected.add(idx);
-          drawCurve();
-        } else {
-          // shift+click toggle
-          if (selected.has(idx)) selected.delete(idx);
-          else selected.add(idx);
-          drawCurve();
-        }
-
         const o = overlayRect();
-        const localX = ev.clientX - o.left;
-        const localY = ev.clientY - o.top;
-        dragOffset.dx = localX - tToX(curve[idx].t);
-        dragOffset.dy = localY - vToY(curve[idx].value);
+        const lx = ev.clientX - o.left;
+        const ly = ev.clientY - o.top;
+        dragOffset.dx = lx - tToX(curve[idx].t);
+        dragOffset.dy = ly - vToY(curve[idx].value);
       });
 
       svg.appendChild(c);
 
-      // label
       const tx = document.createElementNS("http://www.w3.org/2000/svg","text");
-      tx.setAttribute("x", String(cx + 8));
-      tx.setAttribute("y", String(cy - 8));
+      tx.setAttribute("x", String(cx+8));
+      tx.setAttribute("y", String(cy-8));
       tx.setAttribute("font-size","12");
       tx.setAttribute("fill","#111");
       tx.textContent = `${p.type}:${Math.round(p.value)}@${p.t.toFixed(2)}s`;
@@ -386,385 +433,335 @@ spike 3.80 135"></textarea>
     updateHeader();
   }
 
-  async function saveCurve() {
-    if (curIndex < 0) return;
+  function renderTriggers(){
+    triggerTableBody.innerHTML = "";
+    triggers.forEach((tr, i)=>{
+      const trRow = document.createElement('tr');
+      let payload = "";
+      if(tr.kind==="anchor") payload = `${tr.type}, v=${Math.round(tr.value)}`;
+      if(tr.kind==="switch") payload = `${tr.type}`;
+      if(tr.kind==="spike") payload = `v=${Math.round(tr.value)}, τ=${tr.tau ?? defaultTauEl.value}`;
+
+      trRow.innerHTML = `
+        <td>${i}</td>
+        <td>${tr.kind}</td>
+        <td>${Number(tr.t).toFixed(2)}</td>
+        <td>${payload}</td>
+        <td><button data-i="${i}">Del</button></td>
+      `;
+      trRow.querySelector('button').onclick = ()=>{
+        triggers.splice(i,1);
+        renderTriggers();
+        saveLabel().catch(err=>setErr(String(err)));
+      };
+      triggerTableBody.appendChild(trRow);
+    });
+  }
+
+  async function saveLabel(){
+    if(curIndex<0) return;
     const wav = files[curIndex].wav;
-    await fetchJSON('/api/curve', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        wav, fps: FPS, duration,
-        base, events, curve
-      })
+    await fetchJSON('/api/label', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ wav, fps: FPS, duration, base, triggers, curve })
     });
     files[curIndex].labeled = Array.isArray(curve) && curve.length >= 2;
     renderList();
   }
 
-  function parseEvents(text) {
-    const lines = (text || "").split("\n").map(s => s.trim()).filter(Boolean);
-    const out = [];
-    for (const ln of lines) {
-      const parts = ln.split(/\s+/);
-      if (parts.length < 3) continue;
-      const kind = parts[0].toLowerCase();
-      const t = Number(parts[1]);
-      if (!Number.isFinite(t)) continue;
-
-      if (kind === "switch") {
-        const ty = normType(parts[2]);
-        out.push({ kind: "switch", t: clamp(t, 0, duration), type: ty });
-      } else if (kind === "spike") {
-        const v = Number(parts[2]);
-        if (!Number.isFinite(v)) continue;
-        out.push({ kind: "spike", t: clamp(t, 0, duration), value: clamp(v, 0, 150) });
-      }
-    }
-    out.sort((a,b) => a.t - b.t);
-    return out;
-  }
-
-  async function generateFromBaseEvents() {
-    if (!ensureWave()) return;
-
-    base = { type: normType(baseTypeEl.value), value: clamp(baseValueEl.value, 0, 150) };
-    events = parseEvents(eventsTextEl.value);
-
-    const spike_tau = Number(spikeTauEl.value);
-    const res = await fetchJSON('/api/generate_curve', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
+  async function generateCurve(){
+    if(!ensureWave()) return;
+    base = { type:normType(baseTypeEl.value), value: clamp(baseValueEl.value,0,150) };
+    const res = await fetchJSON('/api/generate', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
       body: JSON.stringify({
         wav: files[curIndex].wav,
         fps: FPS,
         duration,
-        spike_tau: Number.isFinite(spike_tau) ? spike_tau : 0.5,
-        base, events
+        base,
+        triggers,
+        default_tau: clamp(defaultTauEl.value,0,10),
       })
     });
-
     curve = res.curve || curve;
-    selected.clear();
-    sortCurve();
-    protectEndpoints();
-    drawCurve();
-    await saveCurve();
+    normalizeCurveEndpoints();
+    draw();
+    await saveLabel();
   }
 
-  function togglePlay() {
-    if (!ensureWave()) return;
-    wave.playPause();
-  }
-
-  async function nextFile() {
-    if (files.length === 0) return;
-    await loadIndex(Math.min(curIndex + 1, files.length - 1));
-  }
-
-  async function prevFile() {
-    if (files.length === 0) return;
-    await loadIndex(Math.max(curIndex - 1, 0));
-  }
-
-  async function exportJSON() {
-    if (curIndex < 0) return;
-    await saveCurve();
+  async function exportJSON(){
+    if(curIndex<0) return;
+    await saveLabel();
     const wav = files[curIndex].wav;
     const data = await fetchJSON(`/api/export/${encodeURIComponent(wav)}`);
-
-    // 下载为文件
-    const blob = new Blob([JSON.stringify(data, null, 2)], {type:"application/json"});
+    const blob = new Blob([JSON.stringify(data,null,2)], {type:"application/json"});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = wav.replace(/\.wav$/i, "") + ".frames.json";
+    a.download = wav.replace(/\.wav$/i,"") + ".frames.json";
     document.body.appendChild(a);
     a.click();
     a.remove();
     URL.revokeObjectURL(url);
   }
 
-  async function loadFiles() {
+  function togglePlay(){
+    if(!ensureWave()) return;
+    wave.playPause();
+  }
+
+  async function nextFile(){
+    if(files.length===0) return;
+    await loadIndex(Math.min(curIndex+1, files.length-1));
+  }
+  async function prevFile(){
+    if(files.length===0) return;
+    await loadIndex(Math.max(curIndex-1, 0));
+  }
+
+  // Apply type to selected TIME RANGE (segment semantics)
+  function applyTypeToRange(){
+    if(!rangeSel){
+      setErr("No range selected. Use Shift+drag to select a time range.");
+      return;
+    }
+    const ty = normType(rangeTypeEl.value);
+    const t0 = Math.min(rangeSel.t0, rangeSel.t1);
+    const t1 = Math.max(rangeSel.t0, rangeSel.t1);
+
+    // Insert boundary points at t0 and t1 with interpolated value and current type,
+    // then set type for all points in [t0, t1] to ty, and ensure left segment boundary correct.
+    const v0 = valueAt(t0);
+    const v1 = valueAt(t1);
+
+    // boundary points inherit current type BEFORE change (for continuity), value interpolated
+    curve.push({t:t0, type:typeAt(t0), value:v0});
+    curve.push({t:t1, type:typeAt(t1), value:v1});
+    sortCurve();
+
+    // dedup same t (keep last)
+    const ded = [];
+    for(const p of curve){
+      if(ded.length && Math.abs(ded[ded.length-1].t - p.t) < 1e-9) ded[ded.length-1] = p;
+      else ded.push(p);
+    }
+    curve = ded;
+
+    // set type for points in [t0, t1] (including boundaries)
+    for(const p of curve){
+      if(p.t >= t0 - 1e-9 && p.t <= t1 + 1e-9){
+        p.type = ty;
+      }
+    }
+
+    normalizeCurveEndpoints();
+    draw();
+    saveLabel().catch(err=>setErr(String(err)));
+  }
+
+  async function loadFiles(){
     setErr("");
     files = await fetchJSON('/api/files');
     renderList();
-
-    const firstUnlabeled = files.findIndex(f => !f.labeled);
-    await loadIndex(firstUnlabeled >= 0 ? firstUnlabeled : (files.length ? 0 : -1));
+    const firstUnlabeled = files.findIndex(f=>!f.labeled);
+    await loadIndex(firstUnlabeled>=0 ? firstUnlabeled : (files.length?0:-1));
   }
 
-  async function loadIndex(i) {
-    if (i < 0 || i >= files.length) {
-      curIndex = -1;
+  async function loadIndex(i){
+    if(i<0 || i>=files.length){
+      curIndex=-1;
       destroyWave();
-      duration = null;
-      curve = [];
-      selected.clear();
       updateHeader();
       return;
     }
-
-    curIndex = i;
-    setErr("");
+    curIndex=i;
     renderList();
     destroyWave();
-
-    duration = null;
-    curve = [];
-    selected.clear();
-    draggingIndex = null;
+    setErr("");
 
     const wav = files[curIndex].wav;
 
     wave = WaveSurfer.create({
-      container: '#wave',
-      height: 180,
-      waveColor: '#8aa',
-      progressColor: '#446',
-      cursorColor: '#111',
-      url: `/audio/${encodeURIComponent(wav)}`,
-      normalize: true,
-      backend: 'WebAudio',
+      container:'#wave',
+      height:180,
+      waveColor:'#8aa',
+      progressColor:'#446',
+      cursorColor:'#111',
+      url:`/audio/${encodeURIComponent(wav)}`,
+      normalize:true,
+      backend:'WebAudio'
     });
 
-    wave.on('ready', async () => {
+    wave.on('ready', async ()=>{
       duration = wave.getDuration();
       updateHeader();
 
-      // load curve label
-      const lbl = await fetchJSON(`/api/curve/${encodeURIComponent(wav)}`);
+      const lbl = await fetchJSON(`/api/label/${encodeURIComponent(wav)}`);
       base = lbl.base || {type:"calm", value:60};
-      events = Array.isArray(lbl.events) ? lbl.events : [];
+      triggers = Array.isArray(lbl.triggers) ? lbl.triggers : [];
       curve = Array.isArray(lbl.curve) ? lbl.curve : [];
 
-      // sync ui
       baseTypeEl.value = normType(base.type);
-      baseValueEl.value = clamp(base.value, 0, 150);
+      baseValueEl.value = clamp(base.value,0,150);
 
-      // render events to textarea
-      const lines = [];
-      for (const e of events) {
-        if (e.kind === "switch") lines.push(`switch ${Number(e.t).toFixed(2)} ${normType(e.type)}`);
-        if (e.kind === "spike") lines.push(`spike ${Number(e.t).toFixed(2)} ${clamp(e.value,0,150)}`);
-      }
-      eventsTextEl.value = lines.join("\n");
-
-      if (!curve || curve.length < 2) {
-        // default minimal curve
+      if(!curve || curve.length<2){
         curve = [
           {t:0, type:normType(base.type), value: clamp(base.value,0,150)},
           {t:duration, type:normType(base.type), value: clamp(base.value,0,150)},
         ];
       }
+      normalizeCurveEndpoints();
+      rangeSel = null;
 
-      sortCurve();
-      protectEndpoints();
+      renderTriggers();
+      draw();
 
-      // store duration back to server (so export works even if user only loads)
-      await fetchJSON('/api/curve', {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ wav, fps: FPS, duration, base, events, curve })
-      });
-
-      drawCurve();
+      // persist duration once opened
+      await saveLabel();
     });
 
-    // global mousemove/up for dragging
-    window.onmousemove = async (ev) => {
-      if (draggingIndex == null) return;
-      if (!ensureWave()) return;
+    // dragging curve points
+    window.onmousemove = (ev)=>{
+      if(draggingIndex==null) return;
+      if(!ensureWave()) return;
 
       const o = overlayRect();
-      const localX = ev.clientX - o.left - dragOffset.dx;
-      const localY = ev.clientY - o.top - dragOffset.dy;
+      const lx = ev.clientX - o.left - dragOffset.dx;
+      const ly = ev.clientY - o.top - dragOffset.dy;
 
-      let t = xToT(localX);
-      let v = yToV(localY);
+      let t = xToT(lx);
+      let v = yToV(ly);
 
-      // endpoint locks
-      if (draggingIndex === 0) t = 0;
-      if (draggingIndex === curve.length - 1) t = duration;
+      // lock endpoints
+      if(draggingIndex===0) t=0;
+      if(draggingIndex===curve.length-1) t=duration;
 
       curve[draggingIndex].t = t;
       curve[draggingIndex].value = v;
 
-      sortCurve();
-      protectEndpoints();
-
-      // keep selection indices consistent after sort: easiest approach—reselect by nearest point
-      // (lightweight: clear selection except for the dragged point)
-      selected.clear();
-      selected.add(Math.min(curve.length-1, Math.max(0, draggingIndex)));
-
-      drawCurve();
+      normalizeCurveEndpoints();
+      draw();
     };
 
-    window.onmouseup = async () => {
-      if (draggingIndex != null) {
-        draggingIndex = null;
-        await saveCurve();
+    window.onmouseup = ()=>{
+      if(draggingIndex!=null){
+        draggingIndex=null;
+        saveLabel().catch(err=>setErr(String(err)));
       }
     };
 
-    // Ctrl+Click add point; Shift+drag box select
-    const overlay = document.getElementById('curveOverlay');
-    let boxing = false;
-    let boxStart = null;
+    // click to add triggers based on mode; Shift+drag selects time range
+    const overlay = document.getElementById('overlay');
+    let boxing=false;
+    let boxStart=null;
 
-    overlay.addEventListener("mousedown", (ev) => {
-      if (!ensureWave()) return;
+    overlay.addEventListener("mousedown", (ev)=>{
+      if(!ensureWave()) return;
 
-      const o = overlayRect();
-      const x = ev.clientX - o.left;
-      const y = ev.clientY - o.top;
-
-      if (ev.ctrlKey) {
-        // add point
-        const t = xToT(x);
-        const v = yToV(y);
-
-        // inherit type from nearest-left point
-        sortCurve();
-        let ty = curve[0].type;
-        for (let i=0;i<curve.length;i++){
-          if (curve[i].t <= t) ty = curve[i].type;
-          else break;
-        }
-
-        curve.push({t, type: ty, value: v});
-        sortCurve();
-        protectEndpoints();
-
-        selected.clear();
-        // select the new point by nearest
-        let best = 0, bestD = 1e9;
-        for (let i=0;i<curve.length;i++){
-          const d = Math.abs(curve[i].t - t);
-          if (d < bestD) { bestD = d; best = i; }
-        }
-        selected.add(best);
-
-        drawCurve();
-        saveCurve().catch(err => setErr(String(err)));
-        return;
-      }
-
-      if (ev.shiftKey) {
-        boxing = true;
+      // shift + drag = range select
+      if(ev.shiftKey){
+        boxing=true;
         boxStart = {x: ev.clientX, y: ev.clientY};
+
         const wb = waveBox.getBoundingClientRect();
         selectRect.style.left = (boxStart.x - wb.left) + "px";
         selectRect.style.top  = (boxStart.y - wb.top) + "px";
-        selectRect.style.width = "0px";
-        selectRect.style.height = "0px";
-        selectRect.style.display = "block";
+        selectRect.style.width="0px";
+        selectRect.style.height="0px";
+        selectRect.style.display="block";
         ev.preventDefault();
         return;
       }
 
-      // click blank area clears selection
-      selected.clear();
-      drawCurve();
+      // add trigger by clicking
+      const mode = modeEl.value;
+      if(mode==="edit") return; // edit mode click does nothing here
+
+      const o = overlayRect();
+      const x = ev.clientX - o.left;
+      const t = xToT(x);
+
+      if(mode==="anchor"){
+        const ty = normType(modeTypeEl.value);
+        const v = clamp(modeValueEl.value,0,150);
+        triggers.push({kind:"anchor", t, type:ty, value:v});
+      } else if(mode==="switch"){
+        const ty = normType(modeTypeEl.value);
+        triggers.push({kind:"switch", t, type:ty});
+      } else if(mode==="spike"){
+        const v = clamp(modeValueEl.value,0,150);
+        const tau = clamp(defaultTauEl.value,0,10);
+        triggers.push({kind:"spike", t, value:v, tau});
+      }
+      triggers.sort((a,b)=>a.t-b.t);
+      renderTriggers();
+      saveLabel().catch(err=>setErr(String(err)));
     });
 
-    window.addEventListener("mousemove", (ev) => {
-      if (!boxing) return;
+    window.addEventListener("mousemove", (ev)=>{
+      if(!boxing) return;
       const wb = waveBox.getBoundingClientRect();
       const x0 = boxStart.x - wb.left;
       const y0 = boxStart.y - wb.top;
       const x1 = ev.clientX - wb.left;
       const y1 = ev.clientY - wb.top;
 
-      const left = Math.min(x0, x1);
-      const top  = Math.min(y0, y1);
-      const w = Math.abs(x1 - x0);
-      const h = Math.abs(y1 - y0);
+      const left = Math.min(x0,x1);
+      const top  = Math.min(y0,y1);
+      const w = Math.abs(x1-x0);
+      const h = Math.abs(y1-y0);
 
-      selectRect.style.left = left + "px";
-      selectRect.style.top = top + "px";
-      selectRect.style.width = w + "px";
-      selectRect.style.height = h + "px";
+      selectRect.style.left = left+"px";
+      selectRect.style.top = top+"px";
+      selectRect.style.width = w+"px";
+      selectRect.style.height = h+"px";
     });
 
-    window.addEventListener("mouseup", (ev) => {
-      if (!boxing) return;
-      boxing = false;
-      selectRect.style.display = "none";
+    window.addEventListener("mouseup", (ev)=>{
+      if(!boxing) return;
+      boxing=false;
+      selectRect.style.display="none";
 
+      // interpret selection as TIME RANGE only (x dimension)
       const wb = waveBox.getBoundingClientRect();
-      const box = {
-        left: parseFloat(selectRect.style.left) + wb.left,
-        top: parseFloat(selectRect.style.top) + wb.top,
-        right: parseFloat(selectRect.style.left) + parseFloat(selectRect.style.width) + wb.left,
-        bottom: parseFloat(selectRect.style.top) + parseFloat(selectRect.style.height) + wb.top,
-      };
+      const leftPx = parseFloat(selectRect.style.left) + wb.left;
+      const widthPx = parseFloat(selectRect.style.width);
 
-      // select points whose screen coords are inside box
-      selected.clear();
       const o = overlayRect();
-      curve.forEach((p, idx) => {
-        const px = o.left + tToX(p.t);
-        const py = o.top + vToY(p.value);
-        if (px >= box.left && px <= box.right && py >= box.top && py <= box.bottom) {
-          selected.add(idx);
-        }
-      });
+      const x0 = clamp(leftPx - o.left, 0, o.width);
+      const x1 = clamp(leftPx + widthPx - o.left, 0, o.width);
 
-      drawCurve();
+      const t0 = xToT(x0);
+      const t1 = xToT(x1);
+      rangeSel = {t0, t1};
+      draw();
     });
 
     updateHeader();
-  }
-
-  function applyTypeToSelected() {
-    const ty = normType(batchTypeEl.value);
-    if (!ty) return;
-    for (const idx of selected) {
-      if (idx === 0 || idx === curve.length - 1) continue; // allow? 你也可开放
-      if (curve[idx]) curve[idx].type = ty;
-    }
-    drawCurve();
-    saveCurve().catch(err => setErr(String(err)));
-  }
-
-  function deleteSelectedPoints() {
-    if (selected.size === 0) return;
-    // do not delete endpoints
-    const keep = [];
-    curve.forEach((p, idx) => {
-      if (idx === 0 || idx === curve.length - 1) { keep.push(p); return; }
-      if (!selected.has(idx)) keep.push(p);
-    });
-    curve = keep;
-    selected.clear();
-    sortCurve();
-    protectEndpoints();
-    drawCurve();
-    saveCurve().catch(err => setErr(String(err)));
   }
 
   // Buttons
   document.getElementById('btnPlay').onclick = togglePlay;
   document.getElementById('btnNext').onclick = nextFile;
   document.getElementById('btnPrev').onclick = prevFile;
-  document.getElementById('btnSave').onclick = () => saveCurve().catch(err => setErr(String(err)));
-  document.getElementById('btnExport').onclick = () => exportJSON().catch(err => setErr(String(err)));
-  document.getElementById('btnGenerate').onclick = () => generateFromBaseEvents().catch(err => setErr(String(err)));
-  document.getElementById('btnApplyType').onclick = applyTypeToSelected;
+  document.getElementById('btnSave').onclick = ()=>saveLabel().catch(err=>setErr(String(err)));
+  document.getElementById('btnGenerate').onclick = ()=>generateCurve().catch(err=>setErr(String(err)));
+  document.getElementById('btnExport').onclick = ()=>exportJSON().catch(err=>setErr(String(err)));
+  document.getElementById('btnApplyRangeType').onclick = applyTypeToRange;
 
   // Keyboard shortcuts
-  document.addEventListener('keydown', async (e) => {
-    if (e.target && ['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+  document.addEventListener('keydown', async (e)=>{
+    if(e.target && ['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
 
-    if (e.code === 'Space') { e.preventDefault(); togglePlay(); return; }
-    if (e.key === 'n' || e.key === 'N') { await nextFile(); return; }
-    if (e.key === 'p' || e.key === 'P') { await prevFile(); return; }
-    if (e.key === 'Delete') { deleteSelectedPoints(); return; }
+    if(e.code==='Space'){ e.preventDefault(); togglePlay(); return; }
+    if(e.key==='n' || e.key==='N'){ await nextFile(); return; }
+    if(e.key==='p' || e.key==='P'){ await prevFile(); return; }
   });
 
   // init
-  loadFiles().catch(err => setErr(String(err)));
+  loadFiles().catch(err=>setErr(String(err)));
 </script>
 </body>
 </html>

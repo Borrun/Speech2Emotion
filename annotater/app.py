@@ -5,7 +5,7 @@ from pathlib import Path
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# 你原来写死的目录，按需改
+# 改成你本机 wav 目录
 AUDIO_DIR = str(Path("/Users/Zhuanz1/Speech2Emotion/wavs"))
 
 LABEL_PATH = os.path.join(BASE_DIR, "labels.jsonl")
@@ -39,12 +39,12 @@ def upsert_label(obj):
             f.write(json.dumps(labels[wav], ensure_ascii=False) + "\n")
 
 
-def clamp(v, lo, hi):
+def clamp(x, lo, hi):
     try:
-        v = float(v)
+        x = float(x)
     except Exception:
-        v = lo
-    return max(lo, min(hi, v))
+        x = lo
+    return max(lo, min(hi, x))
 
 
 def norm_type(t):
@@ -52,47 +52,90 @@ def norm_type(t):
     return t if t in ALLOWED_TYPES else "calm"
 
 
+def normalize_base(base):
+    if not isinstance(base, dict):
+        base = {}
+    return {
+        "type": norm_type(base.get("type", "calm")),
+        "value": float(clamp(base.get("value", 60), 0, 150)),
+    }
+
+
+def normalize_triggers(triggers, duration=None):
+    out = []
+    if not isinstance(triggers, list):
+        return out
+
+    for tr in triggers:
+        if not isinstance(tr, dict):
+            continue
+        kind = (tr.get("kind") or "").strip().lower()
+        if kind not in ("anchor", "switch", "spike"):
+            continue
+
+        t = tr.get("t", 0.0)
+        if duration is not None:
+            t = clamp(t, 0.0, duration)
+        else:
+            t = clamp(t, 0.0, 1e9)
+
+        if kind == "anchor":
+            out.append({
+                "kind": "anchor",
+                "t": float(t),
+                "type": norm_type(tr.get("type", "calm")),
+                "value": float(clamp(tr.get("value", 60), 0, 150)),
+            })
+        elif kind == "switch":
+            out.append({
+                "kind": "switch",
+                "t": float(t),
+                "type": norm_type(tr.get("type", "calm")),
+            })
+        else:
+            out.append({
+                "kind": "spike",
+                "t": float(t),
+                "value": float(clamp(tr.get("value", 120), 0, 150)),
+                "tau": float(clamp(tr.get("tau", 0.5), 0.0, 10.0)),
+            })
+
+    out.sort(key=lambda x: (x["t"], {"anchor": 0, "switch": 1, "spike": 2}[x["kind"]]))
+    return out
+
+
 def normalize_curve(curve, duration=None):
-    """
-    curve: list of {t,type,value}
-    - clamp t to [0,duration] if duration provided
-    - clamp value to [0,150]
-    - ensure type in allowed
-    - sort by t
-    - remove duplicate t by keeping last
-    - ensure at least two points when duration provided: t=0 and t=duration
-    """
     if not isinstance(curve, list):
         curve = []
-
     out = []
     for p in curve:
         if not isinstance(p, dict):
             continue
-        t = clamp(p.get("t", 0.0), 0.0, duration if duration is not None else 1e9)
-        v = clamp(p.get("value", 0.0), 0.0, 150.0)
-        ty = norm_type(p.get("type", "calm"))
-        out.append({"t": float(t), "type": ty, "value": float(v)})
+        t = p.get("t", 0.0)
+        v = p.get("value", 60)
+        ty = p.get("type", "calm")
+        if duration is not None:
+            t = clamp(t, 0.0, duration)
+        else:
+            t = clamp(t, 0.0, 1e9)
+        out.append({"t": float(t), "type": norm_type(ty), "value": float(clamp(v, 0, 150))})
 
     out.sort(key=lambda x: x["t"])
 
-    # dedup by t, keep last
+    # dedup same t: keep last
     dedup = []
-    last_t = None
     for p in out:
-        if last_t is not None and abs(p["t"] - last_t) < 1e-9:
+        if dedup and abs(dedup[-1]["t"] - p["t"]) < 1e-9:
             dedup[-1] = p
         else:
             dedup.append(p)
-            last_t = p["t"]
-
     out = dedup
 
     if duration is not None:
-        if len(out) == 0:
+        if not out:
             out = [
-                {"t": 0.0, "type": "calm", "value": 50.0},
-                {"t": float(duration), "type": "calm", "value": 50.0},
+                {"t": 0.0, "type": "calm", "value": 60.0},
+                {"t": float(duration), "type": "calm", "value": 60.0},
             ]
         else:
             if out[0]["t"] > 0.0:
@@ -100,94 +143,103 @@ def normalize_curve(curve, duration=None):
             if out[-1]["t"] < float(duration):
                 out.append({"t": float(duration), "type": out[-1]["type"], "value": out[-1]["value"]})
 
+        # enforce endpoints exact
+        out[0]["t"] = 0.0
+        out[-1]["t"] = float(duration)
+
     return out
 
 
-def generate_curve(base, events, duration, fps=DEFAULT_FPS, spike_tau=0.5):
+def value_at(curve, t):
+    """linear interpolate value at time t; type not used here"""
+    if not curve:
+        return 60.0
+    if t <= curve[0]["t"]:
+        return curve[0]["value"]
+    if t >= curve[-1]["t"]:
+        return curve[-1]["value"]
+    for i in range(len(curve) - 1):
+        p0 = curve[i]
+        p1 = curve[i + 1]
+        if p0["t"] <= t <= p1["t"]:
+            if abs(p1["t"] - p0["t"]) < 1e-9:
+                return p0["value"]
+            a = (t - p0["t"]) / (p1["t"] - p0["t"])
+            return (1 - a) * p0["value"] + a * p1["value"]
+    return curve[-1]["value"]
+
+
+def type_at(curve, t):
+    """piecewise constant: take left point type"""
+    if not curve:
+        return "calm"
+    if t <= curve[0]["t"]:
+        return curve[0]["type"]
+    for i in range(len(curve) - 1):
+        if curve[i]["t"] <= t < curve[i + 1]["t"]:
+            return curve[i]["type"]
+    return curve[-1]["type"]
+
+
+def generate_curve(base, triggers, duration, default_tau=0.5):
     """
-    base: {type,value}
-    events: list of {t, kind: "switch"|"spike", type?, value?}
+    triggers:
+      - anchor(t,type,value): hard point
+      - switch(t,type): change type at t, value inherited from current curve
+      - spike(t,value,tau): insert peak and decay back to baseline at t+tau
     rule:
-      - start at t=0 with base
-      - switch: at t insert new type, keep value
-      - spike: at t insert value=spikeValue (type unchanged), and at t+tau insert back to previous value
-      - always add end at duration
+      - start with base at t=0
+      - process triggers in time order; anchors override both type/value at t
+      - ensure end at duration
     """
     duration = float(duration)
-    fps = int(fps) if isinstance(fps, (int, float, str)) else DEFAULT_FPS
-    spike_tau = float(spike_tau)
+    base = normalize_base(base)
+    triggers = normalize_triggers(triggers, duration=duration)
 
-    base_type = norm_type((base or {}).get("type", "calm"))
-    base_val = clamp((base or {}).get("value", 60), 0, 150)
+    # start curve with base endpoints (we'll refine)
+    curve = [
+        {"t": 0.0, "type": base["type"], "value": base["value"]},
+        {"t": duration, "type": base["type"], "value": base["value"]},
+    ]
 
-    evs = []
-    if isinstance(events, list):
-        for e in events:
-            if not isinstance(e, dict):
-                continue
-            t = clamp(e.get("t", 0.0), 0.0, duration)
-            kind = (e.get("kind") or "").strip().lower()
-            if kind not in ("switch", "spike"):
-                continue
-            if kind == "switch":
-                evs.append({"t": float(t), "kind": "switch", "type": norm_type(e.get("type", base_type))})
-            else:
-                evs.append({"t": float(t), "kind": "spike", "value": clamp(e.get("value", base_val), 0, 150)})
-    evs.sort(key=lambda x: x["t"])
+    def insert_point(t, ty=None, val=None):
+        ty0 = type_at(curve, t) if ty is None else norm_type(ty)
+        val0 = value_at(curve, t) if val is None else float(clamp(val, 0, 150))
+        curve.append({"t": float(t), "type": ty0, "value": val0})
 
-    curve = [{"t": 0.0, "type": base_type, "value": float(base_val)}]
-    cur_type = base_type
-    cur_val = float(base_val)
+    for tr in triggers:
+        t = float(tr["t"])
+        if tr["kind"] == "anchor":
+            insert_point(t, tr["type"], tr["value"])
+        elif tr["kind"] == "switch":
+            # change type at t, keep current value
+            insert_point(t, tr["type"], None)
+        else:  # spike
+            tau = float(tr.get("tau", default_tau))
+            tau = max(0.0, tau)
+            peak = float(tr["value"])
+            base_val = value_at(curve, t)
+            ty = type_at(curve, t)
+            insert_point(t, ty, peak)
+            insert_point(min(duration, t + tau), ty, base_val)
 
-    for e in evs:
-        t = float(e["t"])
-        if e["kind"] == "switch":
-            cur_type = norm_type(e.get("type", cur_type))
-            curve.append({"t": t, "type": cur_type, "value": cur_val})
-        else:
-            spike_v = float(e["value"])
-            curve.append({"t": t, "type": cur_type, "value": spike_v})
-            back_t = min(duration, t + spike_tau)
-            curve.append({"t": back_t, "type": cur_type, "value": cur_val})
+        curve = normalize_curve(curve, duration=duration)
 
-    curve.append({"t": duration, "type": cur_type, "value": cur_val})
     return normalize_curve(curve, duration=duration)
 
 
-def sample_frames_from_curve(curve, duration, fps):
-    """
-    Output list per frame:
-      {"i": i, "t": t, "type": type, "value": value}
-    type: piecewise constant (from left point)
-    value: linear interpolation between neighbor points
-    """
+def sample_frames(curve, duration, fps):
     duration = float(duration)
     fps = int(fps)
     n = max(1, int(round(duration * fps)))
-    if not curve:
-        curve = [{"t": 0.0, "type": "calm", "value": 50.0}, {"t": duration, "type": "calm", "value": 50.0}]
-
     curve = normalize_curve(curve, duration=duration)
 
     frames = []
-    j = 0
     for i in range(n):
         t = i / fps
-        while j + 1 < len(curve) and curve[j + 1]["t"] <= t:
-            j += 1
-
-        p0 = curve[j]
-        p1 = curve[j + 1] if j + 1 < len(curve) else p0
-
-        ty = p0["type"]
-        if abs(p1["t"] - p0["t"]) < 1e-9:
-            v = p0["value"]
-        else:
-            alpha = (t - p0["t"]) / (p1["t"] - p0["t"])
-            v = (1 - alpha) * p0["value"] + alpha * p1["value"]
-
+        ty = type_at(curve, t)
+        v = value_at(curve, t)
         frames.append({"i": i, "t": float(t), "type": ty, "value": float(clamp(v, 0, 150))})
-
     return frames
 
 
@@ -208,7 +260,7 @@ def api_files():
     payload = []
     for fn in files:
         obj = labels.get(fn, {})
-        curve = obj.get("curve", None)
+        curve = obj.get("curve", [])
         labeled = isinstance(curve, list) and len(curve) >= 2
         payload.append({
             "wav": fn,
@@ -218,22 +270,22 @@ def api_files():
     return jsonify(payload)
 
 
-@app.get("/api/curve/<path:wav>")
-def api_get_curve(wav):
+@app.get("/api/label/<path:wav>")
+def api_get_label(wav):
     labels = load_labels()
     obj = labels.get(wav, {})
     return jsonify({
         "wav": wav,
         "fps": int(obj.get("fps", DEFAULT_FPS)),
-        "base": obj.get("base", {"type": "calm", "value": 60}),
-        "events": obj.get("events", []),
-        "curve": obj.get("curve", []),
         "duration": obj.get("duration", None),
+        "base": obj.get("base", {"type": "calm", "value": 60}),
+        "triggers": obj.get("triggers", []),
+        "curve": obj.get("curve", []),
     })
 
 
-@app.post("/api/curve")
-def api_post_curve():
+@app.post("/api/label")
+def api_post_label():
     data = request.get_json(force=True)
     wav = data.get("wav")
     if not wav or not isinstance(wav, str):
@@ -252,64 +304,51 @@ def api_post_curve():
         except Exception:
             duration = None
 
-    base = data.get("base", {"type": "calm", "value": 60})
-    if not isinstance(base, dict):
-        base = {"type": "calm", "value": 60}
-    base = {"type": norm_type(base.get("type", "calm")), "value": float(clamp(base.get("value", 60), 0, 150))}
+    base = normalize_base(data.get("base", {}))
 
-    events = data.get("events", [])
-    if not isinstance(events, list):
-        events = []
+    triggers = data.get("triggers", [])
+    triggers = normalize_triggers(triggers, duration=duration)
 
     curve = data.get("curve", [])
-    if duration is not None:
-        curve = normalize_curve(curve, duration=duration)
-    else:
-        curve = normalize_curve(curve, duration=None)
+    curve = normalize_curve(curve, duration=duration) if duration is not None else normalize_curve(curve, None)
 
-    labels = load_labels()
-    old = labels.get(wav, {})
     out = {
         "wav": wav,
         "fps": fps,
-        "duration": duration if duration is not None else old.get("duration", None),
+        "duration": duration,
         "base": base,
-        "events": events,
+        "triggers": triggers,
         "curve": curve,
     }
     upsert_label(out)
     return jsonify({"ok": True})
 
 
-@app.post("/api/generate_curve")
-def api_generate_curve():
+@app.post("/api/generate")
+def api_generate():
     data = request.get_json(force=True)
     wav = data.get("wav")
-    duration = data.get("duration", None)
     if not wav or not isinstance(wav, str):
         return jsonify({"error": "Missing wav"}), 400
-    if duration is None:
-        return jsonify({"error": "Missing duration"}), 400
-    try:
-        duration = float(duration)
-    except Exception:
-        return jsonify({"error": "Bad duration"}), 400
 
     fps = int(data.get("fps", DEFAULT_FPS))
-    spike_tau = float(data.get("spike_tau", 0.5))
-    base = data.get("base", {"type": "calm", "value": 60})
-    events = data.get("events", [])
+    duration = data.get("duration", None)
+    if duration is None:
+        return jsonify({"error": "Missing duration"}), 400
+    duration = float(duration)
 
-    curve = generate_curve(base, events, duration=duration, fps=fps, spike_tau=spike_tau)
+    base = normalize_base(data.get("base", {}))
+    triggers = normalize_triggers(data.get("triggers", []), duration=duration)
+    default_tau = float(clamp(data.get("default_tau", 0.5), 0.0, 10.0))
 
-    labels = load_labels()
-    old = labels.get(wav, {})
+    curve = generate_curve(base, triggers, duration, default_tau=default_tau)
+
     out = {
         "wav": wav,
         "fps": fps,
         "duration": duration,
-        "base": {"type": norm_type((base or {}).get("type", "calm")), "value": float(clamp((base or {}).get("value", 60), 0, 150))},
-        "events": events if isinstance(events, list) else [],
+        "base": base,
+        "triggers": triggers,
         "curve": curve,
     }
     upsert_label(out)
@@ -322,14 +361,13 @@ def api_export(wav):
     obj = labels.get(wav)
     if not obj:
         return jsonify({"error": "No label for wav"}), 404
-
     duration = obj.get("duration", None)
     if duration is None:
         return jsonify({"error": "No duration saved yet (open the wav once in UI)"}), 400
 
     fps = int(obj.get("fps", DEFAULT_FPS))
     curve = obj.get("curve", [])
-    frames = sample_frames_from_curve(curve, duration=duration, fps=fps)
+    frames = sample_frames(curve, duration=float(duration), fps=fps)
     return jsonify({"wav": wav, "fps": fps, "duration": float(duration), "frames": frames})
 
 
