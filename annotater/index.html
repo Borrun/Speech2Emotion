@@ -241,6 +241,44 @@
     return Math.max(lo, Math.min(hi, v));
   }
 
+
+  
+  // Global "level snapping" (阶级粘滞): map any value to the CENTER of its bucket,
+  // with hysteresis so small drags near boundaries won't flip levels.
+  const LEVEL_BUCKETS = [
+    {lvl:0, lo:0,   hi:10,  mid:5},
+    {lvl:1, lo:11,  hi:25,  mid:18},
+    {lvl:2, lo:26,  hi:50,  mid:38},
+    {lvl:3, lo:51,  hi:85,  mid:68},
+    {lvl:4, lo:86,  hi:110, mid:98},
+    {lvl:5, lo:111, hi:150, mid:130},
+  ];
+  const HYSTERESIS = 3; // value-units; increase if you want "stickier"
+
+  function bucketOf(v){
+    v = clamp(v, 0, 150);
+    for(let i=LEVEL_BUCKETS.length-1;i>=0;i--){
+      const b = LEVEL_BUCKETS[i];
+      if(v>=b.lo && v<=b.hi) return b;
+    }
+    return LEVEL_BUCKETS[0];
+  }
+
+  function snapToLevels(v, currentV){
+    v = clamp(v, 0, 150);
+
+    // If we have a current (already-snapped) value, apply hysteresis around its bucket.
+    if(currentV!==undefined && currentV!==null && !Number.isNaN(Number(currentV))){
+      const curB = bucketOf(Number(currentV));
+      if(v >= (curB.lo - HYSTERESIS) && v <= (curB.hi + HYSTERESIS)){
+        return curB.mid;
+      }
+    }
+    return bucketOf(v).mid;
+  }
+
+
+
   function normType(t){
     t = (t||"").toLowerCase().trim();
     return TYPES.includes(t) ? t : "calm";
@@ -426,6 +464,7 @@
       tx.setAttribute("y", String(cy-8));
       tx.setAttribute("font-size","12");
       tx.setAttribute("fill","#111");
+      tx.style.pointerEvents = "none";
       tx.textContent = `${p.type}:${Math.round(p.value)}@${p.t.toFixed(2)}s`;
       svg.appendChild(tx);
     });
@@ -452,7 +491,7 @@
       trRow.querySelector('button').onclick = ()=>{
         triggers.splice(i,1);
         renderTriggers();
-        saveLabel().catch(err=>setErr(String(err)));
+        generateCurve().catch(err=>setErr(String(err)));
       };
       triggerTableBody.appendChild(trRow);
     });
@@ -472,7 +511,7 @@
 
   async function generateCurve(){
     if(!ensureWave()) return;
-    base = { type:normType(baseTypeEl.value), value: clamp(baseValueEl.value,0,150) };
+    base = { type:normType(baseTypeEl.value), value: snapToLevels(clamp(baseValueEl.value,0,150), base?.value) };
     const res = await fetchJSON('/api/generate', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -604,7 +643,7 @@
       curve = Array.isArray(lbl.curve) ? lbl.curve : [];
 
       baseTypeEl.value = normType(base.type);
-      baseValueEl.value = clamp(base.value,0,150);
+      baseValueEl.value = snapToLevels(clamp(base.value,0,150));
 
       if(!curve || curve.length<2){
         curve = [
@@ -632,7 +671,7 @@
       const ly = ev.clientY - o.top - dragOffset.dy;
 
       let t = xToT(lx);
-      let v = yToV(ly);
+      let v = snapToLevels(yToV(ly), curve[draggingIndex]?.value);
 
       // lock endpoints
       if(draggingIndex===0) t=0;
@@ -659,6 +698,7 @@
 
     overlay.addEventListener("mousedown", (ev)=>{
       if(!ensureWave()) return;
+      if(ev.button !== 0) return; // left button only
 
       // shift + drag = range select
       if(ev.shiftKey){
@@ -681,7 +721,8 @@
 
       const o = overlayRect();
       const x = ev.clientX - o.left;
-      const t = xToT(x);
+      let t = xToT(x);
+      t = Math.round(t*FPS)/FPS;
 
       if(mode==="anchor"){
         const ty = normType(modeTypeEl.value);

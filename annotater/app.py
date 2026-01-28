@@ -6,70 +6,37 @@ from pathlib import Path
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 改成你本机 wav 目录
-AUDIO_DIR = str(Path("/home/borrun/Speech2Emotion/wavs"))
+AUDIO_DIR = os.environ.get("AUDIO_DIR") or str(Path("/home/borrun/Speech2Emotion/wavs"))
 
 LABEL_PATH = os.path.join(BASE_DIR, "labels.jsonl")
 DEFAULT_FPS = 30
 
-# ======= emotion-model style step decay (ported from config.cpp) =======
+ALLOWED_TYPES = ["happy", "sad", "angry", "fear", "calm", "confused"]
 
+DEFAULT_LEVEL_FRAMES = 15
+LEAD_IN_FRAMES = 5
+
+# 6-level intensity mapping (from config.cpp)
+LEVEL_INTENSITY_MAPPING = {0: 5.0, 1: 18.0, 2: 38.0, 3: 68.0, 4: 98.0, 5: 130.0}
 EMOTION_LEVEL_THRESHOLDS = {
-    5: (111.0, 150.0),
-    4: (86.0, 110.0),
-    3: (51.0, 85.0),
-    2: (26.0, 50.0),
-    1: (11.0, 25.0),
-    0: (0.0, 10.0),
+    5: (111.0, 150.0), 4: (86.0, 110.0), 3: (51.0, 85.0),
+    2: (26.0, 50.0),   1: (11.0, 25.0),  0: (0.0, 10.0),
 }
 
-# 用固定代表值来画“阶级/档位”，避免随机抖动
-LEVEL_TO_VALUE = {1: 18.0, 2: 38.0, 3: 68.0, 4: 98.0, 5: 130.0}
-
-# 秒为单位（config.cpp 里是 FPS * N，这里直接用 N 秒）
-DECAY_PATHS = {
-    "happy": {
-        5: [(3, 3.0), (0, 0.0)],
-        4: [(2, 3.0), (0, 0.0)],
-        3: [(1, 3.0), (0, 0.0)],
-        2: [(0, 0.0)],
-        1: [(0, 0.0)],
-    },
-    "excited": {
-        5: [(3, 1.0), (0, 0.0)],
-        4: [(2, 1.0), (0, 0.0)],
-        3: [(1, 1.0), (0, 0.0)],
-        2: [(0, 0.0)],
-        1: [(0, 0.0)],
-    },
-    "angry": {
-        5: [(3, 2.0), (1, 1.0), (0, 0.0)],
-        4: [(2, 3.0), (0, 0.0)],
-        3: [(1, 2.0), (0, 0.0)],
-        2: [(0, 0.0)],
-        1: [(0, 0.0)],
-    },
-    "sad": {
-        5: [(3, 3.0), (1, 1.0), (0, 0.0)],
-        4: [(2, 2.0), (0, 0.0)],
-        3: [(1, 2.0), (0, 0.0)],
-        2: [(0, 0.0)],
-        1: [(0, 0.0)],
-    },
-    "fear": {
-        5: [(3, 3.0), (1, 1.0), (0, 0.0)],
-        4: [(2, 3.0), (0, 0.0)],
-        3: [(1, 2.0), (0, 0.0)],
-        2: [(0, 0.0)],
-        1: [(0, 0.0)],
-    },
-    # calm 不衰减
+# decay level sequences (durations are DEFAULT_LEVEL_FRAMES each; from config.cpp decay_paths)
+DECAY_LEVELS = {
+    "happy": {5: [3, 0], 4: [2, 0], 3: [1, 0], 2: [0], 1: [0]},
+    "angry": {5: [3, 1, 0], 4: [2, 0], 3: [1, 0], 2: [0], 1: [0]},
+    "sad":   {5: [3, 1, 0], 4: [2, 0], 3: [1, 0], 2: [0], 1: [0]},
+    "fear":  {5: [3, 1, 0], 4: [2, 0], 3: [1, 0], 2: [0], 1: [0]},
+    # calm: no decay needed
     "calm": {},
-    # 你前端有 confused，但 C++ 里叫 comfused；这里给一个保底：直接掉回 0
-    "confused": {5: [(0, 0.0)], 4: [(0, 0.0)], 3: [(0, 0.0)], 2: [(0, 0.0)], 1: [(0, 0.0)]},
+    # confused isn't in config.cpp; fallback: decay straight to 0
+    "confused": {5: [0], 4: [0], 3: [0], 2: [0], 1: [0]},
 }
 
 def level_from_value(v: float) -> int:
-    v = float(v)
+    v = float(clamp(v, 0, 150))
     for lvl in (5, 4, 3, 2, 1, 0):
         lo, hi = EMOTION_LEVEL_THRESHOLDS[lvl]
         if lo <= v <= hi:
@@ -77,23 +44,10 @@ def level_from_value(v: float) -> int:
     return 0
 
 def value_for_level(level: int, base_value: float) -> float:
-    if level <= 0:
+    if int(level) <= 0:
         return float(base_value)
-    return float(LEVEL_TO_VALUE.get(level, base_value))
+    return float(LEVEL_INTENSITY_MAPPING.get(int(level), base_value))
 
-def value_at_step(curve, t):
-    # 采样时用“阶梯保持”，不要线性插值（否则会变成斜坡）
-    if not curve:
-        return 60.0
-    if t <= curve[0]["t"]:
-        return curve[0]["value"]
-    for i in range(len(curve) - 1):
-        if curve[i]["t"] <= t < curve[i + 1]["t"]:
-            return curve[i]["value"]
-    return curve[-1]["value"]
-# =======================================================================
-
-ALLOWED_TYPES = ["happy", "sad", "angry", "fear", "calm", "confused"]
 
 app = Flask(__name__)
 
@@ -129,6 +83,19 @@ def clamp(x, lo, hi):
     return max(lo, min(hi, x))
 
 
+
+def snap_to_level_center(v):
+    """Quantize any value to the center (midpoint) of its emotion level bucket.
+    This is the global '阶级粘滞/量化' rule used everywhere in backend.
+    """
+    v = clamp(v, 0, 150)
+    for lvl in (5, 4, 3, 2, 1, 0):
+        lo, hi = EMOTION_LEVEL_THRESHOLDS[lvl]
+        if lo <= v <= hi:
+            return (lo + hi) / 2.0
+    return 5.0
+
+
 def norm_type(t):
     t = (t or "").strip().lower()
     return t if t in ALLOWED_TYPES else "calm"
@@ -139,7 +106,7 @@ def normalize_base(base):
         base = {}
     return {
         "type": norm_type(base.get("type", "calm")),
-        "value": float(clamp(base.get("value", 60), 0, 150)),
+        "value": float(snap_to_level_center(base.get("value", 60))),
     }
 
 
@@ -200,7 +167,7 @@ def normalize_curve(curve, duration=None):
             t = clamp(t, 0.0, duration)
         else:
             t = clamp(t, 0.0, 1e9)
-        out.append({"t": float(t), "type": norm_type(ty), "value": float(clamp(v, 0, 150))})
+        out.append({"t": float(t), "type": norm_type(ty), "value": float(snap_to_level_center(v))})
 
     out.sort(key=lambda x: x["t"])
 
@@ -251,6 +218,18 @@ def value_at(curve, t):
     return curve[-1]["value"]
 
 
+
+def value_at_step(curve, t):
+    """Step-hold value at time t (left-constant), for staircase curves."""
+    if not curve:
+        return 60.0
+    if t <= curve[0]["t"]:
+        return curve[0]["value"]
+    for i in range(len(curve) - 1):
+        if curve[i]["t"] <= t < curve[i + 1]["t"]:
+            return curve[i]["value"]
+    return curve[-1]["value"]
+
 def type_at(curve, t):
     """piecewise constant: take left point type"""
     if not curve:
@@ -265,85 +244,139 @@ def type_at(curve, t):
 
 def generate_curve(base, triggers, duration, default_tau=0.5):
     """
-    新语义：所有点都是“触发点”，触发后按档位路径自衰减回到 base。
-    - anchor: 指定 (type,value) 触发
-    - spike: 只有 value，没有 type => 继承当前 type（建议你用 anchor 标更清楚）
-    - switch: 只切 type，不改档位（一般用不太上）
-    - default_tau: 复用前端 defaultTau 输入框，作为“衰减延迟秒”
+    Trigger-only staircase curve generator aligned to the FRAME GRID.
+
+    Semantics (fps=DEFAULT_FPS):
+      - Start ramp LEAD_IN_FRAMES before trigger, reaching target at trigger frame
+      - Hold each level for DEFAULT_LEVEL_FRAMES
+      - Decay through pre-defined level sequence (DECAY_LEVELS[type][start_level])
+      - Finally settle back to base emotion (base type/value)
+
+    IMPORTANT: All generated control points land exactly on frame times k/fps.
+               Vertical "steps" are represented by two points on adjacent frames
+               (k-1)/fps and k/fps to avoid duplicate timestamps in the UI.
     """
     duration = float(duration)
     base = normalize_base(base)
     triggers = normalize_triggers(triggers, duration=duration)
 
-    auto_decay_delay = float(clamp(default_tau, 0.0, 10.0))
+    fps = int(DEFAULT_FPS)
+    dur_frames = max(0, int(round(duration * fps)))
+    hold_frames = int(DEFAULT_LEVEL_FRAMES)
+    lead_in_frames = int(LEAD_IN_FRAMES)
+
+    def k_of(t: float) -> int:
+        return int(round(float(t) * fps))
+
+    def t_of(k: int) -> float:
+        return float(clamp(k, 0, dur_frames)) / fps
 
     curve = [{"t": 0.0, "type": base["type"], "value": base["value"]}]
-    cur_type = base["type"]
-    cur_level = 0
 
-    def push_point(t, ty, lvl):
-        ty = norm_type(ty)
-        if lvl <= 0:
-            curve.append({"t": float(t), "type": base["type"], "value": base["value"]})
-        else:
-            curve.append({"t": float(t), "type": ty, "value": value_for_level(lvl, base["value"])})
+    def add_point_k(k: int, ty: str, val: float):
+        curve.append({
+            "t": t_of(k),
+            "type": norm_type(ty),
+            "value": float(clamp(val, 0, 150)),
+        })
 
-    # 遍历触发点
-    for idx, tr in enumerate(triggers):
-        t0 = float(tr["t"])
-        t_next = float(triggers[idx + 1]["t"]) if idx + 1 < len(triggers) else duration
+    def add_step_k(k: int, ty: str, new_val: float):
+        """
+        Represent a vertical step into (k) by adding a point at (k-1) with old value,
+        then a point at (k) with new value. This keeps all timestamps unique.
+        """
+        k = int(clamp(k, 0, dur_frames))
+        if not curve:
+            add_point_k(k, ty, new_val)
+            return
 
-        # 1) 触发：决定 type / level
+        prev = curve[-1]
+        prev_k = k_of(prev["t"])
+
+        # ensure (k-1) exists and is >= prev time
+        if k > 0:
+            k0 = k - 1
+            if k0 > prev_k:
+                add_point_k(k0, prev["type"], prev["value"])
+
+        # now the step at k
+        if k >= prev_k:
+            add_point_k(k, ty, new_val)
+
+    for i, tr in enumerate(triggers):
+        k_tr = k_of(tr["t"])
+        k_tr = int(clamp(k_tr, 0, dur_frames))
+        k_next = k_of(triggers[i + 1]["t"]) if i + 1 < len(triggers) else dur_frames
+        k_next = int(clamp(k_next, 0, dur_frames))
+
+        # Determine trigger target (type + level)
+        t_tr = t_of(k_tr)
         if tr["kind"] == "anchor":
-            cur_type = norm_type(tr.get("type", cur_type))
-            cur_level = level_from_value(tr.get("value", base["value"]))
+            ty = norm_type(tr.get("type", type_at(curve, t_tr)))
+            target_val_raw = float(tr.get("value", value_at(curve, t_tr)))
         elif tr["kind"] == "switch":
-            cur_type = norm_type(tr.get("type", cur_type))
-            # level 不变
+            ty = norm_type(tr.get("type", type_at(curve, t_tr)))
+            target_val_raw = float(value_at(curve, t_tr))  # keep current
         else:  # spike
-            # spike 没有 type，继承当前 type
-            cur_level = level_from_value(tr.get("value", base["value"]))
+            ty = type_at(curve, t_tr)  # inherit type (spike has no type)
+            target_val_raw = float(tr.get("value", value_at(curve, t_tr)))
 
-        push_point(t0, cur_type, cur_level)
+        target_level = level_from_value(target_val_raw)
+        target_val = value_for_level(target_level, base["value"])
 
-        # 2) 自衰减：只要在下一个触发点之前能开始衰减，就生成阶梯衰减点
-        if cur_level > 0:
-            t_decay = t0 + auto_decay_delay
-            if t_decay < t_next - 1e-9 and t_decay <= duration + 1e-9:
-                path = DECAY_PATHS.get(cur_type, {}).get(cur_level, [(0, 0.0)])
+        # 1) lead-in ramp: point at (k_tr - LEAD_IN_FRAMES) with current curve state
+        k_ramp0 = max(0, k_tr - lead_in_frames)
+        if t_of(k_ramp0) > curve[-1]["t"] + 1e-9:
+            add_point_k(k_ramp0, type_at(curve, t_of(k_ramp0)), value_at(curve, t_of(k_ramp0)))
 
-                # decay 开始时：立即跳到 path[0] 的 level（匹配 C++ 的“立刻降一档”）
-                first_level = int(path[0][0]) if path else 0
-                if t_decay < t_next - 1e-9:
-                    push_point(t_decay, cur_type, first_level)
+        # 2) reach target at trigger frame
+        add_point_k(k_tr, ty, target_val)
 
-                # 依次走 duration，到下一档
-                t_step = t_decay
-                for j, (lvl_j, dur_s) in enumerate(path):
-                    dur_s = float(dur_s)
-                    if dur_s <= 0:
-                        # 0 秒：立即跳到下一档（如果有）
-                        next_level = int(path[j + 1][0]) if j + 1 < len(path) else 0
-                        if t_step < t_next - 1e-9:
-                            push_point(t_step, cur_type, next_level)
-                        continue
+        # no room before next trigger
+        if k_tr >= k_next:
+            curve = normalize_curve(curve, duration=duration)
+            continue
 
-                    t_step_end = t_step + dur_s
-                    next_level = int(path[j + 1][0]) if j + 1 < len(path) else 0
+        # 3) hold target for DEFAULT_LEVEL_FRAMES
+        k_hold_end = k_tr + hold_frames
+        if k_hold_end >= k_next:
+            curve = normalize_curve(curve, duration=duration)
+            continue
+        add_point_k(k_hold_end, ty, target_val)
 
-                    if t_step_end >= t_next - 1e-9 or t_step_end > duration + 1e-9:
-                        break
+        # 4) decay sequence; each level holds DEFAULT_LEVEL_FRAMES
+        if target_level > 0 and ty != "calm":
+            levels = DECAY_LEVELS.get(ty, {}).get(target_level, [0])
+            k_cur = k_hold_end
 
-                    push_point(t_step_end, cur_type, next_level)
-                    t_step = t_step_end
+            for lvl in levels:
+                lvl = int(lvl)
+                val_lvl = value_for_level(lvl, base["value"])
 
-                # 更新当前 level（用于“最后一个触发点后没有衰减完”的情况）
-                # 这里不用精确求解，normalize_curve 会把最后状态延伸到 duration
-                cur_level = first_level
+                # step into this level at k_cur
+                if k_cur < k_next:
+                    add_step_k(k_cur, ty, val_lvl)
+                else:
+                    break
 
-    # 结束点：让 normalize_curve 自动补到 duration
-    curve = normalize_curve(curve + [{"t": duration, "type": curve[-1]["type"], "value": curve[-1]["value"]}], duration=duration)
-    return curve
+                # hold this level for DEFAULT_LEVEL_FRAMES
+                k_end = k_cur + hold_frames
+                if k_end < k_next:
+                    add_point_k(k_end, ty, val_lvl)
+                    k_cur = k_end
+                else:
+                    break
+
+            # 5) settle to base at k_cur
+            if k_cur < k_next:
+                add_step_k(k_cur, base["type"], base["value"])
+
+        curve = normalize_curve(curve, duration=duration)
+
+    # ensure end point at duration
+    curve.append({"t": duration, "type": curve[-1]["type"], "value": curve[-1]["value"]})
+    return normalize_curve(curve, duration=duration)
+
 
 
 def sample_frames(curve, duration, fps):
@@ -356,8 +389,8 @@ def sample_frames(curve, duration, fps):
     for i in range(n):
         t = i / fps
         ty = type_at(curve, t)
-        v = value_at(curve, t)
-        frames.append({"i": i, "t": float(t), "type": ty, "value": float(clamp(v, 0, 150))})
+        v = value_at_step(curve, t)
+        frames.append({"i": i, "t": float(t), "type": ty, "value": float(snap_to_level_center(v))})
     return frames
 
 
