@@ -421,6 +421,12 @@ def api_files():
     return jsonify(payload)
 
 
+# Compatibility alias: some frontends call this endpoint name.
+@app.get("/api/list")
+def api_list():
+    return api_files()
+
+
 @app.get("/api/label/<path:wav>")
 def api_get_label(wav):
     labels = load_labels()
@@ -531,4 +537,5 @@ def audio(filename):
 
 
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=7860, debug=True)
+    # Avoid the debug reloader spawning multiple processes (which can leave 7860 occupied).
+    app.run(host="127.0.0.1", port=7860, debug=False, use_reloader=False)

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Speech2Emotion Curve Annotator (Triggers → Curve)</title>
+  <title>Speech2Emotion Curve Annotator</title>
   <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
   <style>
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; }
@@ -30,14 +30,6 @@
       z-index: 5;
     }
     #overlay svg { width:100%; height:100%; display:block; }
-    #selectRect {
-      position:absolute;
-      border: 1px dashed #0b57d0;
-      background: rgba(11,87,208,0.10);
-      display:none;
-      pointer-events:none;
-      z-index: 20;
-    }
 
     .controls { margin-top: 10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
     button, select, input { font: inherit; }
@@ -56,12 +48,15 @@
     }
     .panel .full { grid-column: 1 / -1; }
     .hint { font-size: 12px; color:#666; line-height: 1.4; }
-    input[type="number"], select { padding:6px 8px; border:1px solid #ddd; border-radius: 8px; }
+    select { padding:6px 8px; border:1px solid #ddd; border-radius: 8px; }
+    textarea { width:100%; min-height: 84px; padding:8px 10px; border:1px solid #ddd; border-radius: 10px; resize: vertical; }
     .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
            font-size: 12px; border: 1px solid #ddd; padding: 2px 6px; border-radius: 6px; background:#fafafa; }
-    .table { width:100%; border-collapse: collapse; font-size: 12px; }
-    .table th, .table td { border-bottom: 1px solid #eee; padding: 6px 6px; text-align:left; vertical-align: top; }
-    .table td button { padding: 4px 6px; border-radius: 6px; }
+  
+    .legend { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
+    .legend .item { display:flex; align-items:center; gap:6px; font-size:12px; color: rgba(0,0,0,0.75); }
+    .legend .dot { width:10px; height:10px; border-radius:50%; display:inline-block; border:1px solid rgba(0,0,0,0.25); }
+
   </style>
 </head>
 <body>
@@ -81,98 +76,50 @@
       <div class="muted">fps: <b id="fps">30</b></div>
       <div class="muted">duration(s): <b id="dur">—</b></div>
       <div class="muted">curve pts: <b id="ptCount">—</b></div>
+      <div class="muted">segment: <b id="segInfo">—</b></div>
     </div>
 
     <div id="waveBox" style="margin-top:10px">
       <div id="wave"></div>
       <div id="overlay"><svg id="svg"></svg></div>
-      <div id="selectRect"></div>
     </div>
 
     <div class="controls">
       <button id="btnPlay">Play/Pause <span class="kbd">Space</span></button>
       <button id="btnPrev">Prev <span class="kbd">P</span></button>
       <button id="btnNext">Next <span class="kbd">N</span></button>
-
       <button id="btnSave">Save</button>
-      <button id="btnGenerate">Generate Curve</button>
       <button id="btnExport">Export (JSON)</button>
     </div>
 
     <div class="panel">
-      <div>
-        <div class="muted"><b>Base (fallback)</b></div>
-        <div class="row" style="margin-top:6px">
-          <select id="baseType">
+      <div class="full">
+        <div class="row">
+          <div class="muted"><b>点击曲线段修改情绪类型</b></div>
+          <select id="segType">
             <option>happy</option><option>sad</option><option>angry</option><option>fear</option>
             <option selected>calm</option><option>confused</option>
           </select>
-          <label class="muted">value <input id="baseValue" type="number" min="0" max="150" value="60" style="width:90px"></label>
-        </div>
-        <div class="hint">如果没有 anchor/switch 覆盖到某段，就用 base。</div>
-      </div>
-
-      <div>
-        <div class="muted"><b>Spike τ</b>（回落秒）</div>
-        <div class="row" style="margin-top:6px">
-          <input id="defaultTau" type="number" step="0.1" min="0.0" value="0.5" style="width:110px">
-          <span class="hint">默认 0.5s</span>
+          <span class="hint">点中某一段（两点之间）后，这一段将被设置为所选 type。</span>
+          <div id="typeLegend" class="legend"></div>
         </div>
       </div>
 
       <div class="full">
-        <div class="row">
-          <div class="muted"><b>Trigger Mode</b></div>
-          <select id="mode">
-            <option value="edit">Edit curve (drag/select)</option>
-            <option value="anchor">Add Anchor (type,value)</option>
-            <option value="switch">Add Switch (type)</option>
-            <option value="spike">Add Spike (value)</option>
-          </select>
-
-          <select id="modeType">
-            <option>happy</option><option>sad</option><option>angry</option><option>fear</option>
-            <option selected>calm</option><option>confused</option>
-          </select>
-          <input id="modeValue" type="number" min="0" max="150" value="120" style="width:110px">
-          <span class="hint">在波形上左键点一下，就插入触发点。</span>
+        <div class="muted"><b>Audio Text</b>（转写/内容）</div>
+        <div style="margin-top:6px">
+          <textarea id="audioText" placeholder="可选：输入这段音频的文字内容（会随标注一起保存、导出）"></textarea>
         </div>
-        <div class="hint">
-          Anchor：直接指定某时刻 (type,value)。Switch：只切换 type。Spike：只给峰值 value，自动回落到基线。
-        </div>
-      </div>
-
-      <div class="full">
-        <div class="row">
-          <div class="muted"><b>Range Type Edit</b></div>
-          <select id="rangeType">
-            <option>happy</option><option>sad</option><option selected>angry</option><option>fear</option>
-            <option>calm</option><option>confused</option>
-          </select>
-          <button id="btnApplyRangeType">Apply type to selected range</button>
-          <span class="hint">Shift + 拖拽框选一个时间段，然后应用。</span>
-        </div>
-        <div class="hint">
-          框选是“时间区间”语义：会自动在区间边界插入点，保证“这一段”type 精准生效。
-        </div>
-      </div>
-
-      <div class="full">
-        <div class="muted"><b>Triggers</b></div>
-        <table class="table" id="triggerTable">
-          <thead>
-            <tr><th>#</th><th>kind</th><th>t(s)</th><th>payload</th><th></th></tr>
-          </thead>
-          <tbody></tbody>
-        </table>
       </div>
 
       <div class="full hint">
-        曲线编辑：
+        操作：
         <ul>
-          <li>拖点：左键按住点拖（x=时间，y=value）。</li>
-          <li>Shift 框选：选择一个时间段（用于段级 type 修改）。</li>
-          <li>提示：Generate 后再拖点微调最省事。</li>
+          <li><b>左键拖动点</b>：调整时间/等级（时间会量化到帧）。</li>
+          <li><b>右键点空白处</b>：新增点（会吸附到最近等级线）。</li>
+          <li><b>Alt + 左键点</b>：删除该点（首尾端点不可删）；也可先点选点，再按 <span class="kbd">Delete</span>/<span class="kbd">Backspace</span> 删除。</li>
+          <li><b>点击曲线段</b>：修改该段情绪类型（按段 piecewise-constant）。</li>
+          <li>所有等级变化按“阶梯”显示：一帧突变。</li>
         </ul>
       </div>
     </div>
@@ -190,16 +137,16 @@
   let wave = null;
 
   let duration = null;
-  let base = { type:"calm", value:60 };
-  let triggers = []; // [{kind,t,type?,value?,tau?}]
   let curve = [];    // [{t,type,value}]
-
-  // range selection (time interval)
-  let rangeSel = null; // {t0,t1}
 
   // drag point
   let draggingIndex = null;
   let dragOffset = {dx:0, dy:0};
+
+  // selection / deletion
+  let selectedIndex = null; // selected control point index (for Delete key)
+  let hoveredSeg = null; // hovered segment index
+  let selectedSeg = null; // clicked/selected segment index
 
   // DOM
   const elList = document.getElementById('fileList');
@@ -207,25 +154,37 @@
   const elFps = document.getElementById('fps');
   const elDur = document.getElementById('dur');
   const elPtCount = document.getElementById('ptCount');
+  const elSegInfo = document.getElementById('segInfo');
   const elErr = document.getElementById('err');
   const elCount = document.getElementById('countPill');
   const elDone = document.getElementById('donePill');
 
   const svg = document.getElementById('svg');
   const waveBox = document.getElementById('waveBox');
-  const selectRect = document.getElementById('selectRect');
 
-  const baseTypeEl = document.getElementById('baseType');
-  const baseValueEl = document.getElementById('baseValue');
-  const defaultTauEl = document.getElementById('defaultTau');
+  const segTypeEl = document.getElementById('segType');
+  const audioTextEl = document.getElementById('audioText');
 
-  const modeEl = document.getElementById('mode');
-  const modeTypeEl = document.getElementById('modeType');
-  const modeValueEl = document.getElementById('modeValue');
+  function renderTypeLegend(){
+    const lg = document.getElementById("typeLegend");
+    if(!lg) return;
+    lg.innerHTML = "";
+    const types = ["happy","sad","angry","fear","calm","confused"];
+    for(const ty of types){
+      const it = document.createElement("div");
+      it.className = "item";
+      const dot = document.createElement("span");
+      dot.className = "dot";
+      dot.style.background = typeColor(ty);
+      it.appendChild(dot);
+      const tx = document.createElement("span");
+      tx.textContent = ty;
+      it.appendChild(tx);
+      lg.appendChild(it);
+    }
+  }
+  renderTypeLegend();
 
-  const rangeTypeEl = document.getElementById('rangeType');
-
-  const triggerTableBody = document.querySelector('#triggerTable tbody');
 
   function setErr(msg){ elErr.textContent = msg || ""; }
 
@@ -241,10 +200,7 @@
     return Math.max(lo, Math.min(hi, v));
   }
 
-
-  
-  // Global "level snapping" (阶级粘滞): map any value to the CENTER of its bucket,
-  // with hysteresis so small drags near boundaries won't flip levels.
+  // Global "level snapping" (阶级粘滞): map any value to the CENTER of its bucket.
   const LEVEL_BUCKETS = [
     {lvl:0, lo:0,   hi:10,  mid:5},
     {lvl:1, lo:11,  hi:25,  mid:18},
@@ -253,7 +209,22 @@
     {lvl:4, lo:86,  hi:110, mid:98},
     {lvl:5, lo:111, hi:150, mid:130},
   ];
-  const HYSTERESIS = 3; // value-units; increase if you want "stickier"
+  const HYSTERESIS = 3; 
+
+  // Segment type visualization colors (用于曲线段显示)
+  const TYPE_COLORS = {
+    happy: "#f6a21a",
+    sad: "#5b7bd5",
+    angry: "#d64545",
+    fear: "#7a5bd5",
+    calm: "#2e8b57",
+    confused: "#7a7a7a",
+  };
+  function typeColor(ty){
+    const k = normType(ty);
+    return TYPE_COLORS[k] || "#0b57d0";
+  }
+// value-units; increase if you want "stickier"
 
   function bucketOf(v){
     v = clamp(v, 0, 150);
@@ -266,8 +237,6 @@
 
   function snapToLevels(v, currentV){
     v = clamp(v, 0, 150);
-
-    // If we have a current (already-snapped) value, apply hysteresis around its bucket.
     if(currentV!==undefined && currentV!==null && !Number.isNaN(Number(currentV))){
       const curB = bucketOf(Number(currentV));
       if(v >= (curB.lo - HYSTERESIS) && v <= (curB.hi + HYSTERESIS)){
@@ -276,8 +245,6 @@
     }
     return bucketOf(v).mid;
   }
-
-
 
   function normType(t){
     t = (t||"").toLowerCase().trim();
@@ -321,12 +288,17 @@
     curve.sort((a,b)=>a.t-b.t);
   }
 
+  function quantT(t){
+    return Math.round(Number(t) * FPS) / FPS;
+  }
+
   function normalizeCurveEndpoints(){
     if(!duration) return;
     if(!curve || curve.length<2){
+      const v = snapToLevels(60);
       curve = [
-        {t:0, type:base.type, value:base.value},
-        {t:duration, type:base.type, value:base.value},
+        {t:0, type:"calm", value:v},
+        {t:duration, type:"calm", value:v},
       ];
     }
     sortCurve();
@@ -334,29 +306,156 @@
     curve[curve.length-1].t = duration;
   }
 
-  function valueAt(t){
-    if(!curve || curve.length===0) return base.value;
+  function pointIndexAtT(t){
+    const tq = Number(t);
+    for(let i=0;i<curve.length;i++){
+      if(Math.abs(Number(curve[i].t) - tq) < 1e-9) return i;
+    }
+    return -1;
+  }
+
+  // Staircase (left-constant) value/type lookup
+  function valueAtStep(t){
+    if(!curve || curve.length===0) return snapToLevels(60);
     if(t<=curve[0].t) return curve[0].value;
-    if(t>=curve[curve.length-1].t) return curve[curve.length-1].value;
     for(let i=0;i<curve.length-1;i++){
-      const a=curve[i], b=curve[i+1];
-      if(a.t<=t && t<=b.t){
-        if(Math.abs(b.t-a.t)<1e-9) return a.value;
-        const k=(t-a.t)/(b.t-a.t);
-        return (1-k)*a.value+k*b.value;
-      }
+      if(curve[i].t <= t && t < curve[i+1].t) return curve[i].value;
     }
     return curve[curve.length-1].value;
   }
-
   function typeAt(t){
-    if(!curve || curve.length===0) return base.type;
+    if(!curve || curve.length===0) return "calm";
     if(t<=curve[0].t) return curve[0].type;
     for(let i=0;i<curve.length-1;i++){
-      const a=curve[i], b=curve[i+1];
-      if(a.t<=t && t<b.t) return a.type;
+      if(curve[i].t <= t && t < curve[i+1].t) return curve[i].type;
     }
     return curve[curve.length-1].type;
+  }
+
+  // Insert a control point at time t (quantized to frame grid).
+  // If this point changes level, ensure a "hold" point at (k-1)/FPS exists, so it's a one-frame jump.
+  function insertCurvePoint(t, value, ty){
+    if(!ensureWave()) return;
+    const tQ = quantT(clamp(t, 0, duration));
+    const k = Math.round(tQ * FPS);
+    const kEnd = Math.round(duration * FPS);
+
+    // Don't overwrite hard endpoints
+    if(k <= 0 || k >= kEnd) return;
+
+    const oldV = valueAtStep(tQ);
+    const oldTy = typeAt(tQ);
+    const newV = snapToLevels(clamp(value,0,150), oldV);
+    const newTy = normType(ty || oldTy);
+
+    if(Math.abs(newV - oldV) > 1e-6){
+      const tHold = (k-1) / FPS;
+      if(pointIndexAtT(tHold) < 0){
+        curve.push({t:tHold, type: oldTy, value: oldV});
+      }
+    }
+
+    const idx = pointIndexAtT(tQ);
+    if(idx >= 0){
+      curve[idx].type = newTy;
+      curve[idx].value = newV;
+    } else {
+      curve.push({t:tQ, type: newTy, value: newV});
+    }
+
+    sortCurve();
+    // dedup same t (keep last)
+    const ded = [];
+    for(const p of curve){
+      if(ded.length && Math.abs(ded[ded.length-1].t - p.t) < 1e-9) ded[ded.length-1] = p;
+      else ded.push(p);
+    }
+    curve = ded;
+
+    normalizeCurveEndpoints();
+  }
+
+  function cleanupCurve(){
+    if(!curve || curve.length<2) return;
+    sortCurve();
+
+    // Dedup same-t (keep last)
+    const ded = [];
+    for(const p of curve){
+      if(ded.length && Math.abs(ded[ded.length-1].t - p.t) < 1e-9) ded[ded.length-1] = p;
+      else ded.push(p);
+    }
+    curve = ded;
+
+    // Remove redundant interior points that do not change value/type (staircase semantics)
+    if(curve.length > 2){
+      const keep = [curve[0]];
+      for(let i=1;i<curve.length-1;i++){
+        const prev = keep[keep.length-1];
+        const cur = curve[i];
+        if(Math.abs(Number(cur.value) - Number(prev.value)) < 1e-9 && normType(cur.type) === normType(prev.type)){
+          continue; // redundant
+        }
+        keep.push(cur);
+      }
+      keep.push(curve[curve.length-1]);
+      curve = keep;
+    }
+
+    normalizeCurveEndpoints();
+  }
+
+  function deletePoint(idx){
+    if(!ensureWave()) return false;
+    if(idx==null) return false;
+    idx = Number(idx);
+    if(!Number.isInteger(idx)) return false;
+    if(!curve || curve.length < 3) return false; // keep at least endpoints
+    if(idx <= 0 || idx >= curve.length-1) return false; // don't delete endpoints
+
+    curve.splice(idx, 1);
+    selectedIndex = null;
+    // adjust selected segment index if needed
+    if(selectedSeg!=null){
+      if(selectedSeg === idx) selectedSeg = null;
+      else if(selectedSeg > idx) selectedSeg -= 1;
+    }
+    cleanupCurve();
+    return true;
+  }
+
+  // Apply type to a time interval (segment semantics): [t0, t1)
+  function applyTypeToInterval(t0, t1, ty){
+    if(!ensureWave()) return;
+    const a0 = quantT(Math.min(t0, t1));
+    const a1 = quantT(Math.max(t0, t1));
+    if(a1 <= a0 + 1e-9) return;
+
+    const newTy = normType(ty);
+
+    // Ensure boundary points exist
+    const v0 = valueAtStep(a0);
+    const v1 = valueAtStep(a1);
+    curve.push({t:a0, type:typeAt(a0), value:v0});
+    curve.push({t:a1, type:typeAt(a1), value:v1});
+    sortCurve();
+
+    const ded = [];
+    for(const p of curve){
+      if(ded.length && Math.abs(ded[ded.length-1].t - p.t) < 1e-9) ded[ded.length-1] = p;
+      else ded.push(p);
+    }
+    curve = ded;
+
+    for(const p of curve){
+      if(p.t >= a0 - 1e-9 && p.t < a1 - 1e-9){
+        p.type = newTy;
+      }
+    }
+
+    normalizeCurveEndpoints();
+    draw();
+    saveLabel().catch(err=>setErr(String(err)));
   }
 
   function renderList(){
@@ -385,6 +484,15 @@
     elFps.textContent = FPS;
     elDur.textContent = (duration==null)?"—":duration.toFixed(3);
     elPtCount.textContent = curve?String(curve.length):"—";
+
+    let segTxt = "—";
+    const segIdx = (selectedSeg!=null) ? selectedSeg : hoveredSeg;
+    if(segIdx!=null && curve && segIdx>=0 && segIdx < curve.length-1){
+      const ty = normType(curve[segIdx].type);
+      segTxt = `${segIdx} (${ty})`;
+      if(selectedSeg==null && hoveredSeg!=null) segTxt = `hover ${segTxt}`;
+    }
+    if(elSegInfo) elSegInfo.textContent = segTxt;
   }
 
   function destroyWave(){
@@ -392,7 +500,7 @@
     document.getElementById('wave').innerHTML="";
     svg.innerHTML="";
     duration=null;
-    rangeSel=null;
+    draggingIndex=null;
   }
 
   function draw(){
@@ -409,27 +517,129 @@
     bg.setAttribute("fill","rgba(0,0,0,0.02)");
     svg.appendChild(bg);
 
-    // range selection indicator (optional)
-    if(rangeSel){
-      const x0 = tToX(rangeSel.t0);
-      const x1 = tToX(rangeSel.t1);
-      const rr = document.createElementNS("http://www.w3.org/2000/svg","rect");
-      rr.setAttribute("x", String(Math.min(x0,x1)));
-      rr.setAttribute("y", "0");
-      rr.setAttribute("width", String(Math.abs(x1-x0)));
-      rr.setAttribute("height", String(h));
-      rr.setAttribute("fill", "rgba(255,179,0,0.12)");
-      svg.appendChild(rr);
+    // Level guide lines (dashed)
+    for(const b of LEVEL_BUCKETS){
+      const y = vToY(b.mid);
+      const ln = document.createElementNS("http://www.w3.org/2000/svg","line");
+      ln.setAttribute("x1","0"); ln.setAttribute("x2",String(w));
+      ln.setAttribute("y1",String(y)); ln.setAttribute("y2",String(y));
+      ln.setAttribute("stroke","rgba(0,0,0,0.18)");
+      ln.setAttribute("stroke-dasharray","4 4");
+      svg.appendChild(ln);
+
+      const tx = document.createElementNS("http://www.w3.org/2000/svg","text");
+      tx.setAttribute("x","4");
+      tx.setAttribute("y",String(y-2));
+      tx.setAttribute("font-size","11");
+      tx.setAttribute("fill","rgba(0,0,0,0.45)");
+      tx.style.pointerEvents = "none";
+      tx.textContent = `L${b.lvl}`;
+      svg.appendChild(tx);
     }
 
-    // polyline
-    const pts = curve.map(p=>`${tToX(p.t)},${vToY(p.value)}`).join(" ");
-    const pl = document.createElementNS("http://www.w3.org/2000/svg","polyline");
-    pl.setAttribute("points", pts);
-    pl.setAttribute("fill","none");
-    pl.setAttribute("stroke","#0b57d0");
-    pl.setAttribute("stroke-width","2");
-    svg.appendChild(pl);
+    // Staircase points (for hit testing)
+    const stepPts = [];
+    if(curve && curve.length){
+      stepPts.push({t:curve[0].t, v:curve[0].value});
+      for(let i=1;i<curve.length;i++){
+        stepPts.push({t:curve[i].t, v:curve[i-1].value});
+        stepPts.push({t:curve[i].t, v:curve[i].value});
+      }
+    }
+    const pts = stepPts.map(p=>`${tToX(p.t)},${vToY(p.v)}`).join(" ");
+
+    // Visible segments: draw each horizontal interval with its type color (piecewise-constant)
+    if(curve && curve.length>=2){
+      for(let i=0;i<curve.length-1;i++){
+        const t0 = curve[i].t, t1 = curve[i+1].t;
+        const v  = curve[i].value;
+        const ty = normType(curve[i].type);
+
+        // horizontal segment (type applies to [t0, t1))
+        const ln = document.createElementNS("http://www.w3.org/2000/svg","line");
+        ln.setAttribute("x1", String(tToX(t0)));
+        ln.setAttribute("y1", String(vToY(v)));
+        ln.setAttribute("x2", String(tToX(t1)));
+        ln.setAttribute("y2", String(vToY(v)));
+        ln.setAttribute("stroke", typeColor(ty));
+        ln.setAttribute("stroke-width", (selectedSeg===i) ? "5" : "3");
+        ln.setAttribute("stroke-linecap","round");
+        ln.style.pointerEvents = "none";
+        svg.appendChild(ln);
+
+        // optional label on segment midpoint (helps confirm type at a glance)
+        const mx = (tToX(t0) + tToX(t1))/2;
+        const my = vToY(v) - 8;
+        const label = document.createElementNS("http://www.w3.org/2000/svg","text");
+        label.setAttribute("x", String(mx));
+        label.setAttribute("y", String(my));
+        label.setAttribute("text-anchor","middle");
+        label.setAttribute("font-size","10");
+        label.setAttribute("fill", "rgba(0,0,0,0.6)");
+        label.style.pointerEvents = "none";
+        label.textContent = ty;
+        svg.appendChild(label);
+
+        // vertical jump indicator (neutral color)
+        const v2 = curve[i+1].value;
+        const j = document.createElementNS("http://www.w3.org/2000/svg","line");
+        j.setAttribute("x1", String(tToX(t1)));
+        j.setAttribute("y1", String(vToY(v)));
+        j.setAttribute("x2", String(tToX(t1)));
+        j.setAttribute("y2", String(vToY(v2)));
+        j.setAttribute("stroke","rgba(0,0,0,0.25)");
+        j.setAttribute("stroke-width","1");
+        j.style.pointerEvents = "none";
+        svg.appendChild(j);
+      }
+    }
+
+    // Invisible, thick hit target to make segment clicking easy
+    const plHit = document.createElementNS("http://www.w3.org/2000/svg","polyline");
+    plHit.setAttribute("points", pts);
+    plHit.setAttribute("fill","none");
+    plHit.setAttribute("stroke","rgba(0,0,0,0)"); // fully transparent
+    plHit.setAttribute("stroke-width","14");
+    plHit.style.pointerEvents = "stroke";
+    plHit.style.cursor = "pointer";
+
+    // Hover shows segment info
+    plHit.addEventListener("pointermove", (ev)=>{
+      if(!ensureWave()) return;
+      const o = overlayRect();
+      const x = ev.clientX - o.left;
+      const t = xToT(x);
+      let seg = -1;
+      for(let i=0;i<curve.length-1;i++){
+        if(curve[i].t <= t && t < curve[i+1].t){ seg=i; break; }
+      }
+      hoveredSeg = (seg>=0) ? seg : null;
+      updateHeader();
+    });
+    plHit.addEventListener("pointerleave", ()=>{
+      hoveredSeg = null;
+      updateHeader();
+    });
+
+    // Click a segment to change its emotion type (piecewise constant by segment).
+    plHit.addEventListener("click", (ev)=>{
+      if(!ensureWave()) return;
+      const o = overlayRect();
+      const x = ev.clientX - o.left;
+      const t = xToT(x);
+
+      let seg = -1;
+      for(let i=0;i<curve.length-1;i++){
+        if(curve[i].t <= t && t < curve[i+1].t){ seg=i; break; }
+      }
+      if(seg < 0) return;
+
+      selectedSeg = seg;
+      applyTypeToInterval(curve[seg].t, curve[seg+1].t, normType(segTypeEl.value));
+      ev.preventDefault();
+    });
+
+    svg.appendChild(plHit);
 
     // points
     curve.forEach((p, idx)=>{
@@ -440,15 +650,15 @@
       c.setAttribute("cy", String(cy));
       c.setAttribute("r", "6");
       c.setAttribute("fill", "#fff");
-      c.setAttribute("stroke", "#111");
+      c.setAttribute("stroke", (selectedIndex===idx) ? "#d00" : "#111");
       c.setAttribute("stroke-width", "1.5");
       c.style.cursor = "grab";
       c.style.pointerEvents = "all";
 
       c.addEventListener("mousedown", (ev)=>{
-        if(modeEl.value !== "edit") return;
         ev.preventDefault(); ev.stopPropagation();
         draggingIndex = idx;
+        selectedIndex = idx;
 
         const o = overlayRect();
         const lx = ev.clientX - o.left;
@@ -457,44 +667,25 @@
         dragOffset.dy = ly - vToY(curve[idx].value);
       });
 
-      svg.appendChild(c);
+      c.addEventListener("click", (ev)=>{
+        // Alt+LeftClick deletes the point (non-endpoints)
+        if(ev.altKey){
+          ev.preventDefault(); ev.stopPropagation();
+          if(deletePoint(idx)){
+            draw();
+            saveLabel().catch(err=>setErr(String(err)));
+          }
+          return;
+        }
+        // otherwise select for Delete/Backspace key
+        selectedIndex = idx;
+        draw();
+      });
 
-      const tx = document.createElementNS("http://www.w3.org/2000/svg","text");
-      tx.setAttribute("x", String(cx+8));
-      tx.setAttribute("y", String(cy-8));
-      tx.setAttribute("font-size","12");
-      tx.setAttribute("fill","#111");
-      tx.style.pointerEvents = "none";
-      tx.textContent = `${p.type}:${Math.round(p.value)}@${p.t.toFixed(2)}s`;
-      svg.appendChild(tx);
+      svg.appendChild(c);
     });
 
     updateHeader();
-  }
-
-  function renderTriggers(){
-    triggerTableBody.innerHTML = "";
-    triggers.forEach((tr, i)=>{
-      const trRow = document.createElement('tr');
-      let payload = "";
-      if(tr.kind==="anchor") payload = `${tr.type}, v=${Math.round(tr.value)}`;
-      if(tr.kind==="switch") payload = `${tr.type}`;
-      if(tr.kind==="spike") payload = `v=${Math.round(tr.value)}, τ=${tr.tau ?? defaultTauEl.value}`;
-
-      trRow.innerHTML = `
-        <td>${i}</td>
-        <td>${tr.kind}</td>
-        <td>${Number(tr.t).toFixed(2)}</td>
-        <td>${payload}</td>
-        <td><button data-i="${i}">Del</button></td>
-      `;
-      trRow.querySelector('button').onclick = ()=>{
-        triggers.splice(i,1);
-        renderTriggers();
-        generateCurve().catch(err=>setErr(String(err)));
-      };
-      triggerTableBody.appendChild(trRow);
-    });
   }
 
   async function saveLabel(){
@@ -503,31 +694,10 @@
     await fetchJSON('/api/label', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ wav, fps: FPS, duration, base, triggers, curve })
+      body: JSON.stringify({ wav, fps: FPS, duration, curve, text: (audioTextEl?.value || "") })
     });
     files[curIndex].labeled = Array.isArray(curve) && curve.length >= 2;
     renderList();
-  }
-
-  async function generateCurve(){
-    if(!ensureWave()) return;
-    base = { type:normType(baseTypeEl.value), value: snapToLevels(clamp(baseValueEl.value,0,150), base?.value) };
-    const res = await fetchJSON('/api/generate', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        wav: files[curIndex].wav,
-        fps: FPS,
-        duration,
-        base,
-        triggers,
-        default_tau: clamp(defaultTauEl.value,0,10),
-      })
-    });
-    curve = res.curve || curve;
-    normalizeCurveEndpoints();
-    draw();
-    await saveLabel();
   }
 
   async function exportJSON(){
@@ -560,46 +730,6 @@
     await loadIndex(Math.max(curIndex-1, 0));
   }
 
-  // Apply type to selected TIME RANGE (segment semantics)
-  function applyTypeToRange(){
-    if(!rangeSel){
-      setErr("No range selected. Use Shift+drag to select a time range.");
-      return;
-    }
-    const ty = normType(rangeTypeEl.value);
-    const t0 = Math.min(rangeSel.t0, rangeSel.t1);
-    const t1 = Math.max(rangeSel.t0, rangeSel.t1);
-
-    // Insert boundary points at t0 and t1 with interpolated value and current type,
-    // then set type for all points in [t0, t1] to ty, and ensure left segment boundary correct.
-    const v0 = valueAt(t0);
-    const v1 = valueAt(t1);
-
-    // boundary points inherit current type BEFORE change (for continuity), value interpolated
-    curve.push({t:t0, type:typeAt(t0), value:v0});
-    curve.push({t:t1, type:typeAt(t1), value:v1});
-    sortCurve();
-
-    // dedup same t (keep last)
-    const ded = [];
-    for(const p of curve){
-      if(ded.length && Math.abs(ded[ded.length-1].t - p.t) < 1e-9) ded[ded.length-1] = p;
-      else ded.push(p);
-    }
-    curve = ded;
-
-    // set type for points in [t0, t1] (including boundaries)
-    for(const p of curve){
-      if(p.t >= t0 - 1e-9 && p.t <= t1 + 1e-9){
-        p.type = ty;
-      }
-    }
-
-    normalizeCurveEndpoints();
-    draw();
-    saveLabel().catch(err=>setErr(String(err)));
-  }
-
   async function loadFiles(){
     setErr("");
     files = await fetchJSON('/api/files');
@@ -622,42 +752,55 @@
 
     const wav = files[curIndex].wav;
 
+
+    const audioUrl = `/audio/${encodeURIComponent(wav)}`;
+    try {
+      const head = await fetch(audioUrl, { method: 'HEAD' });
+      if(!head.ok) throw new Error(`${head.status} ${head.statusText}`);
+    } catch (e) {
+      setErr(`Audio load failed: ${audioUrl}  (${e})\n\nCheck: 1) server started, 2) AUDIO_DIR points to your wav folder, 3) the file exists.`);
+      return;
+    }
+
     wave = WaveSurfer.create({
       container:'#wave',
       height:180,
       waveColor:'#8aa',
       progressColor:'#446',
       cursorColor:'#111',
-      url:`/audio/${encodeURIComponent(wav)}`,
+      url: audioUrl,
       normalize:true,
       backend:'WebAudio'
     });
+
+    wave.on('error', (e)=>{
+      setErr(`WaveSurfer error: ${e}`);
+    });
+
 
     wave.on('ready', async ()=>{
       duration = wave.getDuration();
       updateHeader();
 
       const lbl = await fetchJSON(`/api/label/${encodeURIComponent(wav)}`);
-      base = lbl.base || {type:"calm", value:60};
-      triggers = Array.isArray(lbl.triggers) ? lbl.triggers : [];
       curve = Array.isArray(lbl.curve) ? lbl.curve : [];
 
-      baseTypeEl.value = normType(base.type);
-      baseValueEl.value = snapToLevels(clamp(base.value,0,150));
+      selectedIndex = null;
+
+      if(audioTextEl){
+        audioTextEl.value = (typeof lbl.text === 'string') ? lbl.text : (lbl.text ?? "");
+      }
 
       if(!curve || curve.length<2){
+        const v = snapToLevels(60);
         curve = [
-          {t:0, type:normType(base.type), value: clamp(base.value,0,150)},
-          {t:duration, type:normType(base.type), value: clamp(base.value,0,150)},
+          {t:0, type:"calm", value:v},
+          {t:duration, type:"calm", value:v},
         ];
       }
       normalizeCurveEndpoints();
-      rangeSel = null;
-
-      renderTriggers();
       draw();
 
-      // persist duration once opened
       await saveLabel();
     });
 
@@ -670,7 +813,7 @@
       const lx = ev.clientX - o.left - dragOffset.dx;
       const ly = ev.clientY - o.top - dragOffset.dy;
 
-      let t = xToT(lx);
+      let t = quantT(xToT(lx));
       let v = snapToLevels(yToV(ly), curve[draggingIndex]?.value);
 
       // lock endpoints
@@ -691,93 +834,24 @@
       }
     };
 
-    // click to add triggers based on mode; Shift+drag selects time range
+    // Right click: add curve control point. Disable default context menu.
     const overlay = document.getElementById('overlay');
-    let boxing=false;
-    let boxStart=null;
+    overlay.addEventListener("contextmenu", (ev)=>{ ev.preventDefault(); });
 
     overlay.addEventListener("mousedown", (ev)=>{
       if(!ensureWave()) return;
-      if(ev.button !== 0) return; // left button only
-
-      // shift + drag = range select
-      if(ev.shiftKey){
-        boxing=true;
-        boxStart = {x: ev.clientX, y: ev.clientY};
-
-        const wb = waveBox.getBoundingClientRect();
-        selectRect.style.left = (boxStart.x - wb.left) + "px";
-        selectRect.style.top  = (boxStart.y - wb.top) + "px";
-        selectRect.style.width="0px";
-        selectRect.style.height="0px";
-        selectRect.style.display="block";
-        ev.preventDefault();
-        return;
-      }
-
-      // add trigger by clicking
-      const mode = modeEl.value;
-      if(mode==="edit") return; // edit mode click does nothing here
+      if(ev.button !== 2) return; // right button
 
       const o = overlayRect();
       const x = ev.clientX - o.left;
-      let t = xToT(x);
-      t = Math.round(t*FPS)/FPS;
+      const y = ev.clientY - o.top;
 
-      if(mode==="anchor"){
-        const ty = normType(modeTypeEl.value);
-        const v = clamp(modeValueEl.value,0,150);
-        triggers.push({kind:"anchor", t, type:ty, value:v});
-      } else if(mode==="switch"){
-        const ty = normType(modeTypeEl.value);
-        triggers.push({kind:"switch", t, type:ty});
-      } else if(mode==="spike"){
-        const v = clamp(modeValueEl.value,0,150);
-        const tau = clamp(defaultTauEl.value,0,10);
-        triggers.push({kind:"spike", t, value:v, tau});
-      }
-      triggers.sort((a,b)=>a.t-b.t);
-      renderTriggers();
-      saveLabel().catch(err=>setErr(String(err)));
-    });
-
-    window.addEventListener("mousemove", (ev)=>{
-      if(!boxing) return;
-      const wb = waveBox.getBoundingClientRect();
-      const x0 = boxStart.x - wb.left;
-      const y0 = boxStart.y - wb.top;
-      const x1 = ev.clientX - wb.left;
-      const y1 = ev.clientY - wb.top;
-
-      const left = Math.min(x0,x1);
-      const top  = Math.min(y0,y1);
-      const w = Math.abs(x1-x0);
-      const h = Math.abs(y1-y0);
-
-      selectRect.style.left = left+"px";
-      selectRect.style.top = top+"px";
-      selectRect.style.width = w+"px";
-      selectRect.style.height = h+"px";
-    });
-
-    window.addEventListener("mouseup", (ev)=>{
-      if(!boxing) return;
-      boxing=false;
-      selectRect.style.display="none";
-
-      // interpret selection as TIME RANGE only (x dimension)
-      const wb = waveBox.getBoundingClientRect();
-      const leftPx = parseFloat(selectRect.style.left) + wb.left;
-      const widthPx = parseFloat(selectRect.style.width);
-
-      const o = overlayRect();
-      const x0 = clamp(leftPx - o.left, 0, o.width);
-      const x1 = clamp(leftPx + widthPx - o.left, 0, o.width);
-
-      const t0 = xToT(x0);
-      const t1 = xToT(x1);
-      rangeSel = {t0, t1};
+      const t = quantT(xToT(x));
+      const v = snapToLevels(yToV(y));
+      insertCurvePoint(t, v, typeAt(t));
       draw();
+      saveLabel().catch(err=>setErr(String(err)));
+      ev.preventDefault();
     });
 
     updateHeader();
@@ -788,21 +862,24 @@
   document.getElementById('btnNext').onclick = nextFile;
   document.getElementById('btnPrev').onclick = prevFile;
   document.getElementById('btnSave').onclick = ()=>saveLabel().catch(err=>setErr(String(err)));
-  document.getElementById('btnGenerate').onclick = ()=>generateCurve().catch(err=>setErr(String(err)));
   document.getElementById('btnExport').onclick = ()=>exportJSON().catch(err=>setErr(String(err)));
-  document.getElementById('btnApplyRangeType').onclick = applyTypeToRange;
 
   // Keyboard shortcuts
   document.addEventListener('keydown', async (e)=>{
     if(e.target && ['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
-
     if(e.code==='Space'){ e.preventDefault(); togglePlay(); return; }
     if(e.key==='n' || e.key==='N'){ await nextFile(); return; }
     if(e.key==='p' || e.key==='P'){ await prevFile(); return; }
+    if(e.key==='Delete' || e.key==='Backspace'){
+      if(selectedIndex!=null && deletePoint(selectedIndex)){
+        draw();
+        saveLabel().catch(err=>setErr(String(err)));
+      }
+      return;
+    }
   });
 
   // init
-  loadFiles().catch(err=>setErr(String(err)));
-</script>
+  loadFiles().catch(err=>setErr(String(err)));</script>
 </body>
 </html>
