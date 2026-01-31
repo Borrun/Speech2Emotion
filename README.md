@@ -1,57 +1,54 @@
+# Speech2Emotion (Discrete Emotion Codes for TTS Audio)
 
-# Speech To Emotion
+This repo turns external TTS-generated 16kHz wav into a 30fps discrete emotion code stream:
+(type_id, level_id), where:
+- type_id in 6 classes: happy/sad/angry/fear/calm/confused
+- level_id in 0..5
 
-The purpose of this project is to enable AI to express emotions visually, improving the overall user interaction experience.
+## Folder layout
+- wavs/: input wavs (16kHz)
+- annotater/: labeling UI + labels.jsonl (supervision)
+- train/: training scripts
+- models/: model + featurizer
+- infer/: offline inference to generate emotion_codes
+- runtime/: playback sync + IPC stubs
+- outputs/: checkpoints + generated emotion codes
 
-**AudioKey** is a lightweight tool for extracting **emotion/expression trigger timestamps (keyframes)** from speech audio.
+## Setup
+Python deps:
+- torch
+- torchaudio
+- numpy
 
-This repository is only a sub-module of the overall **Speech → Emotion** pipeline. Its goal is to output **when to trigger** an expression, rather than executing the expression itself.
+Example:
+pip install torch torchaudio numpy
 
-## Status
-Work in progress (WIP).
+## Step 1: Label
+cd annotater
+python app.py
+Open UI, label wavs, produces annotater/labels.jsonl
 
-## Data Format
-Each reply corresponds to a `.wav` file, and has one label entry in the annotation file:
+## Step 2: Train
+From repo root:
 
-```json
-{"wav":"utt_0001.wav","fps":30,"key_frames":[5,55]}
-````
+python train/train_emotion_tcn.py \
+  --wav_dir ./wavs \
+  --label_path ./annotater/labels.jsonl \
+  --out_dir ./outputs/ckpt
 
-* `fps`: fixed at 30
-* `key_frames`: up to 3 keyframes (frame indices) per utterance
+## Step 3: Offline infer (recommended for TTS)
+python infer/batch_infer.py \
+  --wav_dir ./wavs \
+  --ckpt ./outputs/ckpt/best.pt \
+  --out_dir ./outputs/emotion_codes
 
-(Currently, text and the agent's internal emotion state are not considered.)
+## Step 4: Runtime sync
+python runtime/player_sync.py \
+  --wav ./wavs/utt_0001.wav \
+  --code ./outputs/emotion_codes/utt_0001.json
+
+This prints 30fps codes at the correct timestamps (replace print with your local actuator calls).
 
 ## Notes
-
-* Designed for real-world deployment with external TTS APIs using chunked/streaming audio input
-* The overall project is still under active development
-
-
-# Speech To Emotion
-
-本工程目地是让AI具有视觉上的情绪表达，优化交互体验。
-
-**AudioKey** 是一个用于从语音音频中提取 **情绪/表情触发时刻（关键帧）** 的小工具
-
-本仓库只是 **Speech → Emotion** 整体链路中的一个子模块，目标是输出“什么时候触发”，而不是执行表情本身。
-
-## 当前状态
-开发中（WIP）。
-
-## 数据格式
-每条回复对应一个 `.wav`，并在标注文件中有一行记录：
-
-```json
-{"wav":"utt_0001.wav","fps":30,"key_frames":[5,55]}
-````
-
-* `fps`：固定为 30
-* `key_frames`：每条最多 3 个关键帧（帧号）
-
-（目前并未考虑文本与agnet的当前情绪状态）
-
-## 备注
-
-* 面向API调外部TTS的chunk/流式输入的落地场景设计
-* 整体工程仍在持续完善中
+- Feature hop = 1/30 sec and STFT center=False to preserve causality.
+- With tiny dataset (~40 wavs), start with strong regularization and early stopping.
