@@ -1,36 +1,24 @@
 import os
 import json
-import math
 from flask import Flask, jsonify, request, send_from_directory, abort
 from pathlib import Path
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-AUDIO_DIR = os.environ.get("AUDIO_DIR") or str(Path("/home/bor/works/AudioKey/wavs"))
+# 改成你本机 wav 目录
+AUDIO_DIR = os.environ.get("AUDIO_DIR") or str(Path("/home/borrun/Speech2Emotion/wavs"))
+
 LABEL_PATH = os.path.join(BASE_DIR, "labels.jsonl")
+DEFAULT_FPS = 30
 
-DEFAULT_FPS = 100  # 16kHz / 160-sample hop = 100 fps
-DEFAULT_SAMPLE_RATE = 16000
-DEFAULT_HOP_SAMPLES = 160  # 10ms hop at 16kHz
+# + action: 表示需要行为表现
+ALLOWED_TYPES = ["happy", "sad", "angry", "fear", "calm", "confused", "action"]
 
-ALLOWED_TYPES = ["happy", "sad", "angry", "fear", "calm", "confused"]
-
-DEFAULT_LEVEL_FRAMES = 15
-LEAD_IN_FRAMES = 5
-
+# 6-level intensity mapping (from config.cpp)
 LEVEL_INTENSITY_MAPPING = {0: 5.0, 1: 18.0, 2: 38.0, 3: 68.0, 4: 98.0, 5: 130.0}
 EMOTION_LEVEL_THRESHOLDS = {
     5: (111.0, 150.0), 4: (86.0, 110.0), 3: (51.0, 85.0),
-    2: (26.0, 50.0),   1: (11.0, 25.0),  0: (0.0, 10.0), 
-}
-
-DECAY_LEVELS = {
-    "happy": {5: [3, 0], 4: [2, 0], 3: [1, 0], 2: [0], 1: [0]},
-    "angry": {5: [3, 1, 0], 4: [2, 0], 3: [1, 0], 2: [0], 1: [0]},
-    "sad":   {5: [3, 1, 0], 4: [2, 0], 3: [1, 0], 2: [0], 1: [0]},
-    "fear":  {5: [3, 1, 0], 4: [2, 0], 3: [1, 0], 2: [0], 1: [0]},
-    "calm": {},
-    "confused": {5: [0], 4: [0], 3: [0], 2: [0], 1: [0]},
+    2: (26.0, 50.0),   1: (11.0, 25.0),  0: (0.0, 10.0),
 }
 
 def clamp(v, lo, hi):
@@ -46,26 +34,83 @@ def level_from_value(v: float) -> int:
 
 def snap_to_level_center(v: float) -> float:
     lvl = level_from_value(v)
-    return float(LEVEL_INTENSITY_MAPPING.get(lvl, 68.0))
+    return float(LEVEL_INTENSITY_MAPPING.get(lvl, 5.0))
 
-def normalize_curve(curve, duration: float):
-    duration = float(duration)
-    if not curve or len(curve) < 2:
-        v = snap_to_level_center(68.0)
-        return [
-            {"t": 0.0, "type": "calm", "value": float(v)},
-            {"t": float(duration), "type": "calm", "value": float(v)},
-        ]
-    curve = list(curve)
-    curve.sort(key=lambda p: float(p.get("t", 0.0)))
-    curve[0]["t"] = 0.0
-    curve[-1]["t"] = float(duration)
+def norm_type(t):
+    t = (t or "").strip().lower()
+    return t if t in ALLOWED_TYPES else "calm"
+
+def normalize_base(base):
+    """
+    base: {"type": str, "value": float}
+    默认 calm L0
+    """
+    if not isinstance(base, dict):
+        base = {}
+    ty = norm_type(base.get("type", "calm"))
+    v = base.get("value", 5.0)
+    v = float(snap_to_level_center(v))
+    return {"type": ty, "value": v}
+
+def normalize_triggers(triggers, duration=None):
+    # 目前保留接口兼容，但不再用于自动生成衰变曲线
+    if not isinstance(triggers, list):
+        return []
+    out = []
+    for tr in triggers:
+        if not isinstance(tr, dict):
+            continue
+        t = tr.get("t", None)
+        ty = tr.get("type", None)
+        v = tr.get("value", None)
+        if t is None or ty is None or v is None:
+            continue
+        t = float(t)
+        if duration is not None:
+            t = clamp(t, 0.0, float(duration))
+        out.append({"t": t, "type": norm_type(ty), "value": float(snap_to_level_center(v))})
+    out.sort(key=lambda x: x["t"])
+    return out
+
+def normalize_curve(curve, duration=None):
+    if not isinstance(curve, list):
+        curve = []
+    out = []
     for p in curve:
-        ty = str(p.get("type", "calm"))
-        p["type"] = ty if ty in ALLOWED_TYPES else "calm"
-        p["value"] = float(snap_to_level_center(float(p.get("value", 68.0))))
-        p["t"] = float(p.get("t", 0.0))
-    return curve
+        if not isinstance(p, dict):
+            continue
+        t = p.get("t", 0.0)
+        v = p.get("value", 5.0)
+        ty = p.get("type", "calm")
+        if duration is not None:
+            t = clamp(t, 0.0, duration)
+        else:
+            t = clamp(t, 0.0, 1e9)
+        out.append({"t": float(t), "type": norm_type(ty), "value": float(snap_to_level_center(v))})
+
+    out.sort(key=lambda x: x["t"])
+
+    # dedup same t: keep last
+    dedup = []
+    for p in out:
+        if dedup and abs(dedup[-1]["t"] - p["t"]) < 1e-9:
+            dedup[-1] = p
+        else:
+            dedup.append(p)
+    out = dedup
+
+    if duration is not None:
+        if not out:
+            # 默认 calm + L0（value=5）
+            out = [
+                {"t": 0.0, "type": "calm", "value": 5.0},
+                {"t": float(duration), "type": "calm", "value": 5.0},
+            ]
+        # force endpoints
+        out[0]["t"] = 0.0
+        out[-1]["t"] = float(duration)
+
+    return out
 
 def type_at(curve, t: float) -> str:
     t = float(t)
@@ -73,19 +118,17 @@ def type_at(curve, t: float) -> str:
         return "calm"
     for i in range(len(curve) - 1):
         if float(curve[i]["t"]) <= t < float(curve[i + 1]["t"]):
-            ty = curve[i].get("type", "calm")
-            return ty if ty in ALLOWED_TYPES else "calm"
-    ty = curve[-2].get("type", "calm")
-    return ty if ty in ALLOWED_TYPES else "calm"
+            return norm_type(curve[i].get("type", "calm"))
+    return norm_type(curve[-2].get("type", "calm"))
 
 def value_at_step(curve, t: float) -> float:
     t = float(t)
     if not curve or len(curve) < 2:
-        return 68.0
+        return 5.0
     for i in range(len(curve) - 1):
         if float(curve[i]["t"]) <= t < float(curve[i + 1]["t"]):
-            return float(curve[i].get("value", 68.0))
-    return float(curve[-2].get("value", 68.0))
+            return float(curve[i].get("value", 5.0))
+    return float(curve[-2].get("value", 5.0))
 
 def load_labels():
     labels = {}
@@ -126,38 +169,6 @@ def sample_frames(curve, duration, fps):
         frames.append({"i": i, "t": float(t), "type": ty, "value": float(snap_to_level_center(v))})
     return frames
 
-def curve_to_segments(curve, duration, sample_rate=DEFAULT_SAMPLE_RATE):
-    duration = float(duration)
-    curve = normalize_curve(curve, duration=duration)
-    segs = []
-    for i in range(max(0, len(curve) - 1)):
-        t0 = float(curve[i]["t"])
-        t1 = float(curve[i + 1]["t"])
-        if t1 <= t0:
-            continue
-        ty = type_at(curve, t0)
-        v = float(snap_to_level_center(value_at_step(curve, t0)))
-        lvl = int(level_from_value(v))
-        s0 = int(round(t0 * sample_rate))
-        s1 = int(round(t1 * sample_rate))
-        segs.append({"t0": t0, "t1": t1, "s0": s0, "s1": s1, "type": ty, "value": v, "level": lvl})
-    return segs
-
-def sample_hop_frames(curve, duration, sample_rate=DEFAULT_SAMPLE_RATE, hop_samples=DEFAULT_HOP_SAMPLES):
-    duration = float(duration)
-    curve = normalize_curve(curve, duration=duration)
-    total_samples = int(round(duration * sample_rate))
-    n = max(1, int(math.ceil(total_samples / float(hop_samples))))
-    frames = []
-    for i in range(n):
-        s = i * hop_samples
-        t = s / float(sample_rate)
-        ty = type_at(curve, t)
-        v = float(snap_to_level_center(value_at_step(curve, t)))
-        lvl = int(level_from_value(v))
-        frames.append({"i": i, "t": float(t), "sample": int(s), "type": ty, "value": v, "level": lvl})
-    return frames
-
 def transition_frames_from_curve(curve, fps: int):
     """Internal change points only (exclude endpoints)."""
     fps = int(fps)
@@ -168,15 +179,28 @@ def transition_frames_from_curve(curve, fps: int):
         out.append(int(round(float(curve[i]["t"]) * fps)))
     return out
 
-def transition_hop_frames_from_curve(curve, sample_rate=DEFAULT_SAMPLE_RATE, hop_samples=DEFAULT_HOP_SAMPLES):
-    hop_fps = float(sample_rate) / float(hop_samples)
-    if not curve or len(curve) < 3:
-        return []
-    out = []
-    for i in range(1, len(curve)-1):
-        out.append(int(round(float(curve[i]["t"]) * hop_fps)))
-    return out
+# ========= Removed auto-decay generation =========
+def generate_curve(base, triggers, duration, default_tau=0.5):
+    """
+    Manual-annotation mode (no auto decay).
 
+    This endpoint is kept for backward compatibility, but it now generates a
+    constant staircase curve over the whole clip using `base` only.
+    """
+    duration = float(duration)
+    base = normalize_base(base)
+
+    fps = int(DEFAULT_FPS)
+    dur_frames = max(1, int(round(duration * fps)))
+    dur_t = dur_frames / float(fps)
+
+    curve = [
+        {"t": 0.0, "type": base["type"], "value": base["value"]},
+        {"t": float(dur_t), "type": base["type"], "value": base["value"]},
+    ]
+    return normalize_curve(curve, duration=float(dur_t))
+
+# ================= Flask app =================
 app = Flask(__name__)
 
 @app.after_request
@@ -261,60 +285,34 @@ def api_save():
     upsert_label(rec)
     return jsonify({"ok": True})
 
-def generate_decay_curve(base_type: str, base_level: int, fps: int, duration_s: float):
-    fps = int(fps)
-    duration_s = float(duration_s)
-    total_frames = max(1, int(round(duration_s * fps)))
-
-    base_type = base_type if base_type in ALLOWED_TYPES else "calm"
-    base_level = int(clamp(base_level, 0, 5))
-
-    frames = []
-    for _ in range(LEAD_IN_FRAMES):
-        frames.append({"type": "calm", "level": 0})
-    for _ in range(DEFAULT_LEVEL_FRAMES):
-        frames.append({"type": base_type, "level": base_level})
-    decay = DECAY_LEVELS.get(base_type, {}).get(base_level, [])
-    for lvl in decay:
-        for _ in range(DEFAULT_LEVEL_FRAMES):
-            frames.append({"type": base_type, "level": int(lvl)})
-    while len(frames) < total_frames:
-        frames.append({"type": "calm", "level": 0})
-
-    curve = []
-    def add_point(frame_i, ty, lvl):
-        t = frame_i / float(fps)
-        curve.append({"t": float(t), "type": ty, "value": float(LEVEL_INTENSITY_MAPPING[int(lvl)])})
-
-    prev = frames[0]
-    add_point(0, prev["type"], prev["level"])
-    for i in range(1, total_frames):
-        cur = frames[i]
-        if cur["type"] != prev["type"] or cur["level"] != prev["level"]:
-            add_point(i, cur["type"], cur["level"])
-            prev = cur
-
-    curve.append({"t": float(total_frames / float(fps)), "type": prev["type"], "value": float(LEVEL_INTENSITY_MAPPING[int(prev["level"])])})
-    return normalize_curve(curve, duration=float(total_frames / float(fps)))
-
 @app.post("/api/generate")
 def api_generate():
-    obj = request.get_json(force=True, silent=False)
-    wav = obj.get("wav")
-    fps = int(obj.get("fps", DEFAULT_FPS))
-    duration = obj.get("duration", None)
-    base = obj.get("base", "calm")
-    triggers = obj.get("triggers", [])
+    # 保留接口兼容，但不再生成衰变/trigger 曲线：只生成 base 常量曲线
+    data = request.get_json(force=True)
+    wav = data.get("wav")
+    if not wav or not isinstance(wav, str):
+        return jsonify({"error": "Missing wav"}), 400
 
-    if not wav:
-        return jsonify({"error": "wav required"}), 400
+    fps = int(data.get("fps", DEFAULT_FPS))
+    duration = data.get("duration", None)
     if duration is None:
-        return jsonify({"error": "duration required"}), 400
+        return jsonify({"error": "Missing duration"}), 400
+    duration = float(duration)
 
-    base_level = 3
-    curve = generate_decay_curve(base_type=str(base), base_level=base_level, fps=fps, duration_s=float(duration))
+    base = normalize_base(data.get("base", {}))
+    triggers = normalize_triggers(data.get("triggers", []), duration=duration)
+    default_tau = float(clamp(data.get("default_tau", 0.5), 0.0, 10.0))
 
-    out = {"wav": wav, "fps": fps, "duration": float(duration), "base": base, "triggers": triggers, "curve": curve}
+    curve = generate_curve(base, triggers, duration, default_tau=default_tau)
+
+    out = {
+        "wav": wav,
+        "fps": fps,
+        "duration": duration,
+        "base": base,
+        "triggers": triggers,
+        "curve": curve,
+    }
     upsert_label(out)
     return jsonify({"ok": True, "curve": curve})
 
@@ -324,7 +322,6 @@ def api_export(wav):
     obj = labels.get(wav)
     if not obj:
         return jsonify({"error": "No label for wav"}), 404
-
     duration = obj.get("duration", None)
     if duration is None:
         return jsonify({"error": "No duration saved yet (open the wav once in UI)"}), 400
@@ -333,37 +330,19 @@ def api_export(wav):
     curve = obj.get("curve", [])
     text = obj.get("text", "")
 
-    # UI-fps frames
     frames = sample_frames(curve, duration=float(duration), fps=fps)
     total_frames = max(1, int(round(float(duration) * fps)))
     trans_frames = transition_frames_from_curve(normalize_curve(curve, float(duration)), fps=fps)
-
-    # 16k hop frames
-    hop_frames = sample_hop_frames(curve, duration=float(duration), sample_rate=DEFAULT_SAMPLE_RATE, hop_samples=DEFAULT_HOP_SAMPLES)
-    total_samples = int(round(float(duration) * DEFAULT_SAMPLE_RATE))
-    total_hop_frames = max(1, int(math.ceil(total_samples / float(DEFAULT_HOP_SAMPLES))))
-    trans_hop_frames = transition_hop_frames_from_curve(normalize_curve(curve, float(duration)), sample_rate=DEFAULT_SAMPLE_RATE, hop_samples=DEFAULT_HOP_SAMPLES)
-
-    segments = curve_to_segments(curve, duration=float(duration), sample_rate=DEFAULT_SAMPLE_RATE)
 
     return jsonify({
         "wav": wav,
         "text": text,
         "fps": fps,
         "duration": float(duration),
-
         "total_frames": total_frames,
         "transition_frames": trans_frames,
         "frames": frames,
-
-        "sample_rate": DEFAULT_SAMPLE_RATE,
-        "hop_samples": DEFAULT_HOP_SAMPLES,
-        "hop_fps": float(DEFAULT_SAMPLE_RATE) / float(DEFAULT_HOP_SAMPLES),
-        "total_hop_frames": total_hop_frames,
-        "transition_hop_frames": trans_hop_frames,
-        "hop_frames": hop_frames,
-
-        "segments": segments,
+        "curve": normalize_curve(curve, float(duration)),
     })
 
 @app.get("/audio/<path:filename>")

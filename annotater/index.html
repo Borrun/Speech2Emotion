@@ -9,155 +9,146 @@
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; }
     .wrap { display: grid; grid-template-columns: 360px 1fr; height: 100vh; }
     .left { border-right: 1px solid #ddd; overflow: auto; }
-    .right { padding: 14px 18px; overflow:auto; }
+    .right { padding: 14px 18px; }
 
     .hdr { padding: 12px 12px; border-bottom: 1px solid #eee; display:flex; gap:10px; align-items:center; }
     .hdr b { font-size: 14px; }
     .list { padding: 0; margin: 0; list-style: none; }
-    .item { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
-    .item:hover { background: #f7fbff; }
+    .item { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; display:flex; justify-content:space-between; gap:10px; }
+    .item:hover { background: #fafafa; }
     .item.active { background: #eef6ff; }
-    .meta { font-size: 12px; color: #666; margin-top: 4px; display:flex; gap:10px; flex-wrap:wrap;}
     .pill { font-size: 12px; padding: 2px 6px; border-radius: 999px; background:#f3f3f3; display:inline-block; }
     .pill.ok { background:#e6f7e6; }
     .pill.no { background:#ffecec; }
 
     #waveBox { border: 1px solid #ddd; border-radius: 10px; padding: 10px; position: relative; }
-    #wave { position: relative; }
-    #overlay {
+    #wave { position: relative; z-index: 1; }
+    /* 关键：恢复 overlay 结构 + z-index，保证鼠标事件能命中 SVG */
+    #overlay{
       position:absolute; left:10px; right:10px;
       top:10px;
       height:160px;
       z-index: 5;
+      pointer-events: auto;
     }
     #overlay svg { width:100%; height:100%; display:block; }
 
     .controls { margin-top: 10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-    button, select, input, textarea { font: inherit; }
-    button { padding: 8px 10px; border: 1px solid #ccc; border-radius: 8px; background:#fff; cursor:pointer;}
-    button:hover { background:#f6f6f6; }
-    button.primary { border-color:#0aa; background:#0aa; color:#fff; }
-    select, input { padding: 7px 10px; border: 1px solid #ccc; border-radius: 8px; }
-    textarea { width: 100%; min-height: 90px; resize: vertical; padding: 10px; border:1px solid #ccc; border-radius: 10px; }
+    button, select, input { font: inherit; }
+    button { padding: 8px 10px; border: 1px solid #ccc; background:#fff; border-radius: 8px; cursor:pointer; }
+    button:hover { background:#fafafa; }
+    .row { display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
+    .muted { color:#666; }
+    .danger { color:#b00020; }
 
-    .kpi { display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px; font-size: 12px; color:#555;}
-    .kpi span { background:#fafafa; border:1px solid #eee; border-radius: 999px; padding: 3px 8px; }
-    .err { margin-top: 10px; white-space: pre-wrap; color: #b00; background:#fff5f5; border:1px solid #f2b; border-radius: 10px; padding: 8px 10px; }
-    .hint { margin-top: 8px; font-size: 12px; color: #666; line-height: 1.4; }
-    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; padding: 1px 6px; border: 1px solid #ddd; border-bottom-width: 2px; border-radius: 6px; background:#f8f8f8; }
+    .panel {
+      margin-top: 10px;
+      border:1px solid #eee; border-radius: 10px;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .panel .full { grid-column: 1 / -1; }
+    .hint { font-size: 12px; color:#666; line-height: 1.4; }
+    select { padding:6px 8px; border:1px solid #ddd; border-radius: 8px; }
+    textarea { width:100%; min-height: 84px; padding:8px 10px; border:1px solid #ddd; border-radius: 10px; resize: vertical; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+           font-size: 12px; border: 1px solid #ddd; padding: 2px 6px; border-radius: 6px; background:#fafafa; }
 
-    .topbar { display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap; align-items:center; }
-    .topbar .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
-    .sectionTitle { margin: 14px 0 6px; font-size: 13px; color:#333; }
+    .legend { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
+    .legend .item { display:flex; align-items:center; gap:6px; font-size:12px; color: rgba(0,0,0,0.75); border:0; padding:0; cursor:default; }
+    .legend .dot { width:10px; height:10px; border-radius:50%; display:inline-block; border:1px solid rgba(0,0,0,0.25); }
   </style>
 </head>
 <body>
 <div class="wrap">
-  <aside class="left">
+  <div class="left">
     <div class="hdr">
       <b>Files</b>
       <span class="pill" id="countPill">0</span>
-      <span class="pill" id="donePill">done:0</span>
-      <button id="btnReload" style="margin-left:auto;">Reload</button>
+      <span class="pill ok" id="donePill">done: 0</span>
     </div>
     <ul class="list" id="fileList"></ul>
-  </aside>
+  </div>
 
-  <section class="right">
-    <div class="topbar">
-      <div class="row">
-        <b id="curName">No file</b>
-        <span class="pill">fps: <span id="fps">-</span></span>
-        <span class="pill">dur: <span id="dur">-</span>s</span>
-        <span class="pill">points: <span id="ptCount">0</span></span>
-        <span class="pill" id="segInfo">segment: -</span>
-      </div>
-      <div class="row">
-        <button class="primary" id="btnSave">Save <span class="kbd">S</span></button>
-        <button id="btnPrev">Prev <span class="kbd">←</span></button>
-        <button id="btnNext">Next <span class="kbd">→</span></button>
-      </div>
+  <div class="right">
+    <div class="row">
+      <div><b id="curName">No file</b></div>
+      <div class="muted">fps: <b id="fps">30</b></div>
+      <div class="muted">duration(s): <b id="dur">—</b></div>
+      <div class="muted">curve pts: <b id="ptCount">—</b></div>
+      <div class="muted">segment: <b id="segInfo">—</b></div>
     </div>
 
-    <div id="err" class="err"></div>
-
-    <div id="waveBox" style="margin-top: 10px;">
+    <div id="waveBox" style="margin-top:10px">
       <div id="wave"></div>
       <div id="overlay"><svg id="svg"></svg></div>
     </div>
 
+    <!-- ✅ 恢复默认按钮 -->
     <div class="controls">
       <button id="btnPlay">Play/Pause <span class="kbd">Space</span></button>
-
-      <label>Type:</label>
-      <select id="segType">
-        <option value="calm">calm</option>
-        <option value="happy">happy</option>
-        <option value="sad">sad</option>
-        <option value="angry">angry</option>
-        <option value="fear">fear</option>
-        <option value="confused">confused</option>
-      </select>
-
-      <label>FPS:</label>
-      <input id="fpsInput" type="number" min="1" max="300" step="1" value="100" style="width: 90px;" />
-
+      <button id="btnPrev">Prev <span class="kbd">P</span></button>
+      <button id="btnNext">Next <span class="kbd">N</span></button>
+      <button id="btnSave">Save</button>
       <button id="btnExport">Export (JSON)</button>
-      <button id="btnGenerate">Generate</button>
     </div>
 
-    <div class="kpi" id="kpi"></div>
+    <div class="panel">
+      <div class="full">
+        <div class="row">
+          <div class="muted"><b>点击曲线段修改情绪类型</b></div>
+          <select id="segType">
+            <option>happy</option><option>sad</option><option>angry</option><option>fear</option>
+            <option selected>calm</option><option>confused</option><option>action</option>
+          </select>
+          <span class="hint">
+            点击某一段（两点之间）会应用当前选中的 type。也支持键盘 1-7：
+            1 happy, 2 sad, 3 angry, 4 fear, 5 calm, 6 confused, 7 action。
+          </span>
+          <div id="typeLegend" class="legend"></div>
+        </div>
+      </div>
 
-    <div class="sectionTitle">Text / Transcript</div>
-    <textarea id="textBox" placeholder="可选：输入转写、备注、说话内容等（随标签保存）"></textarea>
+      <div class="full">
+        <div class="muted"><b>Audio Text</b>（转写/内容）</div>
+        <div style="margin-top:6px">
+          <textarea id="audioText" placeholder="可选：输入这段音频的文字内容（会随标注一起保存、导出）"></textarea>
+        </div>
+      </div>
 
-    <div class="hint">
-      交互：
-      <span class="kbd">左键拖动</span> 调整点（吸附等级虚线；跳变处上下两点共享时间，水平拖动会一起移动）；
-      <span class="kbd">右键</span> 在光标处新增点；
-      <span class="kbd">Alt+左键</span> 删除内部跳变点；
-      <span class="kbd">点击曲线段</span> 将该段情绪类型设置为当前下拉框类型；
-      <span class="kbd">Space</span> 播放/暂停。
+      <div class="full hint">
+        操作：
+        <ul>
+          <li><b>左键拖动点</b>：调整时间/等级（时间会量化到帧）。</li>
+          <li><b>右键点空白处</b>：新增点（会吸附到最近等级线）。</li>
+          <li><b>Alt + 左键点</b>：删除该点（首尾端点不可删）；也可先点选点，再按 <span class="kbd">Delete</span>/<span class="kbd">Backspace</span> 删除。</li>
+          <li><b>点击曲线段</b>：修改该段情绪类型（按段 piecewise-constant）。</li>
+          <li>默认：<b>calm + L0</b>；所有等级变化按“阶梯”显示：一帧突变。</li>
+        </ul>
+      </div>
     </div>
-  </section>
+
+    <div class="danger" id="err" style="margin-top:10px"></div>
+  </div>
 </div>
 
 <script>
-  let FPS = 100; // default: 16kHz / 160-sample hop = 100 fps
-  const DEFAULT_SAMPLE_RATE = 16000;
-  const DEFAULT_HOP_SAMPLES = 160;
-
-  const TYPES = ["happy","sad","angry","fear","calm","confused"];
-
-  // (lvl, lo, hi, mid) in 0..150
-  const LEVEL_BUCKETS = [
-    {lvl:0, lo:0,   hi:10,  mid:5},
-    {lvl:1, lo:11,  hi:25,  mid:18},
-    {lvl:2, lo:26,  hi:50,  mid:38},
-    {lvl:3, lo:51,  hi:85,  mid:68},
-    {lvl:4, lo:86,  hi:110, mid:98},
-    {lvl:5, lo:111, hi:150, mid:130},
-  ];
-
-  const TYPE_COL = {
-    happy: "#f4b000",
-    sad: "#3b82f6",
-    angry: "#ef4444",
-    fear: "#8b5cf6",
-    calm: "#10b981",
-    confused: "#6b7280",
-  };
+  const FPS = 30;
+  const TYPES = ["happy","sad","angry","fear","calm","confused","action"];
 
   let files = [];
   let curIndex = -1;
   let wave = null;
 
   let duration = null;
-  let curve = [];    // [{t,type,value}]  step curve
-  let draggingHandle = null; // {boundaryIdx, curveIdxValue, role}
+  let curve = [];    // [{t,type,value}]
+
+  let draggingIndex = null;
   let dragOffset = {dx:0, dy:0};
 
-  let selectedIndex = null; // selected boundary index (for Delete)
+  let selectedIndex = null;
   let hoveredSeg = null;
   let selectedSeg = null;
 
@@ -170,25 +161,24 @@
   const elErr = document.getElementById('err');
   const elCount = document.getElementById('countPill');
   const elDone = document.getElementById('donePill');
-  const elKpi = document.getElementById('kpi');
-
-  const segTypeEl = document.getElementById('segType');
-  const fpsInput = document.getElementById('fpsInput');
-  const textBox = document.getElementById('textBox');
 
   const svg = document.getElementById('svg');
+  const waveBox = document.getElementById('waveBox');
+
+  const segTypeEl = document.getElementById('segType');
+  const audioTextEl = document.getElementById('audioText');
 
   function setErr(msg){ elErr.textContent = msg || ""; }
 
   async function fetchJSON(url, opts){
-    opts = opts || {};
-    const headers = new Headers(opts.headers || {});
-    headers.set("Cache-Control","no-store");
-    headers.set("Pragma","no-cache");
-    headers.set("Expires","0");
-    const res = await fetch(url, { ...opts, cache: "no-store", headers });
-    if(!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-    return await res.json();
+    const res = await fetch(url, opts);
+    const txt = await res.text();
+    let obj = null;
+    try { obj = JSON.parse(txt); } catch(e) {}
+    if(!res.ok){
+      throw new Error((obj && obj.error) ? obj.error : `${res.status} ${res.statusText}`);
+    }
+    return obj;
   }
 
   function clamp(v, lo, hi){
@@ -197,419 +187,403 @@
     return Math.max(lo, Math.min(hi, v));
   }
 
-  function normType(t){
-    t = String(t||"").trim();
-    if(!t) return "calm";
-    if(!TYPES.includes(t)) return "calm";
-    return t;
-  }
-  function typeColor(t){ return TYPE_COL[normType(t)] || "#111"; }
+  const LEVEL_BUCKETS = [
+    {lvl:0, lo:0,   hi:10,  mid:5},
+    {lvl:1, lo:11,  hi:25,  mid:18},
+    {lvl:2, lo:26,  hi:50,  mid:38},
+    {lvl:3, lo:51,  hi:85,  mid:68},
+    {lvl:4, lo:86,  hi:110, mid:98},
+    {lvl:5, lo:111, hi:150, mid:130},
+  ];
+  const HYSTERESIS = 3;
 
-  function snapToLevels(v, prev){
-    v = clamp(v, 0, 150);
-    let best = LEVEL_BUCKETS[0], bestD = Math.abs(v-best.mid);
-    for(const b of LEVEL_BUCKETS){
-      const d = Math.abs(v - b.mid);
-      if(d < bestD){ best=b; bestD=d; }
-      else if(d === bestD && prev!=null){
-        const prevB = bucketOf(prev);
-        if(prevB && prevB.lvl === b.lvl){ best=b; bestD=d; }
-      }
-    }
-    return best.mid;
+  const TYPE_COLORS = {
+    happy: "#f6a21a",
+    sad: "#5b7bd5",
+    angry: "#d64545",
+    fear: "#7a5bd5",
+    calm: "#2e8b57",
+    confused: "#7a7a7a",
+    action: "#ff2d95",
+  };
+
+  function normType(t){
+    t = (t||"").toLowerCase().trim();
+    return TYPES.includes(t) ? t : "calm";
   }
+  function typeColor(ty){ return TYPE_COLORS[normType(ty)] || "#333"; }
+
+  function renderTypeLegend(){
+    const lg = document.getElementById("typeLegend");
+    if(!lg) return;
+    lg.innerHTML = "";
+    for(const ty of TYPES){
+      const it = document.createElement("div");
+      it.className = "item";
+      const dot = document.createElement("span");
+      dot.className = "dot";
+      dot.style.background = typeColor(ty);
+      it.appendChild(dot);
+      const tx = document.createElement("span");
+      tx.textContent = ty;
+      it.appendChild(tx);
+      lg.appendChild(it);
+    }
+  }
+  renderTypeLegend();
 
   function bucketOf(v){
-    v = clamp(v,0,150);
-    for(const b of LEVEL_BUCKETS){
-      if(b.lo <= v && v <= b.hi) return b;
+    v = clamp(v, 0, 150);
+    for(let i=LEVEL_BUCKETS.length-1;i>=0;i--){
+      const b = LEVEL_BUCKETS[i];
+      if(v>=b.lo && v<=b.hi) return b;
     }
     return LEVEL_BUCKETS[0];
   }
 
-  function quantT(t){
-    return Math.round(Number(t) * FPS) / FPS;
+  function snapToLevels(v, currentV){
+    v = clamp(v, 0, 150);
+    const b = bucketOf(v);
+    // 可选：保留一点滞回（和你原版一致），这里简单返回 mid
+    return b.mid;
   }
 
-  function sortCurve(){ curve.sort((a,b)=>a.t-b.t); }
+  function overlayRect(){
+    // overlay 在 waveBox 内有 padding 10，所以用 waveBox rect + padding 10 计算相对坐标
+    const r = waveBox.getBoundingClientRect();
+    return {left:r.left+10, top:r.top+10, width:r.width-20, height:160};
+  }
+
+  function xToT(x){
+    const o = overlayRect();
+    return clamp(x / Math.max(1, o.width) * duration, 0, duration);
+  }
+  function tToX(t){
+    const o = overlayRect();
+    return (t / Math.max(1e-6, duration)) * o.width;
+  }
+
+  function yToV(y){
+    const o = overlayRect();
+    const v = (1.0 - (y / Math.max(1, o.height))) * 150.0;
+    return clamp(v, 0, 150);
+  }
+  function vToY(v){
+    const o = overlayRect();
+    const y = (1.0 - (v / 150.0)) * o.height;
+    return y;
+  }
+
+  function quantT(t){ return Math.round(t*FPS)/FPS; }
 
   function normalizeCurveEndpoints(){
-    if(!duration) return;
-    if(!curve || curve.length<2){
-      const v = snapToLevels(68);
-      curve = [
-        {t:0, type:"calm", value:v},
-        {t:duration, type:"calm", value:v},
-      ];
-    }
-    sortCurve();
+    if(!curve || curve.length<2) return;
+    curve.sort((a,b)=>a.t-b.t);
     curve[0].t = 0;
     curve[curve.length-1].t = duration;
   }
 
-  function ensureWave(){
-    return !!(wave && duration!=null);
-  }
-
-  function overlayRect(){
-    return document.getElementById('overlay').getBoundingClientRect();
-  }
-
-  function xToT(x){
-    const r = overlayRect();
-    return clamp((x / r.width) * duration, 0, duration);
-  }
-  function tToX(t){
-    const r = overlayRect();
-    return (t / duration) * r.width;
-  }
-  function yToV(y){
-    const r = overlayRect();
-    return clamp(150 - (y / r.height) * 150, 0, 150);
-  }
-  function vToY(v){
-    const r = overlayRect();
-    return ((150 - v) / 150) * r.height;
+  function valueAtStep(t){
+    if(!curve || curve.length<2) return 5;
+    for(let i=0;i<curve.length-1;i++){
+      if(curve[i].t <= t && t < curve[i+1].t) return curve[i].value;
+    }
+    return curve[curve.length-2].value;
   }
 
   function typeAt(t){
     if(!curve || curve.length<2) return "calm";
     for(let i=0;i<curve.length-1;i++){
-      if(curve[i].t <= t && t < curve[i+1].t) return normType(curve[i].type);
+      if(curve[i].t <= t && t < curve[i+1].t) return curve[i].type;
     }
-    return normType(curve[curve.length-2].type);
+    return curve[curve.length-2].type;
   }
 
-  function insertCurvePoint(t, v, ty){
-    t = quantT(t);
-    v = snapToLevels(v);
-    ty = normType(ty);
+  function insertCurvePoint(t, newTy, newV){
+    const tQ = quantT(t);
+    const k = Math.round(tQ * FPS);
 
-    for(let i=0;i<curve.length;i++){
-      if(Math.abs(curve[i].t - t) < (0.5 / FPS)){
-        curve[i].t = t;
-        curve[i].value = v;
-        curve[i].type = ty;
-        normalizeCurveEndpoints();
-        return;
+    const oldV = valueAtStep(tQ);
+    const oldTy = typeAt(tQ);
+
+    const pts = [];
+    for(const p of curve){
+      if(Math.abs(p.t - tQ) > 1e-9) pts.push(p);
+    }
+
+    if((newTy !== oldTy) || (Math.abs(newV - oldV) > 1e-6)){
+      const tHold = (k-1)/FPS;
+      if(tHold > 0 && tHold < duration){
+        pts.push({t: tHold, type: oldTy, value: oldV});
       }
     }
-    curve.push({t, value:v, type:ty});
+    pts.push({t: tQ, type: newTy, value: newV});
+
+    pts.sort((a,b)=>a.t-b.t);
+    const ded = [];
+    for(const p of pts){
+      if(ded.length && Math.abs(ded[ded.length-1].t - p.t) < 1e-9) ded[ded.length-1] = p;
+      else ded.push(p);
+    }
+    curve = ded;
     normalizeCurveEndpoints();
   }
 
   function deletePoint(idx){
     if(!curve || curve.length<3) return false;
-    if(idx <= 0) return false;
-    if(idx >= curve.length-1) return false;
+    if(idx<=0 || idx>=curve.length-1) return false;
     curve.splice(idx,1);
-    selectedIndex = null;
     normalizeCurveEndpoints();
+    selectedIndex = null;
     return true;
   }
 
   function applyTypeToInterval(t0, t1, ty){
     ty = normType(ty);
+    const a0 = quantT(t0);
+    const a1 = quantT(t1);
+    if(a1 <= a0) return;
+
+    insertCurvePoint(a0, typeAt(a0), valueAtStep(a0));
+    insertCurvePoint(a1, typeAt(a1), valueAtStep(a1));
+
     for(let i=0;i<curve.length-1;i++){
-      if(curve[i].t >= t1) continue;
-      if(curve[i+1].t <= t0) continue;
-      curve[i].type = ty;
+      if(curve[i].t >= a0 && curve[i].t < a1){
+        curve[i].type = ty;
+      }
     }
-    draw();
-    saveLabel().catch(err=>setErr(String(err)));
+    normalizeCurveEndpoints();
   }
 
-  function transitionFrames(){
-    // internal boundaries only (exclude t=0 and t=duration)
-    if(!curve || curve.length<3) return [];
-    const out = [];
-    for(let i=1;i<curve.length-1;i++){
-      out.push(Math.round(curve[i].t * FPS));
-    }
-    return out;
-  }
-
-  function totalFrames(){
-    if(duration==null) return 0;
-    return Math.max(1, Math.round(duration * FPS));
-  }
-
-  function updateHeader(){
-    if(curIndex<0 || curIndex>=files.length){
-      elName.textContent = "No file";
-      elFps.textContent = "-";
-      elDur.textContent = "-";
-      elPtCount.textContent = "0";
-      elSegInfo.textContent = "segment: -";
-      elCount.textContent = "0";
-      elDone.textContent = "done:0";
-      elKpi.textContent = "";
-      return;
-    }
-    const f = files[curIndex];
-    elName.textContent = `${f.wav} ${f.labeled? "(labeled)" : ""}`;
-    elFps.textContent = String(FPS);
-    elDur.textContent = (duration!=null) ? duration.toFixed(2) : "-";
-    elPtCount.textContent = String(curve?.length ?? 0);
-
-    elCount.textContent = String(files.length);
-    const doneCount = files.filter(x=>x.labeled).length;
-    elDone.textContent = `done:${doneCount}`;
-
-    if(hoveredSeg!=null && hoveredSeg>=0 && curve.length>=2){
-      const t0 = curve[hoveredSeg].t;
-      const t1 = curve[hoveredSeg+1].t;
-      elSegInfo.textContent = `segment: #${hoveredSeg} ${normType(curve[hoveredSeg].type)}  [${t0.toFixed(3)}, ${t1.toFixed(3)})`;
-    } else if(selectedSeg!=null && selectedSeg>=0 && curve.length>=2){
-      const t0 = curve[selectedSeg].t;
-      const t1 = curve[selectedSeg+1].t;
-      elSegInfo.textContent = `segment: #${selectedSeg} ${normType(curve[selectedSeg].type)}  [${t0.toFixed(3)}, ${t1.toFixed(3)})`;
-    } else {
-      elSegInfo.textContent = `segment: -`;
-    }
-
-    const hopFps = DEFAULT_SAMPLE_RATE / DEFAULT_HOP_SAMPLES; // 100
-    const tf = totalFrames();
-    const trans = transitionFrames();
-
-    elKpi.innerHTML = `
-      <span>train_sr=${DEFAULT_SAMPLE_RATE}</span>
-      <span>hop=${DEFAULT_HOP_SAMPLES} samples (≈${(1000/hopFps).toFixed(1)}ms)</span>
-      <span>ui_fps=${FPS}</span>
-      <span>total_frames=${tf}</span>
-      <span>transition_frames=[${trans.join(",")}]</span>
-    `;
-  }
-
-  function renderList(){
-    elList.innerHTML = "";
-    elCount.textContent = String(files.length);
-    const doneCount = files.filter(x=>x.labeled).length;
-    elDone.textContent = `done:${doneCount}`;
-
-    files.forEach((f, i)=>{
-      const li = document.createElement('li');
-      li.className = "item" + (i===curIndex ? " active" : "");
-      const ok = f.labeled;
-      li.innerHTML = `
-        <div>${f.wav}</div>
-        <div class="meta">
-          <span class="pill ${ok?"ok":"no"}">${ok?"labeled":"todo"}</span>
-          <span class="pill">fps=${f.fps ?? FPS}</span>
-        </div>
-      `;
-      li.onclick = ()=>loadIndex(i);
-      elList.appendChild(li);
-    });
-  }
-
-  function destroyWave(){
-    if(wave){
-      try{ wave.destroy(); }catch(_){}
-      wave=null;
-    }
-    svg.innerHTML="";
-    duration=null;
-    draggingHandle=null;
+  function segStrokeWidth(i){
+    if(selectedSeg===i) return "5";
+    if(hoveredSeg===i) return "4";
+    return "3";
   }
 
   function draw(){
     svg.innerHTML = "";
-    if(!ensureWave()) return;
+    const o = overlayRect();
+    const w = o.width;
+    const h = o.height;
+    svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
 
-    const r = overlayRect();
-    const w=r.width, h=r.height;
-
-    const bg = document.createElementNS("http://www.w3.org/2000/svg","rect");
-    bg.setAttribute("x","0"); bg.setAttribute("y","0");
-    bg.setAttribute("width",String(w)); bg.setAttribute("height",String(h));
-    bg.setAttribute("fill","rgba(0,0,0,0.02)");
-    svg.appendChild(bg);
-
-    // dashed level guides
+    // guide lines
     for(const b of LEVEL_BUCKETS){
       const y = vToY(b.mid);
       const ln = document.createElementNS("http://www.w3.org/2000/svg","line");
-      ln.setAttribute("x1","0"); ln.setAttribute("x2",String(w));
-      ln.setAttribute("y1",String(y)); ln.setAttribute("y2",String(y));
-      ln.setAttribute("stroke","rgba(0,0,0,0.18)");
-      ln.setAttribute("stroke-dasharray","4 4");
+      ln.setAttribute("x1","0"); ln.setAttribute("x2", String(w));
+      ln.setAttribute("y1", String(y)); ln.setAttribute("y2", String(y));
+      ln.setAttribute("stroke", "#666");
+      ln.setAttribute("stroke-width","1");
+      ln.setAttribute("stroke-dasharray","5 5");
+      ln.setAttribute("opacity","0.25");
       svg.appendChild(ln);
 
       const tx = document.createElementNS("http://www.w3.org/2000/svg","text");
-      tx.setAttribute("x","4");
-      tx.setAttribute("y",String(y-2));
+      tx.setAttribute("x", "6");
+      tx.setAttribute("y", String(y - 4));
       tx.setAttribute("font-size","11");
-      tx.setAttribute("fill","rgba(0,0,0,0.45)");
-      tx.style.pointerEvents = "none";
+      tx.setAttribute("fill","#555");
+      tx.setAttribute("opacity","0.8");
       tx.textContent = `L${b.lvl}`;
       svg.appendChild(tx);
     }
 
-    // segments render
-    if(curve && curve.length>=2){
-      for(let i=0;i<curve.length-1;i++){
-        const t0 = curve[i].t, t1 = curve[i+1].t;
-        const v  = curve[i].value;
-        const ty = normType(curve[i].type);
+    // segments + type label
+for(let i=0;i<curve.length-1;i++){
+  const p0 = curve[i];
+  const p1 = curve[i+1];
+  const x0 = tToX(p0.t);
+  const x1 = tToX(p1.t);
+  const y  = vToY(p0.value);
 
-        const ln = document.createElementNS("http://www.w3.org/2000/svg","line");
-        ln.setAttribute("x1", String(tToX(t0)));
-        ln.setAttribute("y1", String(vToY(v)));
-        ln.setAttribute("x2", String(tToX(t1)));
-        ln.setAttribute("y2", String(vToY(v)));
-        ln.setAttribute("stroke", typeColor(ty));
-        ln.setAttribute("stroke-width", (selectedSeg===i) ? "5" : "3");
-        ln.setAttribute("stroke-linecap","round");
-        ln.style.pointerEvents = "none";
-        svg.appendChild(ln);
+  // 1) segment line
+  const ln = document.createElementNS("http://www.w3.org/2000/svg","line");
+  ln.setAttribute("x1", String(x0));
+  ln.setAttribute("x2", String(x1));
+  ln.setAttribute("y1", String(y));
+  ln.setAttribute("y2", String(y));
+  ln.setAttribute("stroke", typeColor(p0.type));
+  ln.setAttribute("stroke-width", segStrokeWidth(i));
+  ln.setAttribute("stroke-linecap","round");
+  ln.setAttribute("opacity","0.9");
+  svg.appendChild(ln);
 
-        const mx = (tToX(t0) + tToX(t1))/2;
-        const my = vToY(v) - 8;
-        const label = document.createElementNS("http://www.w3.org/2000/svg","text");
-        label.setAttribute("x", String(mx));
-        label.setAttribute("y", String(my));
-        label.setAttribute("text-anchor","middle");
-        label.setAttribute("font-size","10");
-        label.setAttribute("fill", "rgba(0,0,0,0.6)");
-        label.style.pointerEvents = "none";
-        label.textContent = ty;
-        svg.appendChild(label);
+  // 2) type label on line (skip too-short segments)
+  const segLenPx = Math.abs(x1 - x0);
+  const segDur   = Math.max(0, p1.t - p0.t);
 
-        const v2 = curve[i+1].value;
-        const j = document.createElementNS("http://www.w3.org/2000/svg","line");
-        j.setAttribute("x1", String(tToX(t1)));
-        j.setAttribute("y1", String(vToY(v)));
-        j.setAttribute("x2", String(tToX(t1)));
-        j.setAttribute("y2", String(vToY(v2)));
-        j.setAttribute("stroke","rgba(0,0,0,0.25)");
-        j.setAttribute("stroke-width","1");
-        j.style.pointerEvents = "none";
-        svg.appendChild(j);
-      }
-    }
+  // 规则：<0.4s 或 <60px 不画，避免挤在一起
+  if(segDur >= 0.4 && segLenPx >= 60){
+    const ty = normType(p0.type);
 
-    // hit target polyline
-    const stepPts = [];
-    if(curve && curve.length){
-      stepPts.push({t:curve[0].t, v:curve[0].value});
-      for(let i=1;i<curve.length;i++){
-        stepPts.push({t:curve[i].t, v:curve[i-1].value});
-        stepPts.push({t:curve[i].t, v:curve[i].value});
-      }
-    }
-    const pts = stepPts.map(p=>`${tToX(p.t)},${vToY(p.v)}`).join(" ");
+    // label group
+    const g = document.createElementNS("http://www.w3.org/2000/svg","g");
+    g.setAttribute("opacity","0.9");
 
-    const plHit = document.createElementNS("http://www.w3.org/2000/svg","polyline");
-    plHit.setAttribute("points", pts);
-    plHit.setAttribute("fill","none");
-    plHit.setAttribute("stroke","rgba(0,0,0,0)");
-    plHit.setAttribute("stroke-width","14");
-    plHit.style.pointerEvents = "stroke";
-    plHit.style.cursor = "pointer";
+    // place label around mid point, slight vertical offset
+    const xm = (x0 + x1) * 0.5;
+    const ym = y - 10;
 
-    plHit.addEventListener("pointermove", (ev)=>{
-      const o = overlayRect();
-      const x = ev.clientX - o.left;
-      const t = xToT(x);
-      let seg = -1;
+    // background (rounded rect)
+    const bg = document.createElementNS("http://www.w3.org/2000/svg","rect");
+    // rough width by chars
+    const padX = 6;
+    const padY = 3;
+    const fontSize = 11;
+    const textW = Math.max(ty.length * 7, 26); // heuristic
+    const bw = textW + padX * 2;
+    const bh = fontSize + padY * 2;
+
+    bg.setAttribute("x", String(xm - bw/2));
+    bg.setAttribute("y", String(ym - bh/2));
+    bg.setAttribute("width", String(bw));
+    bg.setAttribute("height", String(bh));
+    bg.setAttribute("rx", "6");
+    bg.setAttribute("ry", "6");
+    bg.setAttribute("fill", "rgba(255,255,255,0.75)");
+    bg.setAttribute("stroke", "rgba(0,0,0,0.18)");
+    bg.setAttribute("stroke-width", "1");
+
+    const tx = document.createElementNS("http://www.w3.org/2000/svg","text");
+    tx.setAttribute("x", String(xm));
+    tx.setAttribute("y", String(ym + fontSize/2 - 1));
+    tx.setAttribute("text-anchor", "middle");
+    tx.setAttribute("font-size", String(fontSize));
+    tx.setAttribute("fill", typeColor(ty));
+    tx.setAttribute("style", "font-weight:700; paint-order: stroke; stroke: rgba(255,255,255,0.9); stroke-width:2px;");
+
+    tx.textContent = ty;
+
+    g.appendChild(bg);
+    g.appendChild(tx);
+    svg.appendChild(g);
+  }
+}
+
+    // hit layer: use an invisible rect (works now because overlay is on top)
+    const hit = document.createElementNS("http://www.w3.org/2000/svg","rect");
+    hit.setAttribute("x","0"); hit.setAttribute("y","0");
+    hit.setAttribute("width", String(w)); hit.setAttribute("height", String(h));
+    hit.setAttribute("fill","rgba(0,0,0,0)");
+    hit.style.cursor = "pointer";
+
+    hit.addEventListener('mousemove', (ev)=>{
+      if(!duration) return;
+      const lx = ev.offsetX;
+      const t = xToT(lx);
+      let seg=-1;
       for(let i=0;i<curve.length-1;i++){
         if(curve[i].t <= t && t < curve[i+1].t){ seg=i; break; }
       }
-      hoveredSeg = (seg>=0) ? seg : null;
-      updateHeader();
+      hoveredSeg = (seg>=0)? seg : null;
+      elSegInfo.textContent = hoveredSeg==null ? "—" : `${hoveredSeg} [${curve[hoveredSeg].t.toFixed(2)}~${curve[hoveredSeg+1].t.toFixed(2)}]`;
+      draw();
     });
-    plHit.addEventListener("pointerleave", ()=>{
+    hit.addEventListener('mouseleave', ()=>{
       hoveredSeg = null;
-      updateHeader();
+      elSegInfo.textContent = "—";
+      draw();
     });
-
-    plHit.addEventListener("click", (ev)=>{
-      const o = overlayRect();
-      const x = ev.clientX - o.left;
-      const t = xToT(x);
-      let seg = -1;
+    hit.addEventListener('click', (ev)=>{
+      if(!duration) return;
+      const lx = ev.offsetX;
+      const t = xToT(lx);
+      let seg=-1;
       for(let i=0;i<curve.length-1;i++){
         if(curve[i].t <= t && t < curve[i+1].t){ seg=i; break; }
       }
-      if(seg < 0) return;
+      if(seg<0) return;
       selectedSeg = seg;
-      applyTypeToInterval(curve[seg].t, curve[seg+1].t, normType(segTypeEl.value));
+      const ty = normType(segTypeEl.value);
+      applyTypeToInterval(curve[seg].t, curve[seg+1].t, ty);
+      draw();
+      saveLabel().catch(err=>setErr(String(err)));
       ev.preventDefault();
     });
 
-    svg.appendChild(plHit);
+    svg.appendChild(hit);
 
-    // handles (upper/lower at jumps)
-    const handles = [];
-    if(curve && curve.length>=2){
-      const n = curve.length;
-      handles.push({ boundaryIdx: 0, curveIdxValue: 0, role: "start", x: tToX(curve[0].t), y: vToY(curve[0].value) });
-
-      for(let i=1;i<n-1;i++){
-        handles.push({ boundaryIdx: i, curveIdxValue: i-1, role: "lower", x: tToX(curve[i].t), y: vToY(curve[i-1].value) });
-        handles.push({ boundaryIdx: i, curveIdxValue: i,   role: "upper", x: tToX(curve[i].t), y: vToY(curve[i].value) });
-      }
-
-      handles.push({ boundaryIdx: n-1, curveIdxValue: n-2, role: "end", x: tToX(curve[n-1].t), y: vToY(curve[n-2].value) });
-    }
-
-    handles.forEach((h)=>{
+    // points (on top)
+    for(let i=0;i<curve.length;i++){
+      const p = curve[i];
+      const cx = tToX(p.t);
+      const cy = vToY(p.value);
       const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
-      c.setAttribute("cx", String(h.x));
-      c.setAttribute("cy", String(h.y));
-      c.setAttribute("r", "6");
-      c.setAttribute("fill", (h.role==="upper" || h.role==="start") ? "#fff" : "rgba(255,255,255,0.75)");
-      const canSelect = (h.boundaryIdx > 0 && h.boundaryIdx < curve.length-1);
-      c.setAttribute("stroke", (canSelect && selectedIndex===h.boundaryIdx) ? "#d00" : "#111");
-      c.setAttribute("stroke-width", "1.5");
+      c.setAttribute("cx", String(cx));
+      c.setAttribute("cy", String(cy));
+      c.setAttribute("r", (selectedIndex===i) ? "6" : "5");
+      c.setAttribute("fill", "#fff");
+      c.setAttribute("stroke", "#111");
+      c.setAttribute("stroke-width", "1");
       c.style.cursor = "grab";
-      c.style.pointerEvents = "all";
 
-      c.addEventListener("mousedown", (ev)=>{
-        ev.preventDefault(); ev.stopPropagation();
-        draggingHandle = { boundaryIdx: h.boundaryIdx, curveIdxValue: h.curveIdxValue, role: h.role };
-        selectedIndex = canSelect ? h.boundaryIdx : null;
-        selectedSeg = null;
-
-        const o = overlayRect();
-        const lx = ev.clientX - o.left;
-        const ly = ev.clientY - o.top;
-        dragOffset.dx = lx - h.x;
-        dragOffset.dy = ly - h.y;
-      });
-
-      c.addEventListener("click", (ev)=>{
-        if(ev.altKey && canSelect){
-          ev.preventDefault(); ev.stopPropagation();
-          if(deletePoint(h.boundaryIdx)){
+      c.addEventListener('mousedown', (ev)=>{
+        if(ev.button!==0) return;
+        if(ev.altKey){
+          if(deletePoint(i)){
             draw();
             saveLabel().catch(err=>setErr(String(err)));
           }
+          ev.preventDefault();
           return;
         }
-        selectedIndex = canSelect ? h.boundaryIdx : null;
-        draw();
+        draggingIndex = i;
+        selectedIndex = i;
+
+        // offset in overlay coordinates
+        dragOffset.dx = ev.offsetX - cx;
+        dragOffset.dy = ev.offsetY - cy;
+        ev.preventDefault();
       });
 
       svg.appendChild(c);
-    });
+    }
+  }
 
-    updateHeader();
+  function updateHeader(){
+    elFps.textContent = String(FPS);
+    elDur.textContent = (duration==null) ? "—" : duration.toFixed(3);
+    elPtCount.textContent = curve ? String(curve.length) : "—";
+    elCount.textContent = String(files.length);
+    const done = files.filter(x=>x.labeled).length;
+    elDone.textContent = `done: ${done}`;
+  }
+
+  function renderList(){
+    elList.innerHTML = "";
+    for(let i=0;i<files.length;i++){
+      const it = files[i];
+      const li = document.createElement('li');
+      li.className = "item" + (i===curIndex ? " active":"");
+      li.innerHTML = `<span>${it.wav}</span><span class="muted">${it.labeled ? "✓" : ""}</span>`;
+      li.onclick = ()=>loadIndex(i).catch(err=>setErr(String(err)));
+      elList.appendChild(li);
+    }
   }
 
   async function loadFiles(){
     setErr("");
     files = await fetchJSON('/api/files');
+    curIndex = -1;
     renderList();
-    const firstUnlabeled = files.findIndex(f=>!f.labeled);
-    await loadIndex(firstUnlabeled>=0 ? firstUnlabeled : (files.length?0:-1));
+    updateHeader();
+    if(files.length) await loadIndex(0);
+  }
+
+  function destroyWave(){
+    if(wave){
+      try{ wave.destroy(); }catch(e){}
+      wave = null;
+    }
   }
 
   async function loadIndex(i){
     if(i<0 || i>=files.length){
       curIndex=-1;
       destroyWave();
+      elName.textContent = "No file";
       updateHeader();
       return;
     }
@@ -619,236 +593,173 @@
     setErr("");
 
     const wav = files[curIndex].wav;
-    FPS = Number(files[curIndex].fps || FPS);
-    fpsInput.value = String(FPS);
+    elName.textContent = wav;
 
     const audioUrl = `/audio/${encodeURIComponent(wav)}`;
-    try {
-      const head = await fetch(audioUrl, { method: 'HEAD', cache: 'no-store', headers: { 'Cache-Control':'no-store', 'Pragma':'no-cache', 'Expires':'0' } });
-      if(!head.ok) throw new Error(`${head.status} ${head.statusText}`);
-    } catch (e) {
-      setErr(`Audio load failed: ${audioUrl}  (${e})`);
-      return;
-    }
 
     wave = WaveSurfer.create({
       container:'#wave',
       height:160,
-      waveColor:'#cfe7ff',
-      progressColor:'#5aa6ff',
+      waveColor:'#8aa',
+      progressColor:'#446',
       cursorColor:'#111',
       url: audioUrl,
       normalize:true,
-      backend:'WebAudio',
-      fetchParams: { cache: 'no-store', headers: { 'Cache-Control':'no-store', 'Pragma':'no-cache', 'Expires':'0' } }
+      backend:'WebAudio'
     });
 
-    wave.on('error', (e)=>setErr(`WaveSurfer error: ${e}`));
+    wave.on('error', (e)=> setErr(`WaveSurfer error: ${e}`));
 
     wave.on('ready', async ()=>{
       duration = wave.getDuration();
 
       const lbl = await fetchJSON(`/api/label/${encodeURIComponent(wav)}`);
       curve = Array.isArray(lbl.curve) ? lbl.curve : [];
-      if(lbl.fps){
-        FPS = Number(lbl.fps);
-        fpsInput.value = String(FPS);
+
+      selectedIndex = null;
+      hoveredSeg = null;
+      selectedSeg = null;
+
+      if(audioTextEl){
+        audioTextEl.value = (typeof lbl.text === 'string') ? lbl.text : (lbl.text ?? "");
       }
-      textBox.value = (typeof lbl.text === "string") ? lbl.text : (lbl.text ?? "");
 
       if(!curve || curve.length<2){
-        const v = snapToLevels(68);
+        // 默认 calm + L0
         curve = [
-          {t:0, type:"calm", value:v},
-          {t:duration, type:"calm", value:v},
+          {t:0, type:"calm", value:5},
+          {t:duration, type:"calm", value:5},
         ];
       }
       normalizeCurveEndpoints();
+      updateHeader();
       draw();
+
+      // 首次打开也保存一下（保持 labeled 状态 & 记录 duration）
+      await saveLabel();
     });
 
-    updateHeader();
+    // drag handlers
+    window.onmousemove = (ev)=>{
+      if(draggingIndex==null) return;
+      if(!wave || duration==null) return;
+
+      const o = overlayRect();
+      const lx = (ev.clientX - o.left) - dragOffset.dx;
+      const ly = (ev.clientY - o.top) - dragOffset.dy;
+
+      let t = quantT(xToT(lx));
+      let v = snapToLevels(yToV(ly), curve[draggingIndex]?.value);
+
+      if(draggingIndex===0) t = 0;
+      if(draggingIndex===curve.length-1) t = duration;
+
+      if(draggingIndex>0) t = Math.max(t, curve[draggingIndex-1].t + 1/FPS);
+      if(draggingIndex<curve.length-1) t = Math.min(t, curve[draggingIndex+1].t - 1/FPS);
+
+      curve[draggingIndex].t = t;
+      curve[draggingIndex].value = v;
+
+      normalizeCurveEndpoints();
+      updateHeader();
+      draw();
+    };
+
+    window.onmouseup = ()=>{
+      if(draggingIndex!=null){
+        draggingIndex = null;
+        saveLabel().catch(err=>setErr(String(err)));
+      }
+    };
+
+    // right-click add point
+    svg.oncontextmenu = (ev)=>{
+      if(!wave || duration==null) return;
+      const o = overlayRect();
+      const lx = ev.clientX - o.left;
+      const ly = ev.clientY - o.top;
+      const t = quantT(xToT(lx));
+      const v = snapToLevels(yToV(ly), valueAtStep(t));
+      const ty = typeAt(t);
+      insertCurvePoint(t, ty, v);
+      updateHeader();
+      draw();
+      saveLabel().catch(err=>setErr(String(err)));
+      ev.preventDefault();
+    };
   }
 
   async function saveLabel(){
-    if(curIndex<0) return;
+    if(curIndex<0 || duration==null) return;
     const wav = files[curIndex].wav;
-
-    FPS = Number(fpsInput.value || FPS);
-    files[curIndex].fps = FPS;
-
-    const payload = {
-      wav,
-      fps: FPS,
-      duration: duration,
-      curve: curve,
-      text: textBox.value || "",
-      // 同时把帧信息也存进去（后端仍会在 export 时重新计算，双保险）
-      total_frames: totalFrames(),
-      transition_frames: transitionFrames(),
-    };
+    const payload = { wav, fps: FPS, duration, curve, text: audioTextEl ? audioTextEl.value : "" };
     await fetchJSON('/api/save', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify(payload)
+      body: JSON.stringify(payload),
     });
     files[curIndex].labeled = true;
     renderList();
     updateHeader();
   }
 
-  async function generate(){
+  async function exportJSON(){
     if(curIndex<0) return;
     const wav = files[curIndex].wav;
-
-    FPS = Number(fpsInput.value || FPS);
-    files[curIndex].fps = FPS;
-
-    const resp = await fetchJSON('/api/generate', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({
-        wav,
-        fps: FPS,
-        duration: duration,
-        base: normType(segTypeEl.value),
-        triggers: []
-      })
-    });
-
-    if(resp && Array.isArray(resp.curve)){
-      curve = resp.curve;
-      normalizeCurveEndpoints();
-      draw();
-      await saveLabel();
-    }
-  }
-
-  function exportJSON(){
-    if(curIndex<0) return;
-    const wav = files[curIndex].wav;
-    const out = {
-      wav,
-      fps: FPS,
-      duration,
-      curve,
-      text: textBox.value || "",
-      total_frames: totalFrames(),
-      transition_frames: transitionFrames(),
-      sample_rate: DEFAULT_SAMPLE_RATE,
-      hop_samples: DEFAULT_HOP_SAMPLES,
-      hop_fps: DEFAULT_SAMPLE_RATE / DEFAULT_HOP_SAMPLES,
-    };
-
-    const blob = new Blob([JSON.stringify(out, null, 2)], {type:'application/json'});
+    const r = await fetchJSON(`/api/export/${encodeURIComponent(wav)}`);
+    const blob = new Blob([JSON.stringify(r, null, 2)], {type:"application/json"});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = wav.replace(/\.wav$/,'') + '.json';
+    a.download = wav.replace(/\.wav$/i, "") + ".json";
     a.click();
     URL.revokeObjectURL(a.href);
   }
 
-  // Controls
-  document.getElementById('btnReload').addEventListener('click', ()=>loadFiles().catch(err=>setErr(String(err))));
-  document.getElementById('btnSave').addEventListener('click', ()=>saveLabel().catch(err=>setErr(String(err))));
-  document.getElementById('btnPrev').addEventListener('click', ()=>loadIndex(Math.max(0, curIndex-1)).catch(err=>setErr(String(err))));
-  document.getElementById('btnNext').addEventListener('click', ()=>loadIndex(Math.min(files.length-1, curIndex+1)).catch(err=>setErr(String(err))));
-  document.getElementById('btnPlay').addEventListener('click', ()=>{ if(wave) wave.playPause(); });
-  document.getElementById('btnExport').addEventListener('click', exportJSON);
-  document.getElementById('btnGenerate').addEventListener('click', ()=>generate().catch(err=>setErr(String(err))));
+  function togglePlay(){ if(wave) wave.playPause(); }
+  async function nextFile(){ if(curIndex>=0) await loadIndex(Math.min(files.length-1, curIndex+1)); }
+  async function prevFile(){ if(curIndex>=0) await loadIndex(Math.max(0, curIndex-1)); }
 
-  fpsInput.addEventListener('change', ()=>{
-    FPS = Number(fpsInput.value || FPS);
-    updateHeader();
-    draw();
-  });
+  // ✅ 恢复默认按钮绑定
+  document.getElementById('btnPlay').onclick = ()=>togglePlay();
+  document.getElementById('btnPrev').onclick = ()=>prevFile().catch(e=>setErr(String(e)));
+  document.getElementById('btnNext').onclick = ()=>nextFile().catch(e=>setErr(String(e)));
+  document.getElementById('btnSave').onclick = ()=>saveLabel().catch(e=>setErr(String(e)));
+  document.getElementById('btnExport').onclick = ()=>exportJSON().catch(e=>setErr(String(e)));
 
-  window.onkeydown = (ev)=>{
-    if(ev.code==="Space"){
-      ev.preventDefault();
-      if(wave) wave.playPause();
-    }
-    if(ev.key==="ArrowLeft"){
-      ev.preventDefault();
-      if(curIndex>0) loadIndex(curIndex-1).catch(err=>setErr(String(err)));
-    }
-    if(ev.key==="ArrowRight"){
-      ev.preventDefault();
-      if(curIndex<files.length-1) loadIndex(curIndex+1).catch(err=>setErr(String(err)));
-    }
-    if(ev.key==="s" || ev.key==="S"){
-      ev.preventDefault();
-      saveLabel().catch(err=>setErr(String(err)));
-    }
-    if(ev.key==="Delete" || ev.key==="Backspace"){
-      if(selectedIndex!=null){
-        if(deletePoint(selectedIndex)){
-          draw();
-          saveLabel().catch(err=>setErr(String(err)));
-        }
+  // 键盘快捷键 + 1-7 设段 type
+  document.addEventListener('keydown', async (e)=>{
+    if(e.target && ['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+
+    if(e.code==='Space'){ e.preventDefault(); togglePlay(); return; }
+    if(e.key==='n' || e.key==='N'){ await nextFile(); return; }
+    if(e.key==='p' || e.key==='P'){ await prevFile(); return; }
+
+    if(e.key==='Delete' || e.key==='Backspace'){
+      if(selectedIndex!=null && deletePoint(selectedIndex)){
+        updateHeader();
+        draw();
+        saveLabel().catch(err=>setErr(String(err)));
       }
-    }
-  };
-
-  window.onmousemove = (ev)=>{
-    if(draggingHandle==null) return;
-    if(!ensureWave()) return;
-
-    const { boundaryIdx, curveIdxValue } = draggingHandle;
-    const o = overlayRect();
-    const lx = ev.clientX - o.left - dragOffset.dx;
-    const ly = ev.clientY - o.top - dragOffset.dy;
-
-    // shared boundary time
-    let t = quantT(xToT(lx));
-    const eps = 1 / FPS;
-
-    if(boundaryIdx <= 0){
-      t = 0;
-    } else if(boundaryIdx >= curve.length-1){
-      t = duration;
-    } else {
-      const tMin = curve[boundaryIdx-1].t + eps;
-      const tMax = curve[boundaryIdx+1].t - eps;
-      t = clamp(t, tMin, tMax);
-      curve[boundaryIdx].t = t;
+      return;
     }
 
-    // snapped vertical value
-    let v = snapToLevels(yToV(ly), curve[curveIdxValue]?.value);
-    curve[curveIdxValue].value = v;
+    const keyToType = {"1":"happy","2":"sad","3":"angry","4":"fear","5":"calm","6":"confused","7":"action"};
+    if(keyToType[e.key]){
+      const ty = keyToType[e.key];
+      segTypeEl.value = ty;
 
-    normalizeCurveEndpoints();
-    draw();
-  };
-
-  window.onmouseup = ()=>{
-    if(draggingHandle!=null){
-      draggingHandle=null;
-      saveLabel().catch(err=>setErr(String(err)));
+      const seg = (selectedSeg!=null) ? selectedSeg : hoveredSeg;
+      if(seg!=null && curve && seg>=0 && seg < curve.length-1){
+        applyTypeToInterval(curve[seg].t, curve[seg+1].t, ty);
+        updateHeader();
+        draw();
+        saveLabel().catch(err=>setErr(String(err)));
+      }
+      return;
     }
-  };
-
-  // Right click: add point
-  const overlay = document.getElementById('overlay');
-  overlay.addEventListener("contextmenu", (ev)=>{ ev.preventDefault(); });
-
-  overlay.addEventListener("mousedown", (ev)=>{
-    if(!ensureWave()) return;
-    if(ev.button !== 2) return;
-
-    const o = overlayRect();
-    const x = ev.clientX - o.left;
-    const y = ev.clientY - o.top;
-
-    const t = quantT(xToT(x));
-    const v = snapToLevels(yToV(y));
-    insertCurvePoint(t, v, typeAt(t));
-    draw();
-    saveLabel().catch(err=>setErr(String(err)));
-    ev.preventDefault();
   });
 
+  // init
   loadFiles().catch(err=>setErr(String(err)));
 </script>
 </body>

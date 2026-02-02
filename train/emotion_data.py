@@ -13,8 +13,10 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from models.featurizer import CausalLogMelFeaturizer
 
 
-ALLOWED_TYPES = ["happy", "sad", "angry", "fear", "calm", "confused"]
+# ✅ 7 类：新增 action
+ALLOWED_TYPES = ["happy", "sad", "angry", "fear", "calm", "confused", "action"]
 TYPE2ID = {t: i for i, t in enumerate(ALLOWED_TYPES)}
+ID2TYPE = {i: t for t, i in TYPE2ID.items()}
 
 LEVEL_THRESHOLDS = {
     5: (111.0, 150.0),
