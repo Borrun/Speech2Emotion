@@ -6,7 +6,7 @@ from pathlib import Path
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-AUDIO_DIR = os.environ.get("AUDIO_DIR") or str(Path("/home/borrun/Speech2Emotion/wavs"))
+AUDIO_DIR = os.environ.get("AUDIO_DIR") or str(Path("/home/bor/works/AudioKey/wavs"))
 LABEL_PATH = os.path.join(BASE_DIR, "labels.jsonl")
 
 DEFAULT_FPS = 100  # 16kHz / 160-sample hop = 100 fps
@@ -21,7 +21,7 @@ LEAD_IN_FRAMES = 5
 LEVEL_INTENSITY_MAPPING = {0: 5.0, 1: 18.0, 2: 38.0, 3: 68.0, 4: 98.0, 5: 130.0}
 EMOTION_LEVEL_THRESHOLDS = {
     5: (111.0, 150.0), 4: (86.0, 110.0), 3: (51.0, 85.0),
-    2: (26.0, 50.0),   1: (11.0, 25.0),  0: (0.0, 10.0),
+    2: (26.0, 50.0),   1: (11.0, 25.0),  0: (0.0, 10.0), 
 }
 
 DECAY_LEVELS = {
