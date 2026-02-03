@@ -1,0 +1,596 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Speech2Emotion - Label/Pred Viewer</title>
+<script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
+<style>
+body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; }
+.wrap { display: grid; grid-template-columns: 380px 1fr; height: 100vh; }
+.left { border-right: 1px solid #ddd; overflow: auto; }
+.right { padding: 14px 18px; overflow:auto; }
+.hdr { padding: 12px 12px; border-bottom: 1px solid #eee; display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+.hdr b { font-size: 14px; }
+.pill { font-size: 12px; padding: 2px 8px; border-radius: 999px; background:#f3f3f3; display:inline-block; }
+.pill.ok { background:#e6f7e6; }
+.pill.no { background:#ffecec; }
+.pill.pred { background:#eef6ff; }
+.pill.lbl { background:#fff7e6; }
+.list { padding: 0; margin: 0; list-style: none; }
+.item { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; }
+.item:hover { background: #fafafa; }
+.item.active { background: #eef6ff; }
+.meta { font-size: 12px; color: #666; margin-top: 6px; display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.row { display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
+.muted { color:#666; }
+.danger { color:#b00020; }
+button, select, input { font: inherit; }
+select { padding:6px 8px; border:1px solid #ddd; border-radius: 10px; }
+button { padding: 8px 10px; border: 1px solid #ccc; background:#fff; border-radius: 10px; cursor:pointer; }
+button:hover { background:#fafafa; }
+#waveBox { border: 1px solid #ddd; border-radius: 12px; padding: 10px; position: relative; margin-top:10px; }
+#wave { position: relative; }
+#overlay {
+position:absolute; left:10px; right:10px;
+top:10px;
+height:180px;
+z-index: 5;
+pointer-events: none;
+    }
+#overlay svg { width:100%; height:100%; display:block; }
+.panel {
+margin-top: 10px;
+border:1px solid #eee; border-radius: 12px;
+padding: 10px;
+    }
+.legend { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
+.legend .it { display:flex; align-items:center; gap:6px; font-size:12px; color: rgba(0,0,0,0.75); }
+.legend .dot { width:10px; height:10px; border-radius:50%; display:inline-block; border:1px solid rgba(0,0,0,0.25); }
+.hint { font-size: 12px; color:#666; line-height: 1.5; }
+.kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+font-size: 12px; border: 1px solid #ddd; padding: 2px 6px; border-radius: 6px; background:#fafafa; }
+.topbar { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+.sep { width:1px; height:18px; background:#ddd; display:inline-block; }
+.infoGrid { display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap:8px; margin-top:8px; }
+.card { border:1px solid #eee; border-radius: 10px; padding:8px 10px; }
+.card .k { font-size:12px; color:#666; }
+.card .v { font-size:14px; font-weight:600; margin-top:2px; }
+@media (max-width: 980px){
+.wrap { grid-template-columns: 1fr; }
+.left { height: 40vh; }
+.right { height: 60vh; }
+.infoGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+    }
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="left">
+<div class="hdr">
+<b>Files</b>
+<span class="pill" id="countPill">0</span>
+<span class="pill lbl" id="lblPill">labeled: 0</span>
+<span class="pill pred" id="predPill">pred: 0</span>
+<span class="sep"></span>
+<span class="muted" style="font-size:12px;">Mode</span>
+<select id="modeSel" title="Auto: 优先预测；否则用标注">
+<option value="auto" selected>auto</option>
+<option value="pred">pred</option>
+<option value="label">label</option>
+</select>
+</div>
+<ul class="list" id="fileList"></ul>
+</div>
+<div class="right">
+<div class="topbar">
+<div><b id="curName">No file</b></div>
+<span class="pill" id="srcPill">—</span>
+<div class="muted">fps: <b id="fps">30</b></div>
+<div class="muted">duration(s): <b id="dur">—</b></div>
+<div class="muted">frames: <b id="nFrames">—</b></div>
+<div class="muted">segments: <b id="nSeg">—</b></div>
+<div class="muted">boundaries: <b id="nBnd">—</b></div>
+</div>
+<div id="waveBox">
+<div id="wave"></div>
+<div id="overlay"><svg id="svg"></svg></div>
+</div>
+<div class="row" style="margin-top:10px">
+<button id="btnPlay">Play/Pause <span class="kbd">Space</span></button>
+<button id="btnPrev">Prev <span class="kbd">P</span></button>
+<button id="btnNext">Next <span class="kbd">N</span></button>
+<button id="btnOpenAnn" title="打开标注器(7860)当前 wav">Open Annotater</button>
+</div>
+<div class="panel">
+<div class="hint">
+<b>说明</b>：
+<ul>
+<li>该页面只读：用于对比 <b>Label</b> 与 <b>Pred</b> 的曲线显示是否一致。</li>
+<li>Auto 模式：如果该 wav 有 prediction（pred.jsonl 里存在），就显示 Pred；否则显示 Label。</li>
+<li>Pred 的曲线来自你导出的 <code>pred.jsonl</code>（后端接口 <code>/api/pred/&lt;wav&gt;</code>）。</li>
+</ul>
+</div>
+<div class="legend" id="legend"></div>
+<div class="danger" id="err" style="margin-top:8px"></div>
+</div>
+<div class="panel" id="simplePredPanel" style="display:none; text-align:center; padding:20px; font-size:24px; min-height:120px;">
+    <div id="simpleEmoDisplay" style="font-size:48px; font-weight:bold; margin:10px 0;"></div>
+    <div id="simpleScoreDisplay" style="font-size:20px; color:#555;"></div>
+</div>
+<div class="panel">
+<div class="hint" id="hoverInfo">Hover: —</div>
+</div>
+</div>
+</div>
+<script>
+const FPS_DEFAULT = 30;
+const VALUE_MIN = 0;
+const VALUE_MAX = 150;
+// 7 类（全链路）
+const TYPES = ["happy","sad","angry","fear","calm","confused","action"];
+let files = [];
+let curIndex = -1;
+let wave = null;
+let duration = 0;
+// loaded data
+let curObj = null; // label/pred object from backend
+let curve = []; // [{t,type,value}, ...]
+let segments = []; // [{t0,t1,f0,f1,type,value,lvl?}, ...]
+let boundaries = []; // [frame indices]
+let sourceMode = "—"; // label/pred
+// DOM
+const elList = document.getElementById('fileList');
+const elName = document.getElementById('curName');
+const elFps = document.getElementById('fps');
+const elDur = document.getElementById('dur');
+const elNFrames = document.getElementById('nFrames');
+const elNSeg = document.getElementById('nSeg');
+const elNBnd = document.getElementById('nBnd');
+const elErr = document.getElementById('err');
+const elCount = document.getElementById('countPill');
+const elLbl = document.getElementById('lblPill');
+const elPred = document.getElementById('predPill');
+const elMode = document.getElementById('modeSel');
+const elSrcPill = document.getElementById('srcPill');
+const elHoverInfo = document.getElementById('hoverInfo');
+const svg = document.getElementById('svg');
+const waveBox = document.getElementById('waveBox');
+const btnPlay = document.getElementById('btnPlay');
+const btnPrev = document.getElementById('btnPrev');
+const btnNext = document.getElementById('btnNext');
+const btnOpenAnn = document.getElementById('btnOpenAnn');
+function setErr(msg){ elErr.textContent = msg || ""; }
+async function fetchJSON(url, opts){
+const res = await fetch(url, opts);
+if(!res.ok) throw new Error(`${res.status} ${res.statusText}`);
+return await res.json();
+  }
+function clamp(v, lo, hi){
+v = Number(v);
+if(!Number.isFinite(v)) v = lo;
+return Math.max(lo, Math.min(hi, v));
+  }
+function typeColor(ty){
+// stable palette
+const map = {
+happy: "#ffb020",
+sad: "#3b82f6",
+angry: "#ef4444",
+fear: "#8b5cf6",
+calm: "#10b981",
+confused: "#a855f7",
+action: "#111827",
+neutral:  "#9ca3af",
+disgusted:"#8b5cf6",
+fearful:  "#d946ef",
+surprised:"#f59e0b",
+other:    "#6b7280",
+unknown:  "#6b7280",
+    };
+return map[ty.toLowerCase()] || "#999";
+  }
+function renderLegend(){
+const lg = document.getElementById("legend");
+lg.innerHTML = "";
+for(const ty of TYPES){
+const it = document.createElement("div");
+it.className = "it";
+const dot = document.createElement("span");
+dot.className = "dot";
+dot.style.background = typeColor(ty);
+it.appendChild(dot);
+const tx = document.createElement("span");
+tx.textContent = ty;
+it.appendChild(tx);
+lg.appendChild(it);
+    }
+  }
+renderLegend();
+function setSrcPill(mode){
+sourceMode = mode;
+elSrcPill.textContent = mode;
+elSrcPill.className = "pill " + (mode === "pred" ? "pred" : (mode === "label" ? "lbl" : ""));
+  }
+function timeToX(t, w){
+if(duration <= 1e-6) return 0;
+return (t / duration) * w;
+  }
+function valueToY(v, h){
+v = clamp(v, VALUE_MIN, VALUE_MAX);
+const r = (v - VALUE_MIN) / (VALUE_MAX - VALUE_MIN + 1e-9);
+return (1 - r) * h;
+  }
+function quantizeToFrame(t, fps){
+return Math.max(0, Math.round(t * fps));
+  }
+function segmentsFromCurve(curve, fps){
+const segs = [];
+if(!curve || curve.length < 2) return segs;
+for(let i=0;i<curve.length-1;i++){
+const a = curve[i], b = curve[i+1];
+const t0 = clamp(a.t, 0, duration);
+const t1 = clamp(b.t, 0, duration);
+if(t1 <= t0) continue;
+const ty = (TYPES.includes(a.type) ? a.type : "calm");
+const val = Number(a.value ?? 5);
+const f0 = quantizeToFrame(t0, fps);
+const f1 = quantizeToFrame(t1, fps);
+segs.push({t0, t1, f0, f1, type: ty, value: val});
+    }
+return segs;
+  }
+function boundariesFromSegments(segs){
+const b = [];
+for(let i=1;i<segs.length;i++){
+b.push(segs[i].f0);
+    }
+return b;
+  }
+function clearSVG(){
+while(svg.firstChild) svg.removeChild(svg.firstChild);
+  }
+function drawGrid(w, h){
+// horizontal dashed lines for levels 0..5 (approx positions)
+// We draw 6 lines evenly spaced by value bins (0..150).
+const levels = [0,1,2,3,4,5];
+for(const lv of levels){
+const v = (lv/5) * VALUE_MAX;
+const y = valueToY(v, h);
+const line = document.createElementNS("http://www.w3.org/2000/svg","line");
+line.setAttribute("x1","0");
+line.setAttribute("x2", String(w));
+line.setAttribute("y1", String(y));
+line.setAttribute("y2", String(y));
+line.setAttribute("stroke", "rgba(0,0,0,0.12)");
+line.setAttribute("stroke-dasharray","6 6");
+svg.appendChild(line);
+    }
+  }
+function drawSegments(segs, w, h){
+// draw step segments colored by type
+// also draw type label text on each horizontal segment if wide enough
+for(let i=0;i<segs.length;i++){
+const s = segs[i];
+const x0 = timeToX(s.t0, w);
+const x1 = timeToX(s.t1, w);
+const y = valueToY(s.value, h);
+const col = typeColor(s.type);
+const line = document.createElementNS("http://www.w3.org/2000/svg","line");
+line.setAttribute("x1", String(x0));
+line.setAttribute("x2", String(x1));
+line.setAttribute("y1", String(y));
+line.setAttribute("y2", String(y));
+line.setAttribute("stroke", col);
+line.setAttribute("stroke-width","3");
+line.setAttribute("stroke-linecap","round");
+svg.appendChild(line);
+// vertical jump to next value
+if(i < segs.length - 1){
+const next = segs[i+1];
+const y2 = valueToY(next.value, h);
+const vline = document.createElementNS("http://www.w3.org/2000/svg","line");
+vline.setAttribute("x1", String(x1));
+vline.setAttribute("x2", String(x1));
+vline.setAttribute("y1", String(y));
+vline.setAttribute("y2", String(y2));
+vline.setAttribute("stroke", col);
+vline.setAttribute("stroke-width","2");
+vline.setAttribute("opacity","0.9");
+svg.appendChild(vline);
+      }
+// label text
+const width = x1 - x0;
+if(width >= 40){
+const tx = document.createElementNS("http://www.w3.org/2000/svg","text");
+tx.textContent = s.type;
+tx.setAttribute("x", String((x0+x1)/2));
+tx.setAttribute("y", String(y - 6));
+tx.setAttribute("text-anchor","middle");
+tx.setAttribute("font-size","11");
+tx.setAttribute("fill", "rgba(0,0,0,0.7)");
+svg.appendChild(tx);
+      }
+    }
+  }
+function drawBoundaries(bnds, w, h){
+for(const f of bnds){
+const t = f / (curObj?.fps || FPS_DEFAULT);
+const x = timeToX(t, w);
+const line = document.createElementNS("http://www.w3.org/2000/svg","line");
+line.setAttribute("x1", String(x));
+line.setAttribute("x2", String(x));
+line.setAttribute("y1", "0");
+line.setAttribute("y2", String(h));
+line.setAttribute("stroke", "rgba(0,0,0,0.18)");
+line.setAttribute("stroke-dasharray","4 6");
+svg.appendChild(line);
+    }
+  }
+function redraw(){
+clearSVG();
+const rect = document.getElementById("overlay").getBoundingClientRect();
+const w = rect.width;
+const h = rect.height;
+// set viewBox for crisp drawing
+svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+if (isSimpleUtterance) {
+        // 简单模式：不画曲线，显示背景色提示
+        svg.style.display = "none";
+        
+        // 可以选择画一个大色块背景（可选）
+        const bgRect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+        bgRect.setAttribute("x", "0");
+        bgRect.setAttribute("y", "0");
+        bgRect.setAttribute("width", w);
+        bgRect.setAttribute("height", h);
+        bgRect.setAttribute("fill", typeColor(simpleEmo));
+        bgRect.setAttribute("opacity", "0.12");
+        svg.appendChild(bgRect);
+        
+        // 大文字显示情绪
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", w / 2);
+        text.setAttribute("y", h / 2);
+        text.setAttribute("text-anchor", "middle");
+        text.setAttribute("dominant-baseline", "middle");
+        text.setAttribute("font-size", "60");
+        text.setAttribute("font-weight", "bold");
+        text.setAttribute("fill", typeColor(simpleEmo));
+        text.setAttribute("opacity", "0.85");
+        text.textContent = simpleEmo.toUpperCase();
+        svg.appendChild(text);
+        
+        svg.style.display = "block";  // 确保显示
+        return;  // 直接返回，不画其他东西
+    }
+
+    // 正常模式（有 curve 的情况）
+    svg.style.display = "block";
+    drawGrid(w, h);
+    drawBoundaries(boundaries, w, h);
+    drawSegments(segments, w, h);
+  }
+function renderList(){
+elList.innerHTML = "";
+let nLbl = 0, nPred = 0;
+files.forEach((f, idx) => {
+if(f.labeled) nLbl++;
+if(f.predicted) nPred++;
+const li = document.createElement('li');
+li.className = 'item' + (idx===curIndex ? ' active':'');
+li.onclick = () => loadIndex(idx);
+const title = document.createElement('div');
+title.textContent = f.wav;
+li.appendChild(title);
+const meta = document.createElement('div');
+meta.className = 'meta';
+const p1 = document.createElement('span');
+p1.className = 'pill ' + (f.labeled ? 'ok lbl':'no lbl');
+p1.textContent = f.labeled ? 'labeled' : 'no label';
+meta.appendChild(p1);
+const p2 = document.createElement('span');
+p2.className = 'pill ' + (f.predicted ? 'ok pred':'no pred');
+p2.textContent = f.predicted ? 'pred' : 'no pred';
+meta.appendChild(p2);
+li.appendChild(meta);
+elList.appendChild(li);
+    });
+elCount.textContent = String(files.length);
+elLbl.textContent = `labeled: ${nLbl}`;
+elPred.textContent = `pred: ${nPred}`;
+  }
+function pickDataSource(fileEntry){
+const mode = elMode.value;
+if(mode === "label") return "label";
+if(mode === "pred") return "pred";
+// auto
+if(fileEntry.predicted) return "pred";
+if(fileEntry.labeled) return "label";
+return "label";
+  }
+async function loadCurveFor(wav, src){
+if(src === "pred"){
+return await fetchJSON(`/api/pred/${encodeURIComponent(wav)}`);
+    }
+return await fetchJSON(`/api/label/${encodeURIComponent(wav)}`);
+  }
+async function initWaveIfNeeded(){
+if(wave) return;
+wave = WaveSurfer.create({
+container: '#wave',
+height: 180,
+normalize: true,
+cursorWidth: 2,
+barWidth: 0,
+interact: true,
+    });
+btnPlay.onclick = () => wave.playPause();
+wave.on('ready', () => {
+duration = wave.getDuration();
+elDur.textContent = duration.toFixed(3);
+redraw();
+    });
+wave.on('finish', () => { /* noop */ });
+// keyboard
+document.addEventListener('keydown', (e) => {
+if(e.code === 'Space'){ e.preventDefault(); wave.playPause(); }
+if(e.key === 'n' || e.key === 'N') loadIndex(curIndex + 1);
+if(e.key === 'p' || e.key === 'P') loadIndex(curIndex - 1);
+    });
+  }
+function setHoverInfoFromTime(t){
+if(!segments.length){
+elHoverInfo.textContent = "Hover: —";
+return;
+    }
+const fps = curObj?.fps || FPS_DEFAULT;
+const f = Math.round(t * fps);
+let hit = null;
+for(const s of segments){
+if(f >= s.f0 && f < s.f1){ hit = s; break; }
+    }
+if(!hit){
+elHoverInfo.textContent = `Hover: t=${t.toFixed(3)}s f=${f}`;
+return;
+    }
+elHoverInfo.textContent =
+`Hover: type=${hit.type} value=${Number(hit.value).toFixed(1)} ` +
+`t=[${hit.t0.toFixed(3)}, ${hit.t1.toFixed(3)}]s ` +
+`f=[${hit.f0}, ${hit.f1})`;
+  }
+function attachHover(){
+const overlay = document.getElementById("overlay");
+overlay.onmousemove = (ev) => {
+const rect = overlay.getBoundingClientRect();
+const x = ev.clientX - rect.left;
+const w = rect.width;
+const t = (duration > 1e-6) ? (x / w) * duration : 0;
+setHoverInfoFromTime(clamp(t, 0, duration));
+    };
+overlay.onmouseleave = () => { elHoverInfo.textContent = "Hover: —"; };
+  }
+attachHover();
+async function loadIndex(idx){
+idx = clamp(idx, 0, files.length-1);
+if(!Number.isFinite(idx)) return;
+curIndex = idx;
+renderList();
+setErr("");
+const f = files[curIndex];
+const wav = f.wav;
+const src = pickDataSource(f);
+setSrcPill(src);
+elName.textContent = wav;
+elFps.textContent = String(f.fps || FPS_DEFAULT);
+await initWaveIfNeeded();
+// load curve object
+try{
+curObj = await loadCurveFor(wav, src);
+    }catch(err){
+setErr(`load ${src} failed: ${err}`);
+curObj = { wav, fps: (f.fps||FPS_DEFAULT), curve: [] };
+    }
+// load audio
+try{
+const url = `/audio/${encodeURIComponent(wav)}`;
+await wave.load(url);
+    }catch(err){
+setErr(`load audio failed: ${err}`);
+    }
+// set duration/n_frames from object if present
+const fps = Number(curObj.fps || f.fps || FPS_DEFAULT);
+elFps.textContent = String(fps);
+curve = Array.isArray(curObj.curve) ? curObj.curve : [];
+// ensure last point at duration if missing (pred should already have it)
+if(curve.length >= 1 && duration > 0){
+const last = curve[curve.length-1];
+if(Math.abs((last.t||0) - duration) > 1e-2){
+curve = curve.slice();
+curve.push({ t: duration, type: last.type || "calm", value: last.value ?? 5 });
+      }
+    }
+segments = segmentsFromCurve(curve, fps);
+// if pred has explicit segments/boundaries, prefer them (more consistent)
+if(src === "pred" && Array.isArray(curObj.segments) && curObj.segments.length){
+// map to display segments with t0/t1 too
+const segs = [];
+for(const s of curObj.segments){
+const f0 = Number(s.f0||0), f1 = Number(s.f1||0);
+const t0 = f0 / fps;
+const t1 = f1 / fps;
+segs.push({
+t0, t1, f0, f1,
+type: s.type || "calm",
+value: Number(s.value ?? 5)
+        });
+      }
+segments = segs;
+    }
+boundaries = [];
+if(src === "pred" && Array.isArray(curObj.boundaries)){
+boundaries = curObj.boundaries.map(x => Number(x)).filter(x => Number.isFinite(x));
+    }else{
+boundaries = boundariesFromSegments(segments);
+    }
+// update header stats
+elDur.textContent = duration ? duration.toFixed(3) : "—";
+const nFrames = Number(curObj.n_frames || (duration ? Math.round(duration * fps) : 0)) || 0;
+elNFrames.textContent = String(nFrames);
+elNSeg.textContent = String(segments.length);
+elNBnd.textContent = String(boundaries.length);
+
+// 新增：判断是否是 utterance-level 简单预测
+let isSimpleUtterance = false;
+let simpleEmo = null;
+let simpleScore = null;
+
+if (src === "pred" && curObj.emo && !curObj.curve && !curObj.segments) {
+    isSimpleUtterance = true;
+    simpleEmo = curObj.emo;
+    simpleScore = curObj.score != null ? curObj.score : 0;
+}
+
+// 显示或隐藏简单预测面板
+const simplePanel = document.getElementById("simplePredPanel");
+const emoDisplay = document.getElementById("simpleEmoDisplay");
+const scoreDisplay = document.getElementById("simpleScoreDisplay");
+
+if (isSimpleUtterance) {
+    simplePanel.style.display = "block";
+    emoDisplay.textContent = simpleEmo;
+    emoDisplay.style.color = typeColor(simpleEmo);
+    scoreDisplay.textContent = `置信度: ${(simpleScore * 100).toFixed(1)}%`;
+} else {
+    simplePanel.style.display = "none";
+}
+
+redraw();
+// open annotater button
+btnOpenAnn.onclick = () => {
+// annotater default 7860
+const u = `http://127.0.0.1:7860/?wav=${encodeURIComponent(wav)}`;
+window.open(u, "_blank");
+    };
+  }
+async function boot(){
+setErr("");
+try{
+files = await fetchJSON("/api/files");
+renderList();
+if(files.length > 0){
+await loadIndex(0);
+      }
+    }catch(err){
+setErr(`boot failed: ${err}`);
+    }
+elMode.onchange = async () => {
+if(curIndex >= 0) await loadIndex(curIndex);
+    };
+btnPrev.onclick = () => loadIndex(curIndex - 1);
+btnNext.onclick = () => loadIndex(curIndex + 1);
+  }
+boot();
+</script>
+</body>
+</html>
