@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Speech2Emotion - Label/Pred Viewer</title>
+  <title>Speech2Emotion - Label vs Pred Compare</title>
   <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
   <style>
     body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; }
@@ -29,7 +29,7 @@
     .muted { color:#666; }
     .danger { color:#b00020; }
     button, select, input { font: inherit; }
-    select { padding:6px 8px; border:1px solid #ddd; border-radius: 10px; }
+    select, input { padding:6px 8px; border:1px solid #ddd; border-radius: 10px; }
     button { padding: 8px 10px; border: 1px solid #ccc; background:#fff; border-radius: 10px; cursor:pointer; }
     button:hover { background:#fafafa; }
 
@@ -44,16 +44,10 @@
     }
     #overlay svg { width:100%; height:100%; display:block; }
 
-    .panel {
-      margin-top: 10px;
-      border:1px solid #eee; border-radius: 12px;
-      padding: 10px;
-    }
-
+    .panel { margin-top: 10px; border:1px solid #eee; border-radius: 12px; padding: 10px; }
     .legend { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
     .legend .it { display:flex; align-items:center; gap:6px; font-size:12px; color: rgba(0,0,0,0.75); }
     .legend .dot { width:10px; height:10px; border-radius:50%; display:inline-block; border:1px solid rgba(0,0,0,0.25); }
-
     .hint { font-size: 12px; color:#666; line-height: 1.5; }
     .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
            font-size: 12px; border: 1px solid #ddd; padding: 2px 6px; border-radius: 6px; background:#fafafa; }
@@ -61,15 +55,16 @@
     .topbar { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
     .sep { width:1px; height:18px; background:#ddd; display:inline-block; }
 
-    .infoGrid { display:grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap:8px; margin-top:8px; }
+    .infoGrid { display:grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap:8px; margin-top:8px; }
     .card { border:1px solid #eee; border-radius: 10px; padding:8px 10px; }
     .card .k { font-size:12px; color:#666; }
     .card .v { font-size:14px; font-weight:600; margin-top:2px; }
+
     @media (max-width: 980px){
       .wrap { grid-template-columns: 1fr; }
       .left { height: 40vh; }
       .right { height: 60vh; }
-      .infoGrid{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .infoGrid{ grid-template-columns: repeat(3, minmax(0,1fr)); }
     }
   </style>
 </head>
@@ -81,13 +76,6 @@
       <span class="pill" id="countPill">0</span>
       <span class="pill lbl" id="lblPill">labeled: 0</span>
       <span class="pill pred" id="predPill">pred: 0</span>
-      <span class="sep"></span>
-      <span class="muted" style="font-size:12px;">Mode</span>
-      <select id="modeSel" title="Auto: 优先预测；否则用标注">
-        <option value="auto" selected>auto</option>
-        <option value="pred">pred</option>
-        <option value="label">label</option>
-      </select>
     </div>
     <ul class="list" id="fileList"></ul>
   </div>
@@ -95,12 +83,26 @@
   <div class="right">
     <div class="topbar">
       <div><b id="curName">No file</b></div>
-      <span class="pill" id="srcPill">—</span>
+      <span class="pill lbl">Label=实线</span>
+      <span class="pill pred">Pred=虚线</span>
+      <span class="sep"></span>
       <div class="muted">fps: <b id="fps">30</b></div>
       <div class="muted">duration(s): <b id="dur">—</b></div>
       <div class="muted">frames: <b id="nFrames">—</b></div>
-      <div class="muted">segments: <b id="nSeg">—</b></div>
-      <div class="muted">boundaries: <b id="nBnd">—</b></div>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <button id="btnPlay">Play/Pause <span class="kbd">Space</span></button>
+      <button id="btnPrev">Prev <span class="kbd">P</span></button>
+      <button id="btnNext">Next <span class="kbd">N</span></button>
+
+      <span class="sep"></span>
+      <span class="muted">bnd tol(frames)</span>
+      <input id="tol" type="number" min="0" max="10" step="1" value="1" style="width:70px;" />
+      <button id="btnRecalc">Recalc</button>
+
+      <span class="sep"></span>
+      <button id="btnOpenAnn" title="打开标注器(7860)当前 wav">Open Annotater</button>
     </div>
 
     <div id="waveBox">
@@ -108,20 +110,40 @@
       <div id="overlay"><svg id="svg"></svg></div>
     </div>
 
-    <div class="row" style="margin-top:10px">
-      <button id="btnPlay">Play/Pause <span class="kbd">Space</span></button>
-      <button id="btnPrev">Prev <span class="kbd">P</span></button>
-      <button id="btnNext">Next <span class="kbd">N</span></button>
-      <button id="btnOpenAnn" title="打开标注器(7860)当前 wav">Open Annotater</button>
+    <div class="infoGrid">
+      <div class="card">
+        <div class="k">Label segments</div>
+        <div class="v" id="lblSeg">—</div>
+      </div>
+      <div class="card">
+        <div class="k">Pred segments</div>
+        <div class="v" id="predSeg">—</div>
+      </div>
+      <div class="card">
+        <div class="k">Label boundaries</div>
+        <div class="v" id="lblBnd">—</div>
+      </div>
+      <div class="card">
+        <div class="k">Pred boundaries</div>
+        <div class="v" id="predBnd">—</div>
+      </div>
+      <div class="card">
+        <div class="k">bnd Precision</div>
+        <div class="v" id="pBnd">—</div>
+      </div>
+      <div class="card">
+        <div class="k">bnd Recall / F1</div>
+        <div class="v" id="rfBnd">—</div>
+      </div>
     </div>
 
     <div class="panel">
       <div class="hint">
         <b>说明</b>：
         <ul>
-          <li>该页面只读：用于对比 <b>Label</b> 与 <b>Pred</b> 的曲线显示是否一致。</li>
-          <li>Auto 模式：如果该 wav 有 prediction（pred.jsonl 里存在），就显示 Pred；否则显示 Label。</li>
-          <li>Pred 的曲线来自你导出的 <code>pred.jsonl</code>（后端接口 <code>/api/pred/&lt;wav&gt;</code>）。</li>
+          <li>同屏叠加：Label（实线）与 Pred（虚线）。</li>
+          <li>竖虚线：边界（Label 用淡橙，Pred 用淡蓝）。</li>
+          <li>右侧 bnd 指标：按 “预测边界与标注边界在 ±tol 帧内算匹配” 计算。</li>
         </ul>
       </div>
 
@@ -140,7 +162,6 @@
   const VALUE_MIN = 0;
   const VALUE_MAX = 150;
 
-  // 7 类（全链路）
   const TYPES = ["happy","sad","angry","fear","calm","confused","action"];
 
   let files = [];
@@ -148,12 +169,19 @@
   let wave = null;
   let duration = 0;
 
-  // loaded data
-  let curObj = null;        // label/pred object from backend
-  let curve = [];           // [{t,type,value}, ...]
-  let segments = [];        // [{t0,t1,f0,f1,type,value,lvl?}, ...]
-  let boundaries = [];      // [frame indices]
-  let sourceMode = "—";     // label/pred
+  // unified timeline fps for frame-based metrics/hover/boundaries
+  // IMPORTANT: do NOT use label fps here (label may be 100); use pred fps (typically 30)
+  let fpsCommon = FPS_DEFAULT;
+
+  // current objects
+  let lblObj = null;
+  let predObj = null;
+
+  // derived (for drawing)
+  let lblSegs = [];
+  let predSegs = [];
+  let lblBnds = [];
+  let predBnds = [];
 
   // DOM
   const elList = document.getElementById('fileList');
@@ -161,22 +189,26 @@
   const elFps = document.getElementById('fps');
   const elDur = document.getElementById('dur');
   const elNFrames = document.getElementById('nFrames');
-  const elNSeg = document.getElementById('nSeg');
-  const elNBnd = document.getElementById('nBnd');
   const elErr = document.getElementById('err');
   const elCount = document.getElementById('countPill');
   const elLbl = document.getElementById('lblPill');
   const elPred = document.getElementById('predPill');
-  const elMode = document.getElementById('modeSel');
-  const elSrcPill = document.getElementById('srcPill');
-  const elHoverInfo = document.getElementById('hoverInfo');
 
   const svg = document.getElementById('svg');
-  const waveBox = document.getElementById('waveBox');
   const btnPlay = document.getElementById('btnPlay');
   const btnPrev = document.getElementById('btnPrev');
   const btnNext = document.getElementById('btnNext');
   const btnOpenAnn = document.getElementById('btnOpenAnn');
+  const tolInp = document.getElementById('tol');
+  const btnRecalc = document.getElementById('btnRecalc');
+
+  const elLblSeg = document.getElementById('lblSeg');
+  const elPredSeg = document.getElementById('predSeg');
+  const elLblBnd = document.getElementById('lblBnd');
+  const elPredBnd = document.getElementById('predBnd');
+  const elPBnd = document.getElementById('pBnd');
+  const elRFBnd = document.getElementById('rfBnd');
+  const elHoverInfo = document.getElementById('hoverInfo');
 
   function setErr(msg){ elErr.textContent = msg || ""; }
 
@@ -193,7 +225,6 @@
   }
 
   function typeColor(ty){
-    // stable palette
     const map = {
       happy: "#ffb020",
       sad: "#3b82f6",
@@ -223,12 +254,6 @@
     }
   }
   renderLegend();
-
-  function setSrcPill(mode){
-    sourceMode = mode;
-    elSrcPill.textContent = mode;
-    elSrcPill.className = "pill " + (mode === "pred" ? "pred" : (mode === "label" ? "lbl" : ""));
-  }
 
   function timeToX(t, w){
     if(duration <= 1e-6) return 0;
@@ -269,13 +294,30 @@
     return b;
   }
 
+  function preferPredSegments(obj, fpsCommonLocal){
+    // pred.segments are in frame indices of obj.fps; convert to seconds, then re-quantize into fpsCommon
+    const fpsPred = Number(obj?.fps || FPS_DEFAULT);
+    const fpsC = Number(fpsCommonLocal || fpsCommon || FPS_DEFAULT);
+    if(obj && Array.isArray(obj.segments) && obj.segments.length){
+      const segs = [];
+      for(const s of obj.segments){
+        const f0p = Number(s.f0||0), f1p = Number(s.f1||0);
+        const t0 = f0p / fpsPred;
+        const t1 = f1p / fpsPred;
+        const f0 = quantizeToFrame(t0, fpsC);
+        const f1 = quantizeToFrame(t1, fpsC);
+        segs.push({ t0, t1, f0, f1, type: s.type || "calm", value: Number(s.value ?? 5) });
+      }
+      return segs;
+    }
+    return null;
+  }
+
   function clearSVG(){
     while(svg.firstChild) svg.removeChild(svg.firstChild);
   }
 
   function drawGrid(w, h){
-    // horizontal dashed lines for levels 0..5 (approx positions)
-    // We draw 6 lines evenly spaced by value bins (0..150).
     const levels = [0,1,2,3,4,5];
     for(const lv of levels){
       const v = (lv/5) * VALUE_MAX;
@@ -285,15 +327,34 @@
       line.setAttribute("x2", String(w));
       line.setAttribute("y1", String(y));
       line.setAttribute("y2", String(y));
-      line.setAttribute("stroke", "rgba(0,0,0,0.12)");
+      line.setAttribute("stroke", "rgba(0,0,0,0.10)");
       line.setAttribute("stroke-dasharray","6 6");
       svg.appendChild(line);
     }
   }
 
-  function drawSegments(segs, w, h){
-    // draw step segments colored by type
-    // also draw type label text on each horizontal segment if wide enough
+  function drawBoundaries(bnds, fps, w, h, stroke, dash){
+    for(const f of bnds){
+      const t = f / fps;
+      const x = timeToX(t, w);
+      const line = document.createElementNS("http://www.w3.org/2000/svg","line");
+      line.setAttribute("x1", String(x));
+      line.setAttribute("x2", String(x));
+      line.setAttribute("y1", "0");
+      line.setAttribute("y2", String(h));
+      line.setAttribute("stroke", stroke);
+      line.setAttribute("stroke-width","1.5");
+      line.setAttribute("stroke-dasharray", dash);
+      svg.appendChild(line);
+    }
+  }
+
+  function drawSegments(segs, w, h, style){
+    // style: {dash, opacity, width}
+    const dash = style?.dash ?? "";
+    const op = style?.opacity ?? 1.0;
+    const sw = style?.width ?? 3;
+
     for(let i=0;i<segs.length;i++){
       const s = segs[i];
       const x0 = timeToX(s.t0, w);
@@ -307,11 +368,12 @@
       line.setAttribute("y1", String(y));
       line.setAttribute("y2", String(y));
       line.setAttribute("stroke", col);
-      line.setAttribute("stroke-width","3");
+      line.setAttribute("stroke-width", String(sw));
       line.setAttribute("stroke-linecap","round");
+      if(dash) line.setAttribute("stroke-dasharray", dash);
+      line.setAttribute("opacity", String(op));
       svg.appendChild(line);
 
-      // vertical jump to next value
       if(i < segs.length - 1){
         const next = segs[i+1];
         const y2 = valueToY(next.value, h);
@@ -321,38 +383,11 @@
         vline.setAttribute("y1", String(y));
         vline.setAttribute("y2", String(y2));
         vline.setAttribute("stroke", col);
-        vline.setAttribute("stroke-width","2");
-        vline.setAttribute("opacity","0.9");
+        vline.setAttribute("stroke-width", String(Math.max(2, sw-1)));
+        if(dash) vline.setAttribute("stroke-dasharray", dash);
+        vline.setAttribute("opacity", String(op));
         svg.appendChild(vline);
       }
-
-      // label text
-      const width = x1 - x0;
-      if(width >= 40){
-        const tx = document.createElementNS("http://www.w3.org/2000/svg","text");
-        tx.textContent = s.type;
-        tx.setAttribute("x", String((x0+x1)/2));
-        tx.setAttribute("y", String(y - 6));
-        tx.setAttribute("text-anchor","middle");
-        tx.setAttribute("font-size","11");
-        tx.setAttribute("fill", "rgba(0,0,0,0.7)");
-        svg.appendChild(tx);
-      }
-    }
-  }
-
-  function drawBoundaries(bnds, w, h){
-    for(const f of bnds){
-      const t = f / (curObj?.fps || FPS_DEFAULT);
-      const x = timeToX(t, w);
-      const line = document.createElementNS("http://www.w3.org/2000/svg","line");
-      line.setAttribute("x1", String(x));
-      line.setAttribute("x2", String(x));
-      line.setAttribute("y1", "0");
-      line.setAttribute("y2", String(h));
-      line.setAttribute("stroke", "rgba(0,0,0,0.18)");
-      line.setAttribute("stroke-dasharray","4 6");
-      svg.appendChild(line);
     }
   }
 
@@ -361,13 +396,21 @@
     const rect = document.getElementById("overlay").getBoundingClientRect();
     const w = rect.width;
     const h = rect.height;
-
-    // set viewBox for crisp drawing
     svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
 
+    const fps = Number(fpsCommon || FPS_DEFAULT);
+
     drawGrid(w, h);
-    drawBoundaries(boundaries, w, h);
-    drawSegments(segments, w, h);
+
+    // boundaries
+    // label: orange-ish, pred: blue-ish
+    drawBoundaries(lblBnds, fps, w, h, "rgba(255,176,32,0.35)", "5 6");
+    drawBoundaries(predBnds, fps, w, h, "rgba(59,130,246,0.30)", "3 6");
+
+    // curves
+    // label solid (on top slightly)
+    drawSegments(predSegs, w, h, {dash:"7 6", opacity:0.75, width:3});
+    drawSegments(lblSegs,  w, h, {dash:"",     opacity:0.95, width:3.5});
   }
 
   function renderList(){
@@ -388,6 +431,7 @@
 
       const meta = document.createElement('div');
       meta.className = 'meta';
+
       const p1 = document.createElement('span');
       p1.className = 'pill ' + (f.labeled ? 'ok lbl':'no lbl');
       p1.textContent = f.labeled ? 'labeled' : 'no label';
@@ -407,23 +451,6 @@
     elPred.textContent = `pred: ${nPred}`;
   }
 
-  function pickDataSource(fileEntry){
-    const mode = elMode.value;
-    if(mode === "label") return "label";
-    if(mode === "pred") return "pred";
-    // auto
-    if(fileEntry.predicted) return "pred";
-    if(fileEntry.labeled) return "label";
-    return "label";
-  }
-
-  async function loadCurveFor(wav, src){
-    if(src === "pred"){
-      return await fetchJSON(`/api/pred/${encodeURIComponent(wav)}`);
-    }
-    return await fetchJSON(`/api/label/${encodeURIComponent(wav)}`);
-  }
-
   async function initWaveIfNeeded(){
     if(wave) return;
     wave = WaveSurfer.create({
@@ -440,8 +467,8 @@
       duration = wave.getDuration();
       elDur.textContent = duration.toFixed(3);
       redraw();
+      recalcBndMetrics();
     });
-    wave.on('finish', () => { /* noop */ });
 
     // keyboard
     document.addEventListener('keydown', (e) => {
@@ -452,25 +479,22 @@
   }
 
   function setHoverInfoFromTime(t){
-    if(!segments.length){
-      elHoverInfo.textContent = "Hover: —";
-      return;
-    }
-    const fps = curObj?.fps || FPS_DEFAULT;
+    const fps = Number(fpsCommon || FPS_DEFAULT);
     const f = Math.round(t * fps);
 
-    let hit = null;
-    for(const s of segments){
-      if(f >= s.f0 && f < s.f1){ hit = s; break; }
+    function findSeg(segs){
+      for(const s of segs){
+        if(f >= s.f0 && f < s.f1) return s;
+      }
+      return null;
     }
-    if(!hit){
-      elHoverInfo.textContent = `Hover: t=${t.toFixed(3)}s f=${f}`;
-      return;
-    }
-    elHoverInfo.textContent =
-      `Hover: type=${hit.type} value=${Number(hit.value).toFixed(1)}  ` +
-      `t=[${hit.t0.toFixed(3)}, ${hit.t1.toFixed(3)}]s  ` +
-      `f=[${hit.f0}, ${hit.f1})`;
+    const a = findSeg(lblSegs);
+    const b = findSeg(predSegs);
+
+    const base = `Hover: t=${t.toFixed(3)}s f=${f}  `;
+    const s1 = a ? `Label{${a.type}, v=${Number(a.value).toFixed(1)}, f=[${a.f0},${a.f1})}` : `Label{—}`;
+    const s2 = b ? `Pred{${b.type}, v=${Number(b.value).toFixed(1)}, f=[${b.f0},${b.f1})}` : `Pred{—}`;
+    elHoverInfo.textContent = base + "  " + s1 + "  " + s2;
   }
 
   function attachHover(){
@@ -486,6 +510,60 @@
   }
   attachHover();
 
+  function uniqSorted(arr){
+    const s = new Set(arr.map(x => Number(x)).filter(x => Number.isFinite(x)));
+    return Array.from(s).sort((a,b)=>a-b);
+  }
+
+  function matchBoundaries(gt, pr, tol){
+    // greedy: for each pred, match nearest unmatched gt within tol
+    gt = uniqSorted(gt);
+    pr = uniqSorted(pr);
+    tol = Math.max(0, Number(tol)||0);
+
+    const gtUsed = new Array(gt.length).fill(false);
+    let tp = 0;
+
+    for(const p of pr){
+      let best = -1;
+      let bestDist = 1e9;
+      for(let i=0;i<gt.length;i++){
+        if(gtUsed[i]) continue;
+        const d = Math.abs(gt[i] - p);
+        if(d <= tol && d < bestDist){
+          bestDist = d;
+          best = i;
+        }
+      }
+      if(best >= 0){
+        gtUsed[best] = true;
+        tp += 1;
+      }
+    }
+
+    const fp = pr.length - tp;
+    const fn = gt.length - tp;
+    const prec = (tp + fp) > 0 ? tp / (tp + fp) : 0;
+    const rec  = (tp + fn) > 0 ? tp / (tp + fn) : 0;
+    const f1   = (prec + rec) > 0 ? (2 * prec * rec) / (prec + rec) : 0;
+    return {tp, fp, fn, prec, rec, f1};
+  }
+
+  function recalcBndMetrics(){
+    const tol = clamp(tolInp.value, 0, 10);
+    tolInp.value = String(tol);
+
+    const m = matchBoundaries(lblBnds, predBnds, tol);
+
+    elLblSeg.textContent = String(lblSegs.length);
+    elPredSeg.textContent = String(predSegs.length);
+    elLblBnd.textContent = String(lblBnds.length);
+    elPredBnd.textContent = String(predBnds.length);
+
+    elPBnd.textContent = `${m.prec.toFixed(3)} (tp=${m.tp}, fp=${m.fp})`;
+    elRFBnd.textContent = `${m.rec.toFixed(3)} / ${m.f1.toFixed(3)} (fn=${m.fn})`;
+  }
+
   async function loadIndex(idx){
     idx = clamp(idx, 0, files.length-1);
     if(!Number.isFinite(idx)) return;
@@ -496,84 +574,80 @@
     const f = files[curIndex];
     const wav = f.wav;
 
-    const src = pickDataSource(f);
-    setSrcPill(src);
-
     elName.textContent = wav;
     elFps.textContent = String(f.fps || FPS_DEFAULT);
 
     await initWaveIfNeeded();
 
-    // load curve object
-    try{
-      curObj = await loadCurveFor(wav, src);
-    }catch(err){
-      setErr(`load ${src} failed: ${err}`);
-      curObj = { wav, fps: (f.fps||FPS_DEFAULT), curve: [] };
-    }
+    // load label + pred in parallel
+    lblObj = null;
+    predObj = null;
+
+    const pLbl = fetchJSON(`/api/label/${encodeURIComponent(wav)}`).catch(_=>null);
+    const pPred = fetchJSON(`/api/pred/${encodeURIComponent(wav)}`).catch(_=>null);
+
+    [lblObj, predObj] = await Promise.all([pLbl, pPred]);
 
     // load audio
     try{
-      const url = `/audio/${encodeURIComponent(wav)}`;
-      await wave.load(url);
+      await wave.load(`/audio/${encodeURIComponent(wav)}`);
     }catch(err){
       setErr(`load audio failed: ${err}`);
     }
 
-    // set duration/n_frames from object if present
-    const fps = Number(curObj.fps || f.fps || FPS_DEFAULT);
-    elFps.textContent = String(fps);
+    // IMPORTANT: label fps may be 100 (annotation resolution). We unify everything to pred fps (typically 30).
+    fpsCommon = Number(predObj?.fps || FPS_DEFAULT);
+    elFps.textContent = String(fpsCommon);
 
-    curve = Array.isArray(curObj.curve) ? curObj.curve : [];
-    // ensure last point at duration if missing (pred should already have it)
-    if(curve.length >= 1 && duration > 0){
-      const last = curve[curve.length-1];
-      if(Math.abs((last.t||0) - duration) > 1e-2){
-        curve = curve.slice();
-        curve.push({ t: duration, type: last.type || "calm", value: last.value ?? 5 });
-      }
-    }
-
-    segments = segmentsFromCurve(curve, fps);
-
-    // if pred has explicit segments/boundaries, prefer them (more consistent)
-    if(src === "pred" && Array.isArray(curObj.segments) && curObj.segments.length){
-      // map to display segments with t0/t1 too
-      const segs = [];
-      for(const s of curObj.segments){
-        const f0 = Number(s.f0||0), f1 = Number(s.f1||0);
-        const t0 = f0 / fps;
-        const t1 = f1 / fps;
-        segs.push({
-          t0, t1, f0, f1,
-          type: s.type || "calm",
-          value: Number(s.value ?? 5)
-        });
-      }
-      segments = segs;
-    }
-
-    boundaries = [];
-    if(src === "pred" && Array.isArray(curObj.boundaries)){
-      boundaries = curObj.boundaries.map(x => Number(x)).filter(x => Number.isFinite(x));
-    }else{
-      boundaries = boundariesFromSegments(segments);
-    }
-
-    // update header stats
+    // frames & duration (always based on audio duration and fpsCommon)
     elDur.textContent = duration ? duration.toFixed(3) : "—";
-    const nFrames = Number(curObj.n_frames || (duration ? Math.round(duration * fps) : 0)) || 0;
+    const nFrames = duration ? Math.round(duration * fpsCommon) : 0;
     elNFrames.textContent = String(nFrames);
-    elNSeg.textContent = String(segments.length);
-    elNBnd.textContent = String(boundaries.length);
 
+    // build label segs
+    const lblCurve = Array.isArray(lblObj?.curve) ? lblObj.curve : [];
+    lblSegs = segmentsFromCurve(lblCurve, fpsCommon);
+    if(!lblSegs.length && lblObj && lblObj.wav){
+      // allow empty label
+      lblSegs = [];
+    }
+
+    // build pred segs
+    if(predObj){
+      const preferred = preferPredSegments(predObj, fpsCommon);
+      if(preferred) predSegs = preferred;
+      else{
+        const predCurve = Array.isArray(predObj?.curve) ? predObj.curve : [];
+        predSegs = segmentsFromCurve(predCurve, fpsCommon);
+      }
+    }else{
+      predSegs = [];
+    }
+
+    // boundaries
+    lblBnds = boundariesFromSegments(lblSegs);
+    if(predObj && Array.isArray(predObj.boundaries)){
+      // pred boundaries are in pred fps; convert to fpsCommon
+      const fpsPred = Number(predObj?.fps || fpsCommon || FPS_DEFAULT);
+      predBnds = predObj.boundaries
+        .map(x => Number(x))
+        .filter(x => Number.isFinite(x))
+        .map(fp => quantizeToFrame(fp / fpsPred, fpsCommon));
+    }else{
+      predBnds = boundariesFromSegments(predSegs);
+    }
+
+    // normalize
+    lblBnds = uniqSorted(lblBnds);
+    predBnds = uniqSorted(predBnds);
+
+    // redraw & metrics
     redraw();
+    recalcBndMetrics();
 
-    // open annotater button
+    // open annotater
     btnOpenAnn.onclick = () => {
-      // annotater default 7860
-      const u = `http://127.0.0.1:7860/?wav=${encodeURIComponent(wav)}`;
-      window.open(u, "_blank");
+      window.open(`http://127.0.0.1:7860/?wav=${encodeURIComponent(wav)}`, "_blank");
     };
   }
 
@@ -589,12 +663,10 @@
       setErr(`boot failed: ${err}`);
     }
 
-    elMode.onchange = async () => {
-      if(curIndex >= 0) await loadIndex(curIndex);
-    };
-
     btnPrev.onclick = () => loadIndex(curIndex - 1);
     btnNext.onclick = () => loadIndex(curIndex + 1);
+    btnRecalc.onclick = () => recalcBndMetrics();
+    tolInp.onchange = () => recalcBndMetrics();
   }
 
   boot();

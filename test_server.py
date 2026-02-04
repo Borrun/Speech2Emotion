@@ -11,11 +11,11 @@ from flask import Flask, jsonify, request, send_from_directory, abort, Response
 # -----------------------------------------------------------------------------
 # Paths / Config
 # -----------------------------------------------------------------------------
-REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__)))
 
 WAV_DIR = os.environ.get("WAV_DIR") or str(Path(REPO_ROOT) / "wavs")
 LABEL_PATH = os.environ.get("LABEL_PATH") or str(Path(REPO_ROOT) / "annotater" / "labels.jsonl")
-PRED_PATH = os.environ.get("PRED_PATH") or str(Path(REPO_ROOT) / "pred.jsonl")
+PRED_PATH = os.environ.get("PRED_PATH") or str(Path(REPO_ROOT) / "pred_frames.jsonl")
 
 DEFAULT_FPS = int(os.environ.get("FPS") or 30)
 
@@ -181,9 +181,9 @@ def index():
     Otherwise, just show a help page.
     """
     here = os.path.dirname(os.path.abspath(__file__))
-    idx = os.path.join(here, "index.html")
+    idx = os.path.join(here, "test_index.html")
     if os.path.isfile(idx):
-        return send_from_directory(here, "index.html")
+        return send_from_directory(here, "test_index.html")
     return (
         "<h3>Speech2Emotion Test Server</h3>"
         "<p>Endpoints:</p>"
