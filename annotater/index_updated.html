@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Speech2Emotion Curve Annotator</title>
+  <script src="https://unpkg.com/wavesurfer.js@7/dist/wavesurfer.min.js"></script>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 0; }
+    .wrap { display: grid; grid-template-columns: 360px 1fr; height: 100vh; }
+    .left { border-right: 1px solid #ddd; overflow: auto; }
+    .right { padding: 14px 18px; }
+
+    .hdr { padding: 12px 12px; border-bottom: 1px solid #eee; display:flex; gap:10px; align-items:center; }
+    .hdr b { font-size: 14px; }
+    .list { padding: 0; margin: 0; list-style: none; }
+    .item { padding: 10px 12px; border-bottom: 1px solid #f0f0f0; cursor: pointer; display:flex; justify-content:space-between; gap:10px; }
+    .item:hover { background: #fafafa; }
+    .item.active { background: #eef6ff; }
+    .pill { font-size: 12px; padding: 2px 6px; border-radius: 999px; background:#f3f3f3; display:inline-block; }
+    .pill.ok { background:#e6f7e6; }
+    .pill.no { background:#ffecec; }
+
+    #waveBox { border: 1px solid #ddd; border-radius: 10px; padding: 10px; position: relative; }
+    #wave { position: relative; z-index: 1; }
+    /* 关键：恢复 overlay 结构 + z-index，保证鼠标事件能命中 SVG */
+    #overlay{
+      position:absolute; left:10px; right:10px;
+      top:10px;
+      height:160px;
+      z-index: 5;
+      pointer-events: auto;
+    }
+    #overlay svg { width:100%; height:100%; display:block; }
+
+    .controls { margin-top: 10px; display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+    button, select, input { font: inherit; }
+    button { padding: 8px 10px; border: 1px solid #ccc; background:#fff; border-radius: 8px; cursor:pointer; }
+    button:hover { background:#fafafa; }
+    .row { display:flex; gap:14px; flex-wrap:wrap; align-items:center; }
+    .muted { color:#666; }
+    .danger { color:#b00020; }
+
+    .panel {
+      margin-top: 10px;
+      border:1px solid #eee; border-radius: 10px;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .panel .full { grid-column: 1 / -1; }
+    .hint { font-size: 12px; color:#666; line-height: 1.4; }
+    select { padding:6px 8px; border:1px solid #ddd; border-radius: 8px; }
+    textarea { width:100%; min-height: 84px; padding:8px 10px; border:1px solid #ddd; border-radius: 10px; resize: vertical; }
+    .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+           font-size: 12px; border: 1px solid #ddd; padding: 2px 6px; border-radius: 6px; background:#fafafa; }
+
+    .legend { display:flex; flex-wrap:wrap; gap:10px; margin-top:8px; }
+    .legend .item { display:flex; align-items:center; gap:6px; font-size:12px; color: rgba(0,0,0,0.75); border:0; padding:0; cursor:default; }
+    .legend .dot { width:10px; height:10px; border-radius:50%; display:inline-block; border:1px solid rgba(0,0,0,0.25); }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="left">
+    <div class="hdr">
+      <b>Files</b>
+      <span class="pill" id="countPill">0</span>
+      <span class="pill ok" id="donePill">done: 0</span>
+    </div>
+    <ul class="list" id="fileList"></ul>
+  </div>
+
+  <div class="right">
+    <div class="row">
+      <div><b id="curName">No file</b></div>
+      <div class="muted">fps: <b id="fps">30</b></div>
+      <div class="muted">duration(s): <b id="dur">—</b></div>
+      <div class="muted">curve pts: <b id="ptCount">—</b></div>
+      <div class="muted">segment: <b id="segInfo">—</b></div>
+    </div>
+
+    <div id="waveBox" style="margin-top:10px">
+      <div id="wave"></div>
+      <div id="overlay"><svg id="svg"></svg></div>
+    </div>
+
+    <div id="shapeBox" style="margin-top:10px">
+      <div class="row" style="justify-content:space-between; align-items:baseline;">
+        <div class="muted"><b>二维情绪曲线（hover进度展示）</b></div>
+        <div class="muted">frame: <b id="shapeFrame">—</b></div>
+      </div>
+      <div style="margin-top:8px; border:1px solid #ddd; border-radius:10px; padding:10px;">
+        <svg id="shapeSvg" style="width:100%; height:240px; display:block;"></svg>
+      </div>
+      <div class="hint" style="margin-top:6px;">
+        鼠标在上方波形区域移动时，会根据当前时间 → 帧号，加载 /home/borrun/Speech2Emotion/annotater/data 里的对应 txt 数据并绘制。
+        每帧 4 组 × 32 个二维点，前端会线性插值到 320 个点后绘制。
+      </div>
+    </div>
+
+
+</div>
+
+    <!-- ✅ 恢复默认按钮 -->
+    <div class="controls">
+      <button id="btnPlay">Play/Pause <span class="kbd">Space</span></button>
+      <button id="btnPrev">Prev <span class="kbd">P</span></button>
+      <button id="btnNext">Next <span class="kbd">N</span></button>
+      <button id="btnSave">Save</button>
+      <button id="btnExport">Export (JSON)</button>
+    </div>
+
+    <div class="panel">
+      <div class="full">
+        <div class="row">
+          <div class="muted"><b>点击曲线段修改情绪类型</b></div>
+          <select id="segType">
+            <option>happy</option><option>sad</option><option>angry</option><option>fear</option>
+            <option selected>calm</option>
+          </select>
+          <span class="hint">
+            点击某一段（两点之间）会应用当前选中的 type。也支持键盘 1-7：
+            1 happy, 2 sad, 3 angry, 4 fear, 5 calm。
+          </span>
+          <div id="typeLegend" class="legend"></div>
+        </div>
+      </div>
+
+      <div class="full">
+        <div class="muted"><b>Audio Text</b>（转写/内容）</div>
+        <div style="margin-top:6px">
+          <textarea id="audioText" placeholder="可选：输入这段音频的文字内容（会随标注一起保存、导出）"></textarea>
+        </div>
+      </div>
+
+      <div class="full hint">
+        操作：
+        <ul>
+          <li><b>左键拖动点</b>：调整时间/等级（时间会量化到帧）。</li>
+          <li><b>右键点空白处</b>：新增点（会吸附到最近等级线）。</li>
+          <li><b>Alt + 左键点</b>：删除该点（首尾端点不可删）；也可先点选点，再按 <span class="kbd">Delete</span>/<span class="kbd">Backspace</span> 删除。</li>
+          <li><b>点击曲线段</b>：修改该段情绪类型（按段 piecewise-constant）。</li>
+          <li>默认：<b>calm + L0</b>；所有等级变化按“阶梯”显示：一帧突变。</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="danger" id="err" style="margin-top:10px"></div>
+  </div>
+</div>
+
+<script>
+  const FPS = 30;
+  const TYPES = ["happy","sad","angry","fear","calm"];
+
+  let files = [];
+  let curIndex = -1;
+  let wave = null;
+
+  let duration = null;
+  let curve = [];    // [{t,type,value}]
+
+  let draggingIndex = null;
+  let dragOffset = {dx:0, dy:0};
+
+  let selectedIndex = null;
+  let hoveredSeg = null;
+  let selectedSeg = null;
+
+  const elList = document.getElementById('fileList');
+  const elName = document.getElementById('curName');
+  const elFps = document.getElementById('fps');
+  const elDur = document.getElementById('dur');
+  const elPtCount = document.getElementById('ptCount');
+  const elSegInfo = document.getElementById('segInfo');
+  const elErr = document.getElementById('err');
+  const elCount = document.getElementById('countPill');
+  const elDone = document.getElementById('donePill');
+
+  const svg = document.getElementById('svg');
+  const waveBox = document.getElementById('waveBox');
+
+  const segTypeEl = document.getElementById('segType');
+  const audioTextEl = document.getElementById('audioText');
+  const shapeSvg = document.getElementById('shapeSvg');
+  const elShapeFrame = document.getElementById('shapeFrame');
+  let shapeAvailable = false;
+  let shapeMaxFrame = null;
+  let lastShapeFrame = null;
+  let shapeCache = new Map(); // frameIdx -> {groups: [ [ [x,y]...32 ] x4 ]}
+
+  function lerp(a,b,t){ return a + (b-a)*t; }
+
+  function interpPolyline(pts, n=320){
+    // pts: [[x,y]...], len>=2
+    if(!pts || pts.length<2) return [];
+    const m = pts.length;
+    const out = [];
+    for(let j=0;j<n;j++){
+      const tt = (j/(n-1))*(m-1);
+      const i = Math.min(m-2, Math.max(0, Math.floor(tt)));
+      const a = tt - i;
+      const p0 = pts[i], p1 = pts[i+1];
+      out.push([lerp(p0[0], p1[0], a), lerp(p0[1], p1[1], a)]);
+    }
+    return out;
+  }
+
+  function computeBounds(groups){
+    let xmin=Infinity, xmax=-Infinity, ymin=Infinity, ymax=-Infinity;
+    for(const g of groups){
+      for(const [x,y] of g){
+        xmin = Math.min(xmin, x); xmax = Math.max(xmax, x);
+        ymin = Math.min(ymin, y); ymax = Math.max(ymax, y);
+      }
+    }
+    if(!Number.isFinite(xmin)) return {xmin:-1,xmax:1,ymin:-1,ymax:1};
+    const padX = (xmax-xmin)*0.08 + 1e-6;
+    const padY = (ymax-ymin)*0.08 + 1e-6;
+    return {xmin:xmin-padX, xmax:xmax+padX, ymin:ymin-padY, ymax:ymax+padY};
+  }
+
+  function ptsToPath(pts){
+    if(!pts.length) return "";
+    let d = `M ${pts[0][0]} ${pts[0][1]}`;
+    for(let i=1;i<pts.length;i++){
+      d += ` L ${pts[i][0]} ${pts[i][1]}`;
+    }
+    return d;
+  }
+
+  function clearShape(){
+    if(shapeSvg) shapeSvg.innerHTML = "";
+    if(elShapeFrame) elShapeFrame.textContent = "—";
+  }
+
+  function drawShape(groups32){
+    if(!shapeSvg) return;
+    shapeSvg.innerHTML = "";
+    // interpolate each group to 320
+    const groups = groups32.map(g=>interpPolyline(g, 320));
+
+    const b = computeBounds(groups);
+    const vbW = (b.xmax - b.xmin);
+    const vbH = (b.ymax - b.ymin);
+    shapeSvg.setAttribute("viewBox", `${b.xmin} ${b.ymin} ${vbW} ${vbH}`);
+
+    // flip Y axis? data seems already in screen coords; keep as-is but invert to conventional?
+    // keep as-is to match data: no transform.
+
+    const colors = ["#111", "#2e8b57", "#5b7bd5", "#d64545"]; // 4 groups
+    for(let k=0;k<groups.length;k++){
+      const path = document.createElementNS("http://www.w3.org/2000/svg","path");
+      path.setAttribute("d", ptsToPath(groups[k]));
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", colors[k % colors.length]);
+      path.setAttribute("stroke-width", String(vbW * 0.0025)); // scale with viewbox
+      path.setAttribute("stroke-linecap","round");
+      path.setAttribute("stroke-linejoin","round");
+      path.setAttribute("opacity","0.95");
+      shapeSvg.appendChild(path);
+    }
+  }
+
+  async function shapeMeta(wav){
+    try{
+      const obj = await fetchJSON(`/api/shape/${encodeURIComponent(wav)}`);
+      shapeAvailable = !!obj.available;
+      shapeMaxFrame = obj.max_frame ?? null;
+      clearShape();
+    }catch(e){
+      shapeAvailable = false;
+      shapeMaxFrame = null;
+      clearShape();
+    }
+  }
+
+  async function loadShapeFrame(wav, fi){
+    if(!wav) return null;
+    if(shapeCache.has(fi)) return shapeCache.get(fi);
+    const obj = await fetchJSON(`/api/shape/${encodeURIComponent(wav)}?i=${fi}`);
+    if(obj && obj.groups){
+      shapeCache.set(fi, obj);
+      return obj;
+    }
+    return null;
+  }
+
+  async function updateShapeAtTime(t){
+    if(!duration || curIndex<0) return;
+    const wav = files[curIndex]?.wav;
+    if(!wav) return;
+    if(!shapeAvailable) return;
+
+    const fi = Math.max(0, Math.round(t * FPS));
+    if(lastShapeFrame === fi) return;
+    lastShapeFrame = fi;
+
+    // cap to max frame if known
+    const fi2 = (shapeMaxFrame!=null) ? Math.min(shapeMaxFrame, fi) : fi;
+
+    try{
+      const obj = await loadShapeFrame(wav, fi2);
+      if(!obj || !obj.groups){
+        clearShape();
+        return;
+      }
+      if(elShapeFrame) elShapeFrame.textContent = String(obj.frame ?? fi2);
+      drawShape(obj.groups);
+    }catch(e){
+      // ignore hover errors to avoid noisy UI
+    }
+  }
+
+
+  function setErr(msg){ elErr.textContent = msg || ""; }
+
+  async function fetchJSON(url, opts){
+    const res = await fetch(url, opts);
+    const txt = await res.text();
+    let obj = null;
+    try { obj = JSON.parse(txt); } catch(e) {}
+    if(!res.ok){
+      throw new Error((obj && obj.error) ? obj.error : `${res.status} ${res.statusText}`);
+    }
+    return obj;
+  }
+
+  function clamp(v, lo, hi){
+    v = Number(v);
+    if(!Number.isFinite(v)) v = lo;
+    return Math.max(lo, Math.min(hi, v));
+  }
+
+  const LEVEL_BUCKETS = [
+    {lvl:0, lo:0,   hi:10,  mid:5},
+    {lvl:1, lo:11,  hi:25,  mid:18},
+    {lvl:2, lo:26,  hi:50,  mid:38},
+    {lvl:3, lo:51,  hi:85,  mid:68},
+    {lvl:4, lo:86,  hi:110, mid:98},
+    {lvl:5, lo:111, hi:150, mid:130},
+  ];
+  const HYSTERESIS = 3;
+
+  const TYPE_COLORS = {
+    happy: "#f6a21a",
+    sad: "#5b7bd5",
+    angry: "#d64545",
+    fear: "#7a5bd5",
+    calm: "#2e8b57",
+  };
+
+  function normType(t){
+    t = (t||"").toLowerCase().trim();
+    return TYPES.includes(t) ? t : "calm";
+  }
+  function typeColor(ty){ return TYPE_COLORS[normType(ty)] || "#333"; }
+
+  function renderTypeLegend(){
+    const lg = document.getElementById("typeLegend");
+    if(!lg) return;
+    lg.innerHTML = "";
+    for(const ty of TYPES){
+      const it = document.createElement("div");
+      it.className = "item";
+      const dot = document.createElement("span");
+      dot.className = "dot";
+      dot.style.background = typeColor(ty);
+      it.appendChild(dot);
+      const tx = document.createElement("span");
+      tx.textContent = ty;
+      it.appendChild(tx);
+      lg.appendChild(it);
+    }
+  }
+  renderTypeLegend();
+
+  function bucketOf(v){
+    v = clamp(v, 0, 150);
+    for(let i=LEVEL_BUCKETS.length-1;i>=0;i--){
+      const b = LEVEL_BUCKETS[i];
+      if(v>=b.lo && v<=b.hi) return b;
+    }
+    return LEVEL_BUCKETS[0];
+  }
+
+  function snapToLevels(v, currentV){
+    v = clamp(v, 0, 150);
+    const b = bucketOf(v);
+    // 可选：保留一点滞回（和你原版一致），这里简单返回 mid
+    return b.mid;
+  }
+
+  function overlayRect(){
+    // overlay 在 waveBox 内有 padding 10，所以用 waveBox rect + padding 10 计算相对坐标
+    const r = waveBox.getBoundingClientRect();
+    return {left:r.left+10, top:r.top+10, width:r.width-20, height:160};
+  }
+
+  function xToT(x){
+    const o = overlayRect();
+    return clamp(x / Math.max(1, o.width) * duration, 0, duration);
+  }
+  function tToX(t){
+    const o = overlayRect();
+    return (t / Math.max(1e-6, duration)) * o.width;
+  }
+
+  function yToV(y){
+    const o = overlayRect();
+    const v = (1.0 - (y / Math.max(1, o.height))) * 150.0;
+    return clamp(v, 0, 150);
+  }
+  function vToY(v){
+    const o = overlayRect();
+    const y = (1.0 - (v / 150.0)) * o.height;
+    return y;
+  }
+
+  function quantT(t){ return Math.round(t*FPS)/FPS; }
+
+  function normalizeCurveEndpoints(){
+    if(!curve || curve.length<2) return;
+    curve.sort((a,b)=>a.t-b.t);
+    curve[0].t = 0;
+    curve[curve.length-1].t = duration;
+  }
+
+  function valueAtStep(t){
+    if(!curve || curve.length<2) return 5;
+    for(let i=0;i<curve.length-1;i++){
+      if(curve[i].t <= t && t < curve[i+1].t) return curve[i].value;
+    }
+    return curve[curve.length-2].value;
+  }
+
+  function typeAt(t){
+    if(!curve || curve.length<2) return "calm";
+    for(let i=0;i<curve.length-1;i++){
+      if(curve[i].t <= t && t < curve[i+1].t) return curve[i].type;
+    }
+    return curve[curve.length-2].type;
+  }
+
+  function insertCurvePoint(t, newTy, newV){
+    const tQ = quantT(t);
+    const k = Math.round(tQ * FPS);
+
+    const oldV = valueAtStep(tQ);
+    const oldTy = typeAt(tQ);
+
+    const pts = [];
+    for(const p of curve){
+      if(Math.abs(p.t - tQ) > 1e-9) pts.push(p);
+    }
+
+    if((newTy !== oldTy) || (Math.abs(newV - oldV) > 1e-6)){
+      const tHold = (k-1)/FPS;
+      if(tHold > 0 && tHold < duration){
+        pts.push({t: tHold, type: oldTy, value: oldV});
+      }
+    }
+    pts.push({t: tQ, type: newTy, value: newV});
+
+    pts.sort((a,b)=>a.t-b.t);
+    const ded = [];
+    for(const p of pts){
+      if(ded.length && Math.abs(ded[ded.length-1].t - p.t) < 1e-9) ded[ded.length-1] = p;
+      else ded.push(p);
+    }
+    curve = ded;
+    normalizeCurveEndpoints();
+  }
+
+  function deletePoint(idx){
+    if(!curve || curve.length<3) return false;
+    if(idx<=0 || idx>=curve.length-1) return false;
+    curve.splice(idx,1);
+    normalizeCurveEndpoints();
+    selectedIndex = null;
+    return true;
+  }
+
+  function applyTypeToInterval(t0, t1, ty){
+    ty = normType(ty);
+    const a0 = quantT(t0);
+    const a1 = quantT(t1);
+    if(a1 <= a0) return;
+
+    insertCurvePoint(a0, typeAt(a0), valueAtStep(a0));
+    insertCurvePoint(a1, typeAt(a1), valueAtStep(a1));
+
+    for(let i=0;i<curve.length-1;i++){
+      if(curve[i].t >= a0 && curve[i].t < a1){
+        curve[i].type = ty;
+      }
+    }
+    normalizeCurveEndpoints();
+  }
+
+  function segStrokeWidth(i){
+    if(selectedSeg===i) return "5";
+    if(hoveredSeg===i) return "4";
+    return "3";
+  }
+
+  function draw(){
+    svg.innerHTML = "";
+    const o = overlayRect();
+    const w = o.width;
+    const h = o.height;
+    svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+
+    // guide lines
+    for(const b of LEVEL_BUCKETS){
+      const y = vToY(b.mid);
+      const ln = document.createElementNS("http://www.w3.org/2000/svg","line");
+      ln.setAttribute("x1","0"); ln.setAttribute("x2", String(w));
+      ln.setAttribute("y1", String(y)); ln.setAttribute("y2", String(y));
+      ln.setAttribute("stroke", "#666");
+      ln.setAttribute("stroke-width","1");
+      ln.setAttribute("stroke-dasharray","5 5");
+      ln.setAttribute("opacity","0.25");
+      svg.appendChild(ln);
+
+      const tx = document.createElementNS("http://www.w3.org/2000/svg","text");
+      tx.setAttribute("x", "6");
+      tx.setAttribute("y", String(y - 4));
+      tx.setAttribute("font-size","11");
+      tx.setAttribute("fill","#555");
+      tx.setAttribute("opacity","0.8");
+      tx.textContent = `L${b.lvl}`;
+      svg.appendChild(tx);
+    }
+
+    // segments + type label
+for(let i=0;i<curve.length-1;i++){
+  const p0 = curve[i];
+  const p1 = curve[i+1];
+  const x0 = tToX(p0.t);
+  const x1 = tToX(p1.t);
+  const y  = vToY(p0.value);
+
+  // 1) segment line
+  const ln = document.createElementNS("http://www.w3.org/2000/svg","line");
+  ln.setAttribute("x1", String(x0));
+  ln.setAttribute("x2", String(x1));
+  ln.setAttribute("y1", String(y));
+  ln.setAttribute("y2", String(y));
+  ln.setAttribute("stroke", typeColor(p0.type));
+  ln.setAttribute("stroke-width", segStrokeWidth(i));
+  ln.setAttribute("stroke-linecap","round");
+  ln.setAttribute("opacity","0.9");
+  svg.appendChild(ln);
+
+  // 2) type label on line (skip too-short segments)
+  const segLenPx = Math.abs(x1 - x0);
+  const segDur   = Math.max(0, p1.t - p0.t);
+
+  // 规则：<0.4s 或 <60px 不画，避免挤在一起
+  if(segDur >= 0.4 && segLenPx >= 60){
+    const ty = normType(p0.type);
+
+    // label group
+    const g = document.createElementNS("http://www.w3.org/2000/svg","g");
+    g.setAttribute("opacity","0.9");
+
+    // place label around mid point, slight vertical offset
+    const xm = (x0 + x1) * 0.5;
+    const ym = y - 10;
+
+    // background (rounded rect)
+    const bg = document.createElementNS("http://www.w3.org/2000/svg","rect");
+    // rough width by chars
+    const padX = 6;
+    const padY = 3;
+    const fontSize = 11;
+    const textW = Math.max(ty.length * 7, 26); // heuristic
+    const bw = textW + padX * 2;
+    const bh = fontSize + padY * 2;
+
+    bg.setAttribute("x", String(xm - bw/2));
+    bg.setAttribute("y", String(ym - bh/2));
+    bg.setAttribute("width", String(bw));
+    bg.setAttribute("height", String(bh));
+    bg.setAttribute("rx", "6");
+    bg.setAttribute("ry", "6");
+    bg.setAttribute("fill", "rgba(255,255,255,0.75)");
+    bg.setAttribute("stroke", "rgba(0,0,0,0.18)");
+    bg.setAttribute("stroke-width", "1");
+
+    const tx = document.createElementNS("http://www.w3.org/2000/svg","text");
+    tx.setAttribute("x", String(xm));
+    tx.setAttribute("y", String(ym + fontSize/2 - 1));
+    tx.setAttribute("text-anchor", "middle");
+    tx.setAttribute("font-size", String(fontSize));
+    tx.setAttribute("fill", typeColor(ty));
+    tx.setAttribute("style", "font-weight:700; paint-order: stroke; stroke: rgba(255,255,255,0.9); stroke-width:2px;");
+
+    tx.textContent = ty;
+
+    g.appendChild(bg);
+    g.appendChild(tx);
+    svg.appendChild(g);
+  }
+}
+
+    // hit layer: use an invisible rect (works now because overlay is on top)
+    const hit = document.createElementNS("http://www.w3.org/2000/svg","rect");
+    hit.setAttribute("x","0"); hit.setAttribute("y","0");
+    hit.setAttribute("width", String(w)); hit.setAttribute("height", String(h));
+    hit.setAttribute("fill","rgba(0,0,0,0)");
+    hit.style.cursor = "pointer";
+
+    hit.addEventListener('mousemove', (ev)=>{
+      if(!duration) return;
+      const lx = ev.offsetX;
+      const t = xToT(lx);
+      updateShapeAtTime(t);
+      let seg=-1;
+      for(let i=0;i<curve.length-1;i++){
+        if(curve[i].t <= t && t < curve[i+1].t){ seg=i; break; }
+      }
+      hoveredSeg = (seg>=0)? seg : null;
+      elSegInfo.textContent = hoveredSeg==null ? "—" : `${hoveredSeg} [${curve[hoveredSeg].t.toFixed(2)}~${curve[hoveredSeg+1].t.toFixed(2)}]`;
+      draw();
+    });
+    hit.addEventListener('mouseleave', ()=>{
+      hoveredSeg = null;
+      elSegInfo.textContent = "—";
+      draw();
+    });
+    hit.addEventListener('click', (ev)=>{
+      if(!duration) return;
+      const lx = ev.offsetX;
+      const t = xToT(lx);
+      let seg=-1;
+      for(let i=0;i<curve.length-1;i++){
+        if(curve[i].t <= t && t < curve[i+1].t){ seg=i; break; }
+      }
+      if(seg<0) return;
+      selectedSeg = seg;
+      const ty = normType(segTypeEl.value);
+      applyTypeToInterval(curve[seg].t, curve[seg+1].t, ty);
+      draw();
+      saveLabel().catch(err=>setErr(String(err)));
+      ev.preventDefault();
+    });
+
+    svg.appendChild(hit);
+
+    // points (on top)
+    for(let i=0;i<curve.length;i++){
+      const p = curve[i];
+      const cx = tToX(p.t);
+      const cy = vToY(p.value);
+      const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+      c.setAttribute("cx", String(cx));
+      c.setAttribute("cy", String(cy));
+      c.setAttribute("r", (selectedIndex===i) ? "6" : "5");
+      c.setAttribute("fill", "#fff");
+      c.setAttribute("stroke", "#111");
+      c.setAttribute("stroke-width", "1");
+      c.style.cursor = "grab";
+
+      c.addEventListener('mousedown', (ev)=>{
+        if(ev.button!==0) return;
+        if(ev.altKey){
+          if(deletePoint(i)){
+            draw();
+            saveLabel().catch(err=>setErr(String(err)));
+          }
+          ev.preventDefault();
+          return;
+        }
+        draggingIndex = i;
+        selectedIndex = i;
+
+        // offset in overlay coordinates
+        dragOffset.dx = ev.offsetX - cx;
+        dragOffset.dy = ev.offsetY - cy;
+        ev.preventDefault();
+      });
+
+      svg.appendChild(c);
+    }
+  }
+
+  function updateHeader(){
+    elFps.textContent = String(FPS);
+    elDur.textContent = (duration==null) ? "—" : duration.toFixed(3);
+    elPtCount.textContent = curve ? String(curve.length) : "—";
+    elCount.textContent = String(files.length);
+    const done = files.filter(x=>x.labeled).length;
+    elDone.textContent = `done: ${done}`;
+  }
+
+  function renderList(){
+    elList.innerHTML = "";
+    for(let i=0;i<files.length;i++){
+      const it = files[i];
+      const li = document.createElement('li');
+      li.className = "item" + (i===curIndex ? " active":"");
+      li.innerHTML = `<span>${it.wav}</span><span class="muted">${it.labeled ? "✓" : ""}</span>`;
+      li.onclick = ()=>loadIndex(i).catch(err=>setErr(String(err)));
+      elList.appendChild(li);
+    }
+  }
+
+  async function loadFiles(){
+    setErr("");
+    files = await fetchJSON('/api/files');
+    curIndex = -1;
+    renderList();
+    updateHeader();
+    if(files.length) await loadIndex(0);
+  }
+
+  function destroyWave(){
+    if(wave){
+      try{ wave.destroy(); }catch(e){}
+      wave = null;
+    }
+  }
+
+  async function loadIndex(i){
+    if(i<0 || i>=files.length){
+      curIndex=-1;
+      destroyWave();
+      elName.textContent = "No file";
+      updateHeader();
+      return;
+    }
+    curIndex=i;
+    renderList();
+    destroyWave();
+    setErr("");
+
+    const wav = files[curIndex].wav;
+    elName.textContent = wav;
+
+    const audioUrl = `/audio/${encodeURIComponent(wav)}`;
+
+    wave = WaveSurfer.create({
+      container:'#wave',
+      height:160,
+      waveColor:'#8aa',
+      progressColor:'#446',
+      cursorColor:'#111',
+      url: audioUrl,
+      normalize:true,
+      backend:'WebAudio'
+    });
+
+    wave.on('error', (e)=> setErr(`WaveSurfer error: ${e}`));
+
+    wave.on('ready', async ()=>{
+      duration = wave.getDuration();
+
+      const lbl = await fetchJSON(`/api/label/${encodeURIComponent(wav)}`);
+      curve = Array.isArray(lbl.curve) ? lbl.curve : [];
+
+      selectedIndex = null;
+      hoveredSeg = null;
+      selectedSeg = null;
+
+      if(audioTextEl){
+        audioTextEl.value = (typeof lbl.text === 'string') ? lbl.text : (lbl.text ?? "");
+      }
+
+      if(!curve || curve.length<2){
+        // 默认 calm + L0
+        curve = [
+          {t:0, type:"calm", value:5},
+          {t:duration, type:"calm", value:5},
+        ];
+      }
+      normalizeCurveEndpoints();
+      updateHeader();
+      draw();
+
+      // 首次打开也保存一下（保持 labeled 状态 & 记录 duration）
+      await saveLabel();
+    });
+
+    // drag handlers
+    window.onmousemove = (ev)=>{
+      if(draggingIndex==null) return;
+      if(!wave || duration==null) return;
+
+      const o = overlayRect();
+      const lx = (ev.clientX - o.left) - dragOffset.dx;
+      const ly = (ev.clientY - o.top) - dragOffset.dy;
+
+      let t = quantT(xToT(lx));
+      let v = snapToLevels(yToV(ly), curve[draggingIndex]?.value);
+
+      if(draggingIndex===0) t = 0;
+      if(draggingIndex===curve.length-1) t = duration;
+
+      if(draggingIndex>0) t = Math.max(t, curve[draggingIndex-1].t + 1/FPS);
+      if(draggingIndex<curve.length-1) t = Math.min(t, curve[draggingIndex+1].t - 1/FPS);
+
+      curve[draggingIndex].t = t;
+      curve[draggingIndex].value = v;
+
+      normalizeCurveEndpoints();
+      updateHeader();
+      draw();
+    };
+
+    window.onmouseup = ()=>{
+      if(draggingIndex!=null){
+        draggingIndex = null;
+        saveLabel().catch(err=>setErr(String(err)));
+      }
+    };
+
+    // right-click add point
+    svg.oncontextmenu = (ev)=>{
+      if(!wave || duration==null) return;
+      const o = overlayRect();
+      const lx = ev.clientX - o.left;
+      const ly = ev.clientY - o.top;
+      const t = quantT(xToT(lx));
+      const v = snapToLevels(yToV(ly), valueAtStep(t));
+      const ty = typeAt(t);
+      insertCurvePoint(t, ty, v);
+      updateHeader();
+      draw();
+      saveLabel().catch(err=>setErr(String(err)));
+      ev.preventDefault();
+    };
+  }
+
+  async function saveLabel(){
+    if(curIndex<0 || duration==null) return;
+    const wav = files[curIndex].wav;
+    const payload = { wav, fps: FPS, duration, curve, text: audioTextEl ? audioTextEl.value : "" };
+    await fetchJSON('/api/save', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload),
+    });
+    files[curIndex].labeled = true;
+    renderList();
+    updateHeader();
+  }
+
+  async function exportJSON(){
+    if(curIndex<0) return;
+    const wav = files[curIndex].wav;
+    const r = await fetchJSON(`/api/export/${encodeURIComponent(wav)}`);
+    const blob = new Blob([JSON.stringify(r, null, 2)], {type:"application/json"});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = wav.replace(/\.wav$/i, "") + ".json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  function togglePlay(){ if(wave) wave.playPause(); }
+  async function nextFile(){ if(curIndex>=0) await loadIndex(Math.min(files.length-1, curIndex+1)); }
+  async function prevFile(){ if(curIndex>=0) await loadIndex(Math.max(0, curIndex-1)); }
+
+  // ✅ 恢复默认按钮绑定
+  document.getElementById('btnPlay').onclick = ()=>togglePlay();
+  document.getElementById('btnPrev').onclick = ()=>prevFile().catch(e=>setErr(String(e)));
+  document.getElementById('btnNext').onclick = ()=>nextFile().catch(e=>setErr(String(e)));
+  document.getElementById('btnSave').onclick = ()=>saveLabel().catch(e=>setErr(String(e)));
+  document.getElementById('btnExport').onclick = ()=>exportJSON().catch(e=>setErr(String(e)));
+
+  // 键盘快捷键 + 1-7 设段 type
+  document.addEventListener('keydown', async (e)=>{
+    if(e.target && ['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)) return;
+
+    if(e.code==='Space'){ e.preventDefault(); togglePlay(); return; }
+    if(e.key==='n' || e.key==='N'){ await nextFile(); return; }
+    if(e.key==='p' || e.key==='P'){ await prevFile(); return; }
+
+    if(e.key==='Delete' || e.key==='Backspace'){
+      if(selectedIndex!=null && deletePoint(selectedIndex)){
+        updateHeader();
+        draw();
+        saveLabel().catch(err=>setErr(String(err)));
+      }
+      return;
+    }
+
+    const keyToType = {"1":"happy","2":"sad","3":"angry","4":"fear","5":"calm"};
+    if(keyToType[e.key]){
+      const ty = keyToType[e.key];
+      segTypeEl.value = ty;
+
+      const seg = (selectedSeg!=null) ? selectedSeg : hoveredSeg;
+      if(seg!=null && curve && seg>=0 && seg < curve.length-1){
+        applyTypeToInterval(curve[seg].t, curve[seg+1].t, ty);
+        updateHeader();
+        draw();
+        saveLabel().catch(err=>setErr(String(err)));
+      }
+      return;
+    }
+  });
+
+  // init
+  loadFiles().catch(err=>setErr(String(err)));
+</script>
+</body>
+</html>
