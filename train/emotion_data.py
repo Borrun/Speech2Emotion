@@ -134,7 +134,7 @@ class DataConfig:
 
 class EmotionSeqDataset(torch.utils.data.Dataset):
     """
-    Reads annotater/labels.jsonl
+    Reads annotater/labels_new.jsonl
     returns:
       mel: [T, M]
       y_type: [T]
