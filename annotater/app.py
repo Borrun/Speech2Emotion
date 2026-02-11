@@ -3,16 +3,22 @@ import json
 from flask import Flask, jsonify, request, send_from_directory, abort
 from pathlib import Path
 
+# 获取当前脚本所在的文件夹绝对路径
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# 改成你本机 wav 目录
-AUDIO_DIR = os.environ.get("AUDIO_DIR") or str(Path("/home/borrun/Speech2Emotion/wavs"))
+#同级目录下的 wavs 和 data
+AUDIO_DIR = os.path.join(BASE_DIR, "wavs")
+DATA_DIR = os.path.join(BASE_DIR, "data")
 
-LABEL_PATH = os.path.join(BASE_DIR, "labels.jsonl")
+# 标注文件也保存在脚本同级目录下
+LABEL_PATH = os.path.join(BASE_DIR, "labels_new.jsonl")
+
+# 初始化 Flask 时指定 template_folder 为当前目录
+app = Flask(__name__, template_folder=BASE_DIR)
 DEFAULT_FPS = 30
 
 # + action: 表示需要行为表现
-ALLOWED_TYPES = ["happy", "sad", "angry", "fear", "calm", "confused", "action"]
+ALLOWED_TYPES = ["happy", "sad", "angry", "fear", "calm"]
 
 # 6-level intensity mapping (from config.cpp)
 LEVEL_INTENSITY_MAPPING = {0: 5.0, 1: 18.0, 2: 38.0, 3: 68.0, 4: 98.0, 5: 130.0}
@@ -200,6 +206,227 @@ def generate_curve(base, triggers, duration, default_tau=0.5):
     ]
     return normalize_curve(curve, duration=float(dur_t))
 
+
+
+# ================= Emotion template curves (from <type>.txt) =================
+_emo_cache = {}  # type -> {"frames": {frame:int -> [g0..g3]}, "max_frame": int}
+
+def emotion_txt_for_type(etype: str) -> str:
+    # e.g. happy -> DATA_DIR/happy.txt
+    return os.path.join(DATA_DIR, f"{etype}.txt")
+
+def load_emotion_template(etype: str):
+    """
+    Support two txt formats (4 lines per block):
+
+    Format A (no _id column):
+      block_idx x1 y1 ... x32 y32
+      block_idx x1 y1 ... x32 y32
+      block_idx x1 y1 ... x32 y32
+      block_idx x1 y1 ... x32 y32
+      next_block_idx ...
+
+    Format B (with _id column):
+      block_idx _id x1 y1 ... x32 y32
+      (repeat 4 lines for same block_idx and same _id)
+      next_block_idx ...
+
+    We group by (block_idx, _id_if_present_else_"0") and take the 4 lines in file order as 4 curves.
+    If a block_idx has multiple _id blocks, we pick the first completed one.
+    """
+    if etype in _emo_cache:
+        return _emo_cache[etype]
+
+    txt_path = emotion_txt_for_type(etype)
+    blocks = {}   # block_idx -> list[4] (picked first completed key)
+    max_block = None
+
+    if not os.path.isfile(txt_path):
+        _emo_cache[etype] = {"frames": {}, "max_frame": None, "path": txt_path}
+        return _emo_cache[etype]
+
+    cur = {}  # (block_idx, sid) -> [pts...]
+    with open(txt_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            parts = line.split()
+
+            # Decide whether there's an _id column
+            # Need exactly 64 numeric values for points
+            if len(parts) == 1 + 64:
+                # A: block + 64 nums
+                try:
+                    bi = int(float(parts[0]))
+                except Exception:
+                    continue
+                sid = "0"
+                num_parts = parts[1:]
+            elif len(parts) >= 2 + 64:
+                # B: block + _id + 64 nums (ignore any tail)
+                try:
+                    bi = int(float(parts[0]))
+                except Exception:
+                    continue
+                sid = parts[1]
+                num_parts = parts[2:2+64]
+            else:
+                continue
+
+            nums = []
+            ok = True
+            for s in num_parts:
+                try:
+                    nums.append(float(s))
+                except Exception:
+                    ok = False
+                    break
+            if not ok or len(nums) != 64:
+                continue
+
+            pts = [[nums[i], nums[i+1]] for i in range(0, 64, 2)]
+
+            key = (bi, sid)
+            cur.setdefault(key, []).append(pts)
+
+            if max_block is None or bi > max_block:
+                max_block = bi
+
+            # commit first completed 4-line block for this block_idx
+            if len(cur[key]) == 4 and bi not in blocks:
+                blocks[bi] = cur[key][:4]
+
+    _emo_cache[etype] = {"frames": blocks, "max_frame": max_block, "path": txt_path}
+    return _emo_cache[etype]
+
+    txt_path = emotion_txt_for_type(etype)
+    frames = {}      # frame -> list[4] (picked _id)
+    seen_frame = set()
+    max_frame = None
+
+    if not os.path.isfile(txt_path):
+        _emo_cache[etype] = {"frames": {}, "max_frame": None, "path": txt_path}
+        return _emo_cache[etype]
+
+    # temp gather: (frame, sid) -> [pts, pts, pts, pts]
+    cur = {}  # key -> list of groups
+    with open(txt_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            parts = line.split()
+            if len(parts) < 2 + 64:
+                continue
+            try:
+                fi = int(float(parts[0]))
+            except Exception:
+                continue
+            sid = parts[1]
+            # parse 32 points
+            nums = []
+            ok = True
+            for s in parts[2:]:
+                try:
+                    nums.append(float(s))
+                except Exception:
+                    ok = False
+                    break
+            if not ok or len(nums) != 64:
+                continue
+            pts = [[nums[i], nums[i+1]] for i in range(0, 64, 2)]
+
+            key = (fi, sid)
+            cur.setdefault(key, []).append(pts)
+
+            if max_frame is None or fi > max_frame:
+                max_frame = fi
+
+            # once we have 4 lines, maybe commit if this frame not yet committed
+            if len(cur[key]) == 4 and fi not in frames:
+                frames[fi] = cur[key][:4]
+
+    _emo_cache[etype] = {"frames": frames, "max_frame": max_frame, "path": txt_path}
+    return _emo_cache[etype]
+
+# ================= 2D curve data (per-frame) =================
+# Expected txt format:
+# each line: "<frame_idx> x1 y1 x2 y2 ... x32 y32"
+# For one frame there are 4 lines (4 groups), so total 4 * 32 points.
+_shape_cache = {}  # txt_path -> {"frames": {i: [group0..3]}, "max_frame": int}
+
+def load_shape_txt(txt_path: str):
+    txt_path = str(txt_path)
+    if txt_path in _shape_cache:
+        return _shape_cache[txt_path]
+
+    frames = {}
+    max_frame = None
+    if not os.path.isfile(txt_path):
+        _shape_cache[txt_path] = {"frames": {}, "max_frame": None}
+        return _shape_cache[txt_path]
+
+    with open(txt_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            parts = line.split()
+            # expected: frame group_id x1 y1 ... x32 y32
+            if len(parts) < 2 + 64:
+                continue
+            try:
+                fi = int(float(parts[0]))
+                gid = int(float(parts[1]))
+            except Exception:
+                continue
+            nums = []
+            ok = True
+            for s in parts[2:]:
+                try:
+                    nums.append(float(s))
+                except Exception:
+                    ok = False
+                    break
+            if not ok or (len(nums) % 2 != 0):
+                continue
+            pts = []
+            for k in range(0, len(nums), 2):
+                pts.append([nums[k], nums[k+1]])
+            if len(pts) != 32:
+                continue
+
+            frames.setdefault(fi, {})
+            frames[fi][gid] = pts  # overwrite if duplicated
+
+            if max_frame is None or fi > max_frame:
+                max_frame = fi
+
+    # Keep only frames with at least 1 group; normalize to list[4]
+    for fi, gd in list(frames.items()):
+        if not gd:
+            frames.pop(fi, None)
+            continue
+        # gid may be 0-3 or 1-4; normalize to 0-3 if needed
+        norm = [[], [], [], []]
+        for gid, pts in gd.items():
+            if gid in (1,2,3,4):
+                idx = gid-1
+            else:
+                idx = gid
+            if 0 <= idx < 4:
+                norm[idx] = pts
+        frames[fi] = norm
+
+    _shape_cache[txt_path] = {"frames": frames, "max_frame": max_frame}
+    return _shape_cache[txt_path]
+
+def shape_txt_for_wav(wav_name: str) -> str:
+    base = os.path.splitext(os.path.basename(wav_name))[0]
+    # prefer exact match: <base>.txt under DATA_DIR
+    return os.path.join(DATA_DIR, base + ".txt")
+
 # ================= Flask app =================
 app = Flask(__name__)
 
@@ -244,6 +471,88 @@ def api_label(wav):
         "duration": obj.get("duration", None),
         "text": obj.get("text", ""),
     })
+
+
+@app.get("/api/shape/<path:wav>")
+def api_shape(wav):
+    """
+    Return per-frame 2D curve points.
+    - GET /api/shape/<wav>            -> meta: available/max_frame
+    - GET /api/shape/<wav>?i=<frame>  -> {frame, groups: [ [ [x,y]...32 ] x4 ]}
+    """
+    txt_path = shape_txt_for_wav(wav)
+    data = load_shape_txt(txt_path)
+    frames = data.get("frames", {})
+    max_frame = data.get("max_frame", None)
+
+    fi = request.args.get("i", default=None, type=int)
+    if fi is None:
+        return jsonify({"wav": wav, "available": bool(frames), "max_frame": max_frame})
+
+    if not frames:
+        return jsonify({"error": f"Missing shape txt: {txt_path}"}), 404
+
+    # find closest available frame if exact not present
+    if fi not in frames:
+        # simple nearest search within small window first
+        for d in range(1, 6):
+            if (fi-d) in frames:
+                fi = fi-d; break
+            if (fi+d) in frames:
+                fi = fi+d; break
+        if fi not in frames:
+            # fallback: clamp
+            if max_frame is not None:
+                fi = int(clamp(fi, 0, max_frame))
+            if fi not in frames:
+                return jsonify({"error": f"Frame not found: {fi}"}), 404
+
+    groups = frames.get(fi, [])
+    # pad to 4 with empty groups (front-end will skip empty)
+    while len(groups) < 4:
+        groups.append([])
+    return jsonify({"wav": wav, "frame": fi, "groups": groups})
+
+
+@app.get("/api/emo_shape/<etype>")
+def api_emo_shape(etype):
+    """
+    Return emotion template 2D curve.
+    - GET /api/emo_shape/<etype>?frame=130
+    - GET /api/emo_shape/<etype>?level=5  (mapped by LEVEL_INTENSITY_MAPPING)
+    """
+    etype = (etype or "").strip().lower()
+    if etype not in ALLOWED_TYPES:
+        return jsonify({"error": f"Bad type: {etype}"}), 400
+
+    frame = request.args.get("frame", default=None, type=int)
+    level = request.args.get("level", default=None, type=int)
+
+    if frame is None and level is None:
+        meta = load_emotion_template(etype)
+        return jsonify({"type": etype, "available": bool(meta["frames"]), "max_frame": meta["max_frame"], "path": meta.get("path")})
+
+    if frame is None:
+        if level not in LEVEL_INTENSITY_MAPPING:
+            return jsonify({"error": f"Bad level: {level}"}), 400
+        frame = int(round(LEVEL_INTENSITY_MAPPING[level]))
+
+    meta = load_emotion_template(etype)
+    frames = meta.get("frames", {})
+    if not frames:
+        return jsonify({"error": f"Missing template txt: {meta.get('path')}"}), 404
+
+    if frame not in frames:
+        # allow nearest within small window
+        for d in range(1, 6):
+            if (frame-d) in frames:
+                frame = frame-d; break
+            if (frame+d) in frames:
+                frame = frame+d; break
+        if frame not in frames:
+            return jsonify({"error": f"Frame not found: {frame}"}), 404
+
+    return jsonify({"type": etype, "frame": frame, "groups": frames[frame]})
 
 @app.post("/api/save")
 def api_save():

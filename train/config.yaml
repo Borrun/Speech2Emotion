@@ -1,0 +1,33 @@
+# config.yaml - 训练配置文件
+# 路径：/home/borrun/Speech2Emotion/train/config.yaml
+
+# ============ 必需参数 ============
+wav_dir: "/home/borrun/Speech2Emotion/annotater/wavs"          # 音频文件目录
+label_path: "/home/borrun/Speech2Emotion/annotater/labels_new.jsonl"  # 标签文件路径
+out_dir: "/home/borrun/Speech2Emotion/output"             # 输出目录
+
+# ============ 训练参数 ============
+epochs: 100
+batch_size: 8
+lr: 0.0001
+weight_decay: 0.0001
+seed: 42
+val_ratio: 0.2
+
+# ============ 模型参数 ============
+channels: 128
+layers: 6
+dropout: 0.1
+
+# ============ 边界检测 ============
+use_boundary_head: true
+
+# ============ 损失函数权重 ============
+label_smoothing: 0.1
+w_type: 1.0
+w_lvl: 1.0
+w_bnd: 0.5
+
+# ============ 其他 ============
+grad_clip: 1.0
+pos_weight_cap: 10.0
