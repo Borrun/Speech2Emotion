@@ -1,0 +1,260 @@
+{
+  "wav": "utt_0013.wav",
+  "fps": 30,
+  "duration": 7.255,
+  "n_frames": 217,
+  "text": "直接放玉米粒在锅里可不行哦，你这想法挺有烟火气，但小心炸成厨房灾难现场。",
+  "switch_frames": [
+    45,
+    72,
+    147
+  ],
+  "tokens": [
+    {
+      "token": "直",
+      "f0": 0,
+      "f1": 6
+    },
+    {
+      "token": "接",
+      "f0": 6,
+      "f1": 11
+    },
+    {
+      "token": "放",
+      "f0": 11,
+      "f1": 17
+    },
+    {
+      "token": "玉",
+      "f0": 17,
+      "f1": 23
+    },
+    {
+      "token": "米",
+      "f0": 23,
+      "f1": 29
+    },
+    {
+      "token": "粒",
+      "f0": 29,
+      "f1": 34
+    },
+    {
+      "token": "在",
+      "f0": 34,
+      "f1": 40
+    },
+    {
+      "token": "锅",
+      "f0": 40,
+      "f1": 46
+    },
+    {
+      "token": "里",
+      "f0": 46,
+      "f1": 52
+    },
+    {
+      "token": "可",
+      "f0": 52,
+      "f1": 57
+    },
+    {
+      "token": "不",
+      "f0": 57,
+      "f1": 63
+    },
+    {
+      "token": "行",
+      "f0": 63,
+      "f1": 69
+    },
+    {
+      "token": "哦",
+      "f0": 69,
+      "f1": 75
+    },
+    {
+      "token": "，",
+      "f0": 75,
+      "f1": 84
+    },
+    {
+      "token": "你",
+      "f0": 84,
+      "f1": 90
+    },
+    {
+      "token": "这",
+      "f0": 90,
+      "f1": 95
+    },
+    {
+      "token": "想",
+      "f0": 95,
+      "f1": 101
+    },
+    {
+      "token": "法",
+      "f0": 101,
+      "f1": 107
+    },
+    {
+      "token": "挺",
+      "f0": 107,
+      "f1": 113
+    },
+    {
+      "token": "有",
+      "f0": 113,
+      "f1": 118
+    },
+    {
+      "token": "烟",
+      "f0": 118,
+      "f1": 124
+    },
+    {
+      "token": "火",
+      "f0": 124,
+      "f1": 130
+    },
+    {
+      "token": "气",
+      "f0": 130,
+      "f1": 135
+    },
+    {
+      "token": "，",
+      "f0": 135,
+      "f1": 147
+    },
+    {
+      "token": "但",
+      "f0": 147,
+      "f1": 150
+    },
+    {
+      "token": "小",
+      "f0": 150,
+      "f1": 156
+    },
+    {
+      "token": "心",
+      "f0": 156,
+      "f1": 162
+    },
+    {
+      "token": "炸",
+      "f0": 162,
+      "f1": 168
+    },
+    {
+      "token": "成",
+      "f0": 168,
+      "f1": 173
+    },
+    {
+      "token": "厨",
+      "f0": 173,
+      "f1": 179
+    },
+    {
+      "token": "房",
+      "f0": 179,
+      "f1": 185
+    },
+    {
+      "token": "灾",
+      "f0": 185,
+      "f1": 191
+    },
+    {
+      "token": "难",
+      "f0": 191,
+      "f1": 196
+    },
+    {
+      "token": "现",
+      "f0": 196,
+      "f1": 202
+    },
+    {
+      "token": "场",
+      "f0": 202,
+      "f1": 208
+    },
+    {
+      "token": "。",
+      "f0": 208,
+      "f1": 217
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_frame": 0,
+      "end_frame": 45,
+      "start_sec": 0.0,
+      "end_sec": 1.5,
+      "emotion_type_id": 1,
+      "emotion_type": "sad",
+      "emotion_type_conf": 0.5333333333333333,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.6666666666666666,
+      "text": "直接放玉米粒在锅",
+      "token_start": 0,
+      "token_end": 7,
+      "n_tokens": 8
+    },
+    {
+      "seg_id": 1,
+      "start_frame": 45,
+      "end_frame": 72,
+      "start_sec": 1.5,
+      "end_sec": 2.4,
+      "emotion_type_id": 1,
+      "emotion_type": "sad",
+      "emotion_type_conf": 0.48148148148148145,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.6296296296296297,
+      "text": "锅里可不行哦",
+      "token_start": 7,
+      "token_end": 12,
+      "n_tokens": 6
+    },
+    {
+      "seg_id": 2,
+      "start_frame": 72,
+      "end_frame": 147,
+      "start_sec": 2.4,
+      "end_sec": 4.9,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.9866666666666667,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.7066666666666667,
+      "text": "哦，你这想法挺有烟火气，",
+      "token_start": 12,
+      "token_end": 23,
+      "n_tokens": 12
+    },
+    {
+      "seg_id": 3,
+      "start_frame": 147,
+      "end_frame": 217,
+      "start_sec": 4.9,
+      "end_sec": 7.233333333333333,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.7142857142857143,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.5,
+      "text": "但小心炸成厨房灾难现场。",
+      "token_start": 24,
+      "token_end": 35,
+      "n_tokens": 12
+    }
+  ]
+}

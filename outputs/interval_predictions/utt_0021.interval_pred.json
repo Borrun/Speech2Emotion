@@ -1,0 +1,200 @@
+{
+  "wav": "utt_0021.wav",
+  "fps": 30,
+  "duration": 5.0366875,
+  "n_frames": 150,
+  "text": "咋了？这是被生活偷袭了，说来听听，我给你顺顺气。",
+  "switch_frames": [
+    44,
+    89,
+    119
+  ],
+  "tokens": [
+    {
+      "token": "咋",
+      "f0": 0,
+      "f1": 6
+    },
+    {
+      "token": "了",
+      "f0": 6,
+      "f1": 11
+    },
+    {
+      "token": "？",
+      "f0": 11,
+      "f1": 20
+    },
+    {
+      "token": "这",
+      "f0": 20,
+      "f1": 26
+    },
+    {
+      "token": "是",
+      "f0": 26,
+      "f1": 32
+    },
+    {
+      "token": "被",
+      "f0": 32,
+      "f1": 38
+    },
+    {
+      "token": "生",
+      "f0": 38,
+      "f1": 43
+    },
+    {
+      "token": "活",
+      "f0": 43,
+      "f1": 49
+    },
+    {
+      "token": "偷",
+      "f0": 49,
+      "f1": 55
+    },
+    {
+      "token": "袭",
+      "f0": 55,
+      "f1": 60
+    },
+    {
+      "token": "了",
+      "f0": 60,
+      "f1": 66
+    },
+    {
+      "token": "，",
+      "f0": 66,
+      "f1": 75
+    },
+    {
+      "token": "说",
+      "f0": 75,
+      "f1": 81
+    },
+    {
+      "token": "来",
+      "f0": 81,
+      "f1": 86
+    },
+    {
+      "token": "听",
+      "f0": 86,
+      "f1": 92
+    },
+    {
+      "token": "听",
+      "f0": 92,
+      "f1": 98
+    },
+    {
+      "token": "，",
+      "f0": 98,
+      "f1": 107
+    },
+    {
+      "token": "我",
+      "f0": 107,
+      "f1": 112
+    },
+    {
+      "token": "给",
+      "f0": 112,
+      "f1": 118
+    },
+    {
+      "token": "你",
+      "f0": 118,
+      "f1": 124
+    },
+    {
+      "token": "顺",
+      "f0": 124,
+      "f1": 130
+    },
+    {
+      "token": "顺",
+      "f0": 130,
+      "f1": 135
+    },
+    {
+      "token": "气",
+      "f0": 135,
+      "f1": 141
+    },
+    {
+      "token": "。",
+      "f0": 141,
+      "f1": 150
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_frame": 0,
+      "end_frame": 44,
+      "start_sec": 0.0,
+      "end_sec": 1.4666666666666666,
+      "emotion_type_id": 1,
+      "emotion_type": "sad",
+      "emotion_type_conf": 0.6136363636363636,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.75,
+      "text": "咋了？这是被生活",
+      "token_start": 0,
+      "token_end": 7,
+      "n_tokens": 8
+    },
+    {
+      "seg_id": 1,
+      "start_frame": 44,
+      "end_frame": 89,
+      "start_sec": 1.4666666666666666,
+      "end_sec": 2.966666666666667,
+      "emotion_type_id": 1,
+      "emotion_type": "sad",
+      "emotion_type_conf": 0.5333333333333333,
+      "emotion_level": 4,
+      "emotion_level_conf": 0.5777777777777777,
+      "text": "活偷袭了，说来听",
+      "token_start": 7,
+      "token_end": 14,
+      "n_tokens": 8
+    },
+    {
+      "seg_id": 2,
+      "start_frame": 89,
+      "end_frame": 119,
+      "start_sec": 2.966666666666667,
+      "end_sec": 3.966666666666667,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 1.0,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.6333333333333333,
+      "text": "听听，我给你",
+      "token_start": 14,
+      "token_end": 19,
+      "n_tokens": 6
+    },
+    {
+      "seg_id": 3,
+      "start_frame": 119,
+      "end_frame": 150,
+      "start_sec": 3.966666666666667,
+      "end_sec": 5.0,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.967741935483871,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.5161290322580645,
+      "text": "你顺顺气。",
+      "token_start": 19,
+      "token_end": 23,
+      "n_tokens": 5
+    }
+  ]
+}

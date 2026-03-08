@@ -1,0 +1,208 @@
+{
+  "wav": "utt_0030.wav",
+  "fps": 30,
+  "duration": 4.983125,
+  "n_frames": 149,
+  "text": "怎么了？这是突然哪里不对劲吗？是累着了，还是吃东西不舒服？",
+  "switch_frames": [
+    43,
+    89
+  ],
+  "tokens": [
+    {
+      "token": "怎",
+      "f0": 0,
+      "f1": 5
+    },
+    {
+      "token": "么",
+      "f0": 5,
+      "f1": 9
+    },
+    {
+      "token": "了",
+      "f0": 9,
+      "f1": 14
+    },
+    {
+      "token": "？",
+      "f0": 14,
+      "f1": 22
+    },
+    {
+      "token": "这",
+      "f0": 22,
+      "f1": 27
+    },
+    {
+      "token": "是",
+      "f0": 27,
+      "f1": 31
+    },
+    {
+      "token": "突",
+      "f0": 31,
+      "f1": 36
+    },
+    {
+      "token": "然",
+      "f0": 36,
+      "f1": 41
+    },
+    {
+      "token": "哪",
+      "f0": 41,
+      "f1": 46
+    },
+    {
+      "token": "里",
+      "f0": 46,
+      "f1": 50
+    },
+    {
+      "token": "不",
+      "f0": 50,
+      "f1": 55
+    },
+    {
+      "token": "对",
+      "f0": 55,
+      "f1": 60
+    },
+    {
+      "token": "劲",
+      "f0": 60,
+      "f1": 65
+    },
+    {
+      "token": "吗",
+      "f0": 65,
+      "f1": 69
+    },
+    {
+      "token": "？",
+      "f0": 69,
+      "f1": 77
+    },
+    {
+      "token": "是",
+      "f0": 77,
+      "f1": 82
+    },
+    {
+      "token": "累",
+      "f0": 82,
+      "f1": 86
+    },
+    {
+      "token": "着",
+      "f0": 86,
+      "f1": 91
+    },
+    {
+      "token": "了",
+      "f0": 91,
+      "f1": 96
+    },
+    {
+      "token": "，",
+      "f0": 96,
+      "f1": 103
+    },
+    {
+      "token": "还",
+      "f0": 103,
+      "f1": 108
+    },
+    {
+      "token": "是",
+      "f0": 108,
+      "f1": 113
+    },
+    {
+      "token": "吃",
+      "f0": 113,
+      "f1": 118
+    },
+    {
+      "token": "东",
+      "f0": 118,
+      "f1": 122
+    },
+    {
+      "token": "西",
+      "f0": 122,
+      "f1": 127
+    },
+    {
+      "token": "不",
+      "f0": 127,
+      "f1": 132
+    },
+    {
+      "token": "舒",
+      "f0": 132,
+      "f1": 137
+    },
+    {
+      "token": "服",
+      "f0": 137,
+      "f1": 141
+    },
+    {
+      "token": "？",
+      "f0": 141,
+      "f1": 149
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_frame": 0,
+      "end_frame": 43,
+      "start_sec": 0.0,
+      "end_sec": 1.4333333333333333,
+      "emotion_type_id": 3,
+      "emotion_type": "fear",
+      "emotion_type_conf": 0.627906976744186,
+      "emotion_level": 5,
+      "emotion_level_conf": 0.32558139534883723,
+      "text": "怎么了？这是突然哪",
+      "token_start": 0,
+      "token_end": 8,
+      "n_tokens": 9
+    },
+    {
+      "seg_id": 1,
+      "start_frame": 43,
+      "end_frame": 89,
+      "start_sec": 1.4333333333333333,
+      "end_sec": 2.966666666666667,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.5652173913043478,
+      "emotion_level": 4,
+      "emotion_level_conf": 0.5,
+      "text": "哪里不对劲吗？是累着",
+      "token_start": 8,
+      "token_end": 17,
+      "n_tokens": 10
+    },
+    {
+      "seg_id": 2,
+      "start_frame": 89,
+      "end_frame": 149,
+      "start_sec": 2.966666666666667,
+      "end_sec": 4.966666666666667,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.6,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.6333333333333333,
+      "text": "着了，还是吃东西不舒服？",
+      "token_start": 17,
+      "token_end": 28,
+      "n_tokens": 12
+    }
+  ]
+}

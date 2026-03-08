@@ -1,0 +1,274 @@
+{
+  "wav": "utt_0022.wav",
+  "fps": 30,
+  "duration": 7.295438,
+  "text": "艾文，连环扣，我是不是有啥好事要宣布啊，再喊下去，隔壁家狗都要跟着叫了。",
+  "tokens": [
+    {
+      "token": "艾",
+      "f0": 0,
+      "f1": 6
+    },
+    {
+      "token": "文",
+      "f0": 6,
+      "f1": 11
+    },
+    {
+      "token": "，",
+      "f0": 11,
+      "f1": 26
+    },
+    {
+      "token": "连",
+      "f0": 26,
+      "f1": 27
+    },
+    {
+      "token": "环",
+      "f0": 27,
+      "f1": 31
+    },
+    {
+      "token": "扣",
+      "f0": 31,
+      "f1": 37
+    },
+    {
+      "token": "，",
+      "f0": 37,
+      "f1": 46
+    },
+    {
+      "token": "我",
+      "f0": 46,
+      "f1": 52
+    },
+    {
+      "token": "是",
+      "f0": 52,
+      "f1": 57
+    },
+    {
+      "token": "不",
+      "f0": 57,
+      "f1": 63
+    },
+    {
+      "token": "是",
+      "f0": 63,
+      "f1": 69
+    },
+    {
+      "token": "有",
+      "f0": 69,
+      "f1": 74
+    },
+    {
+      "token": "啥",
+      "f0": 74,
+      "f1": 80
+    },
+    {
+      "token": "好",
+      "f0": 80,
+      "f1": 85
+    },
+    {
+      "token": "事",
+      "f0": 85,
+      "f1": 91
+    },
+    {
+      "token": "要",
+      "f0": 91,
+      "f1": 97
+    },
+    {
+      "token": "宣",
+      "f0": 97,
+      "f1": 102
+    },
+    {
+      "token": "布",
+      "f0": 102,
+      "f1": 108
+    },
+    {
+      "token": "啊",
+      "f0": 108,
+      "f1": 113
+    },
+    {
+      "token": "，",
+      "f0": 113,
+      "f1": 123
+    },
+    {
+      "token": "再",
+      "f0": 123,
+      "f1": 128
+    },
+    {
+      "token": "喊",
+      "f0": 128,
+      "f1": 134
+    },
+    {
+      "token": "下",
+      "f0": 134,
+      "f1": 139
+    },
+    {
+      "token": "去",
+      "f0": 139,
+      "f1": 145
+    },
+    {
+      "token": "，",
+      "f0": 145,
+      "f1": 154
+    },
+    {
+      "token": "隔",
+      "f0": 154,
+      "f1": 159
+    },
+    {
+      "token": "壁",
+      "f0": 159,
+      "f1": 165
+    },
+    {
+      "token": "家",
+      "f0": 165,
+      "f1": 171
+    },
+    {
+      "token": "狗",
+      "f0": 171,
+      "f1": 176
+    },
+    {
+      "token": "都",
+      "f0": 176,
+      "f1": 182
+    },
+    {
+      "token": "要",
+      "f0": 182,
+      "f1": 188
+    },
+    {
+      "token": "跟",
+      "f0": 188,
+      "f1": 193
+    },
+    {
+      "token": "着",
+      "f0": 193,
+      "f1": 199
+    },
+    {
+      "token": "叫",
+      "f0": 199,
+      "f1": 204
+    },
+    {
+      "token": "了",
+      "f0": 204,
+      "f1": 210
+    },
+    {
+      "token": "。",
+      "f0": 210,
+      "f1": 219
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_sec": 0.0,
+      "end_sec": 0.8508826928916493,
+      "start_frame": 0,
+      "end_frame": 26,
+      "emotion_type": "fear",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "艾文，",
+      "token_start": 0,
+      "token_end": 2,
+      "n_tokens": 3
+    },
+    {
+      "seg_id": 1,
+      "start_sec": 0.8508826928916493,
+      "end_sec": 2.537543652173913,
+      "start_frame": 26,
+      "end_frame": 76,
+      "emotion_type": "sad",
+      "emotion_value": 18.0,
+      "emotion_level": 1,
+      "text": "连环扣，我是不是有啥",
+      "token_start": 3,
+      "token_end": 12,
+      "n_tokens": 10
+    },
+    {
+      "seg_id": 2,
+      "start_sec": 2.537543652173913,
+      "end_sec": 4.098334390614217,
+      "start_frame": 76,
+      "end_frame": 123,
+      "emotion_type": "happy",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "啥好事要宣布啊，",
+      "token_start": 12,
+      "token_end": 19,
+      "n_tokens": 8
+    },
+    {
+      "seg_id": 3,
+      "start_sec": 4.098334390614217,
+      "end_sec": 5.623881467218771,
+      "start_frame": 123,
+      "end_frame": 169,
+      "emotion_type": "sad",
+      "emotion_value": 98.0,
+      "emotion_level": 4,
+      "text": "再喊下去，隔壁家",
+      "token_start": 20,
+      "token_end": 27,
+      "n_tokens": 8
+    },
+    {
+      "seg_id": 4,
+      "start_sec": 5.623881467218771,
+      "end_sec": 6.19784967425811,
+      "start_frame": 169,
+      "end_frame": 186,
+      "emotion_type": "happy",
+      "emotion_value": 130.0,
+      "emotion_level": 5,
+      "text": "家狗都要",
+      "token_start": 27,
+      "token_end": 30,
+      "n_tokens": 4
+    },
+    {
+      "seg_id": 5,
+      "start_sec": 6.19784967425811,
+      "end_sec": 7.295438,
+      "start_frame": 186,
+      "end_frame": 219,
+      "emotion_type": "happy",
+      "emotion_value": 98.0,
+      "emotion_level": 4,
+      "text": "要跟着叫了。",
+      "token_start": 30,
+      "token_end": 35,
+      "n_tokens": 6
+    }
+  ]
+}

@@ -1,0 +1,230 @@
+{
+  "wav": "utt_0017.wav",
+  "fps": 30,
+  "duration": 7.20975,
+  "n_frames": 215,
+  "text": "哎喂，这都能歪到你头上，叫爸爸也得先过我这关，拿点诚意来呀。",
+  "switch_frames": [
+    36,
+    89,
+    171
+  ],
+  "tokens": [
+    {
+      "token": "哎",
+      "f0": 0,
+      "f1": 7
+    },
+    {
+      "token": "喂",
+      "f0": 7,
+      "f1": 13
+    },
+    {
+      "token": "，",
+      "f0": 13,
+      "f1": 24
+    },
+    {
+      "token": "这",
+      "f0": 24,
+      "f1": 31
+    },
+    {
+      "token": "都",
+      "f0": 31,
+      "f1": 37
+    },
+    {
+      "token": "能",
+      "f0": 37,
+      "f1": 44
+    },
+    {
+      "token": "歪",
+      "f0": 44,
+      "f1": 50
+    },
+    {
+      "token": "到",
+      "f0": 50,
+      "f1": 57
+    },
+    {
+      "token": "你",
+      "f0": 57,
+      "f1": 64
+    },
+    {
+      "token": "头",
+      "f0": 64,
+      "f1": 70
+    },
+    {
+      "token": "上",
+      "f0": 70,
+      "f1": 77
+    },
+    {
+      "token": "，",
+      "f0": 77,
+      "f1": 89
+    },
+    {
+      "token": "叫",
+      "f0": 89,
+      "f1": 94
+    },
+    {
+      "token": "爸",
+      "f0": 94,
+      "f1": 101
+    },
+    {
+      "token": "爸",
+      "f0": 101,
+      "f1": 108
+    },
+    {
+      "token": "也",
+      "f0": 108,
+      "f1": 114
+    },
+    {
+      "token": "得",
+      "f0": 114,
+      "f1": 121
+    },
+    {
+      "token": "先",
+      "f0": 121,
+      "f1": 127
+    },
+    {
+      "token": "过",
+      "f0": 127,
+      "f1": 134
+    },
+    {
+      "token": "我",
+      "f0": 134,
+      "f1": 141
+    },
+    {
+      "token": "这",
+      "f0": 141,
+      "f1": 147
+    },
+    {
+      "token": "关",
+      "f0": 147,
+      "f1": 154
+    },
+    {
+      "token": "，",
+      "f0": 154,
+      "f1": 171
+    },
+    {
+      "token": "拿",
+      "f0": 171,
+      "f1": 172
+    },
+    {
+      "token": "点",
+      "f0": 172,
+      "f1": 178
+    },
+    {
+      "token": "诚",
+      "f0": 178,
+      "f1": 184
+    },
+    {
+      "token": "意",
+      "f0": 184,
+      "f1": 191
+    },
+    {
+      "token": "来",
+      "f0": 191,
+      "f1": 198
+    },
+    {
+      "token": "呀",
+      "f0": 198,
+      "f1": 204
+    },
+    {
+      "token": "。",
+      "f0": 204,
+      "f1": 215
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_frame": 0,
+      "end_frame": 36,
+      "start_sec": 0.0,
+      "end_sec": 1.2,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.6944444444444444,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.5277777777777778,
+      "text": "哎喂，这都",
+      "token_start": 0,
+      "token_end": 4,
+      "n_tokens": 5
+    },
+    {
+      "seg_id": 1,
+      "start_frame": 36,
+      "end_frame": 89,
+      "start_sec": 1.2,
+      "end_sec": 2.966666666666667,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.5849056603773585,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.8113207547169812,
+      "text": "都能歪到你头上，",
+      "token_start": 4,
+      "token_end": 11,
+      "n_tokens": 8
+    },
+    {
+      "seg_id": 2,
+      "start_frame": 89,
+      "end_frame": 171,
+      "start_sec": 2.966666666666667,
+      "end_sec": 5.7,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.8536585365853658,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.35365853658536583,
+      "text": "叫爸爸也得先过我这关，",
+      "token_start": 12,
+      "token_end": 22,
+      "n_tokens": 11
+    },
+    {
+      "seg_id": 3,
+      "start_frame": 171,
+      "end_frame": 215,
+      "start_sec": 5.7,
+      "end_sec": 7.166666666666667,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.75,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.5,
+      "text": "拿点诚意来呀。",
+      "token_start": 23,
+      "token_end": 29,
+      "n_tokens": 7
+    }
+  ]
+}

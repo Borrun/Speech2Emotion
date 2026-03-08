@@ -1,0 +1,400 @@
+{
+  "wav": "utt_0024.wav",
+  "fps": 30,
+  "duration": 9.931125,
+  "n_frames": 297,
+  "text": "你终于发现新大陆了，那家店的麻辣烫可是藏不住的香，是不是连汤都喝的一滴不剩。我懂上次我也这样。",
+  "switch_frames": [
+    25,
+    67,
+    107,
+    123,
+    157,
+    179,
+    195,
+    229
+  ],
+  "tokens": [
+    {
+      "token": "你",
+      "f0": 0,
+      "f1": 6
+    },
+    {
+      "token": "终",
+      "f0": 6,
+      "f1": 12
+    },
+    {
+      "token": "于",
+      "f0": 12,
+      "f1": 18
+    },
+    {
+      "token": "发",
+      "f0": 18,
+      "f1": 24
+    },
+    {
+      "token": "现",
+      "f0": 24,
+      "f1": 30
+    },
+    {
+      "token": "新",
+      "f0": 30,
+      "f1": 36
+    },
+    {
+      "token": "大",
+      "f0": 36,
+      "f1": 42
+    },
+    {
+      "token": "陆",
+      "f0": 42,
+      "f1": 48
+    },
+    {
+      "token": "了",
+      "f0": 48,
+      "f1": 54
+    },
+    {
+      "token": "，",
+      "f0": 54,
+      "f1": 67
+    },
+    {
+      "token": "那",
+      "f0": 67,
+      "f1": 70
+    },
+    {
+      "token": "家",
+      "f0": 70,
+      "f1": 76
+    },
+    {
+      "token": "店",
+      "f0": 76,
+      "f1": 82
+    },
+    {
+      "token": "的",
+      "f0": 82,
+      "f1": 88
+    },
+    {
+      "token": "麻",
+      "f0": 88,
+      "f1": 94
+    },
+    {
+      "token": "辣",
+      "f0": 94,
+      "f1": 100
+    },
+    {
+      "token": "烫",
+      "f0": 100,
+      "f1": 106
+    },
+    {
+      "token": "可",
+      "f0": 106,
+      "f1": 112
+    },
+    {
+      "token": "是",
+      "f0": 112,
+      "f1": 118
+    },
+    {
+      "token": "藏",
+      "f0": 118,
+      "f1": 124
+    },
+    {
+      "token": "不",
+      "f0": 124,
+      "f1": 130
+    },
+    {
+      "token": "住",
+      "f0": 130,
+      "f1": 136
+    },
+    {
+      "token": "的",
+      "f0": 136,
+      "f1": 142
+    },
+    {
+      "token": "香",
+      "f0": 142,
+      "f1": 148
+    },
+    {
+      "token": "，",
+      "f0": 148,
+      "f1": 157
+    },
+    {
+      "token": "是",
+      "f0": 157,
+      "f1": 164
+    },
+    {
+      "token": "不",
+      "f0": 164,
+      "f1": 170
+    },
+    {
+      "token": "是",
+      "f0": 170,
+      "f1": 176
+    },
+    {
+      "token": "连",
+      "f0": 176,
+      "f1": 182
+    },
+    {
+      "token": "汤",
+      "f0": 182,
+      "f1": 188
+    },
+    {
+      "token": "都",
+      "f0": 188,
+      "f1": 194
+    },
+    {
+      "token": "喝",
+      "f0": 194,
+      "f1": 200
+    },
+    {
+      "token": "的",
+      "f0": 200,
+      "f1": 206
+    },
+    {
+      "token": "一",
+      "f0": 206,
+      "f1": 212
+    },
+    {
+      "token": "滴",
+      "f0": 212,
+      "f1": 218
+    },
+    {
+      "token": "不",
+      "f0": 218,
+      "f1": 224
+    },
+    {
+      "token": "剩",
+      "f0": 224,
+      "f1": 230
+    },
+    {
+      "token": "。",
+      "f0": 230,
+      "f1": 231
+    },
+    {
+      "token": "我",
+      "f0": 231,
+      "f1": 245
+    },
+    {
+      "token": "懂",
+      "f0": 245,
+      "f1": 251
+    },
+    {
+      "token": "上",
+      "f0": 251,
+      "f1": 257
+    },
+    {
+      "token": "次",
+      "f0": 257,
+      "f1": 263
+    },
+    {
+      "token": "我",
+      "f0": 263,
+      "f1": 269
+    },
+    {
+      "token": "也",
+      "f0": 269,
+      "f1": 275
+    },
+    {
+      "token": "这",
+      "f0": 275,
+      "f1": 281
+    },
+    {
+      "token": "样",
+      "f0": 281,
+      "f1": 287
+    },
+    {
+      "token": "。",
+      "f0": 287,
+      "f1": 297
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_frame": 0,
+      "end_frame": 25,
+      "start_sec": 0.0,
+      "end_sec": 0.8333333333333334,
+      "emotion_type_id": 3,
+      "emotion_type": "fear",
+      "emotion_type_conf": 0.48,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.4,
+      "text": "你终于发现",
+      "token_start": 0,
+      "token_end": 4,
+      "n_tokens": 5
+    },
+    {
+      "seg_id": 1,
+      "start_frame": 25,
+      "end_frame": 67,
+      "start_sec": 0.8333333333333334,
+      "end_sec": 2.2333333333333334,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.47619047619047616,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.7619047619047619,
+      "text": "现新大陆了，",
+      "token_start": 4,
+      "token_end": 9,
+      "n_tokens": 6
+    },
+    {
+      "seg_id": 2,
+      "start_frame": 67,
+      "end_frame": 107,
+      "start_sec": 2.2333333333333334,
+      "end_sec": 3.566666666666667,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.975,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.4,
+      "text": "那家店的麻辣烫可",
+      "token_start": 10,
+      "token_end": 17,
+      "n_tokens": 8
+    },
+    {
+      "seg_id": 3,
+      "start_frame": 107,
+      "end_frame": 123,
+      "start_sec": 3.566666666666667,
+      "end_sec": 4.1,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.875,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.5625,
+      "text": "可是藏",
+      "token_start": 17,
+      "token_end": 19,
+      "n_tokens": 3
+    },
+    {
+      "seg_id": 4,
+      "start_frame": 123,
+      "end_frame": 157,
+      "start_sec": 4.1,
+      "end_sec": 5.233333333333333,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.8235294117647058,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.47058823529411764,
+      "text": "藏不住的香，",
+      "token_start": 19,
+      "token_end": 24,
+      "n_tokens": 6
+    },
+    {
+      "seg_id": 5,
+      "start_frame": 157,
+      "end_frame": 179,
+      "start_sec": 5.233333333333333,
+      "end_sec": 5.966666666666667,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 1.0,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.8636363636363636,
+      "text": "是不是连",
+      "token_start": 25,
+      "token_end": 28,
+      "n_tokens": 4
+    },
+    {
+      "seg_id": 6,
+      "start_frame": 179,
+      "end_frame": 195,
+      "start_sec": 5.966666666666667,
+      "end_sec": 6.5,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 1.0,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.4375,
+      "text": "连汤都喝",
+      "token_start": 28,
+      "token_end": 31,
+      "n_tokens": 4
+    },
+    {
+      "seg_id": 7,
+      "start_frame": 195,
+      "end_frame": 229,
+      "start_sec": 6.5,
+      "end_sec": 7.633333333333334,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.9411764705882353,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.4411764705882353,
+      "text": "喝的一滴不剩",
+      "token_start": 31,
+      "token_end": 36,
+      "n_tokens": 6
+    },
+    {
+      "seg_id": 8,
+      "start_frame": 229,
+      "end_frame": 297,
+      "start_sec": 7.633333333333334,
+      "end_sec": 9.9,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.8088235294117647,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.6764705882352942,
+      "text": "剩。我懂上次我也这样。",
+      "token_start": 36,
+      "token_end": 46,
+      "n_tokens": 11
+    }
+  ]
+}

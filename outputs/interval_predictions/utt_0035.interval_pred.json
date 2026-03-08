@@ -1,0 +1,252 @@
+{
+  "wav": "utt_0035.wav",
+  "fps": 30,
+  "duration": 7.2615,
+  "n_frames": 217,
+  "text": "哎呦突然开火啊，我咋惹你了，要不你出题考我，让我证明一下自己。",
+  "switch_frames": [
+    24,
+    69,
+    115,
+    142
+  ],
+  "tokens": [
+    {
+      "token": "哎",
+      "f0": 0,
+      "f1": 6
+    },
+    {
+      "token": "呦",
+      "f0": 6,
+      "f1": 13
+    },
+    {
+      "token": "突",
+      "f0": 13,
+      "f1": 19
+    },
+    {
+      "token": "然",
+      "f0": 19,
+      "f1": 26
+    },
+    {
+      "token": "开",
+      "f0": 26,
+      "f1": 32
+    },
+    {
+      "token": "火",
+      "f0": 32,
+      "f1": 39
+    },
+    {
+      "token": "啊",
+      "f0": 39,
+      "f1": 45
+    },
+    {
+      "token": "，",
+      "f0": 45,
+      "f1": 56
+    },
+    {
+      "token": "我",
+      "f0": 56,
+      "f1": 62
+    },
+    {
+      "token": "咋",
+      "f0": 62,
+      "f1": 69
+    },
+    {
+      "token": "惹",
+      "f0": 69,
+      "f1": 75
+    },
+    {
+      "token": "你",
+      "f0": 75,
+      "f1": 82
+    },
+    {
+      "token": "了",
+      "f0": 82,
+      "f1": 88
+    },
+    {
+      "token": "，",
+      "f0": 88,
+      "f1": 99
+    },
+    {
+      "token": "要",
+      "f0": 99,
+      "f1": 105
+    },
+    {
+      "token": "不",
+      "f0": 105,
+      "f1": 112
+    },
+    {
+      "token": "你",
+      "f0": 112,
+      "f1": 118
+    },
+    {
+      "token": "出",
+      "f0": 118,
+      "f1": 125
+    },
+    {
+      "token": "题",
+      "f0": 125,
+      "f1": 131
+    },
+    {
+      "token": "考",
+      "f0": 131,
+      "f1": 138
+    },
+    {
+      "token": "我",
+      "f0": 138,
+      "f1": 144
+    },
+    {
+      "token": "，",
+      "f0": 144,
+      "f1": 155
+    },
+    {
+      "token": "让",
+      "f0": 155,
+      "f1": 161
+    },
+    {
+      "token": "我",
+      "f0": 161,
+      "f1": 168
+    },
+    {
+      "token": "证",
+      "f0": 168,
+      "f1": 174
+    },
+    {
+      "token": "明",
+      "f0": 174,
+      "f1": 181
+    },
+    {
+      "token": "一",
+      "f0": 181,
+      "f1": 187
+    },
+    {
+      "token": "下",
+      "f0": 187,
+      "f1": 194
+    },
+    {
+      "token": "自",
+      "f0": 194,
+      "f1": 200
+    },
+    {
+      "token": "己",
+      "f0": 200,
+      "f1": 207
+    },
+    {
+      "token": "。",
+      "f0": 207,
+      "f1": 217
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_frame": 0,
+      "end_frame": 24,
+      "start_sec": 0.0,
+      "end_sec": 0.8,
+      "emotion_type_id": 1,
+      "emotion_type": "sad",
+      "emotion_type_conf": 0.4166666666666667,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.625,
+      "text": "哎呦突然",
+      "token_start": 0,
+      "token_end": 3,
+      "n_tokens": 4
+    },
+    {
+      "seg_id": 1,
+      "start_frame": 24,
+      "end_frame": 69,
+      "start_sec": 0.8,
+      "end_sec": 2.3,
+      "emotion_type_id": 3,
+      "emotion_type": "fear",
+      "emotion_type_conf": 0.4666666666666667,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.8444444444444444,
+      "text": "然开火啊，我咋",
+      "token_start": 3,
+      "token_end": 9,
+      "n_tokens": 7
+    },
+    {
+      "seg_id": 2,
+      "start_frame": 69,
+      "end_frame": 115,
+      "start_sec": 2.3,
+      "end_sec": 3.8333333333333335,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.717391304347826,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.6086956521739131,
+      "text": "惹你了，要不你",
+      "token_start": 10,
+      "token_end": 16,
+      "n_tokens": 7
+    },
+    {
+      "seg_id": 3,
+      "start_frame": 115,
+      "end_frame": 142,
+      "start_sec": 3.8333333333333335,
+      "end_sec": 4.733333333333333,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.5925925925925926,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.7407407407407407,
+      "text": "你出题考我",
+      "token_start": 16,
+      "token_end": 20,
+      "n_tokens": 5
+    },
+    {
+      "seg_id": 4,
+      "start_frame": 142,
+      "end_frame": 217,
+      "start_sec": 4.733333333333333,
+      "end_sec": 7.233333333333333,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 1.0,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.7333333333333333,
+      "text": "我，让我证明一下自己。",
+      "token_start": 20,
+      "token_end": 30,
+      "n_tokens": 11
+    }
+  ]
+}

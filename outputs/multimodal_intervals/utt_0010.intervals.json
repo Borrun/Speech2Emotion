@@ -1,0 +1,220 @@
+{
+  "wav": "utt_0010.wav",
+  "fps": 30,
+  "duration": 7.16625,
+  "text": "板蓝跟泡面，你居然真是了，99块的电池都比他有味觉尊严。",
+  "tokens": [
+    {
+      "token": "板",
+      "f0": 0,
+      "f1": 7
+    },
+    {
+      "token": "蓝",
+      "f0": 7,
+      "f1": 14
+    },
+    {
+      "token": "跟",
+      "f0": 14,
+      "f1": 22
+    },
+    {
+      "token": "泡",
+      "f0": 22,
+      "f1": 29
+    },
+    {
+      "token": "面",
+      "f0": 29,
+      "f1": 36
+    },
+    {
+      "token": "，",
+      "f0": 36,
+      "f1": 48
+    },
+    {
+      "token": "你",
+      "f0": 48,
+      "f1": 55
+    },
+    {
+      "token": "居",
+      "f0": 55,
+      "f1": 62
+    },
+    {
+      "token": "然",
+      "f0": 62,
+      "f1": 69
+    },
+    {
+      "token": "真",
+      "f0": 69,
+      "f1": 76
+    },
+    {
+      "token": "是",
+      "f0": 76,
+      "f1": 84
+    },
+    {
+      "token": "了",
+      "f0": 84,
+      "f1": 91
+    },
+    {
+      "token": "，",
+      "f0": 91,
+      "f1": 102
+    },
+    {
+      "token": "9",
+      "f0": 102,
+      "f1": 110
+    },
+    {
+      "token": "9",
+      "f0": 110,
+      "f1": 117
+    },
+    {
+      "token": "块",
+      "f0": 117,
+      "f1": 124
+    },
+    {
+      "token": "的",
+      "f0": 124,
+      "f1": 131
+    },
+    {
+      "token": "电",
+      "f0": 131,
+      "f1": 139
+    },
+    {
+      "token": "池",
+      "f0": 139,
+      "f1": 146
+    },
+    {
+      "token": "都",
+      "f0": 146,
+      "f1": 153
+    },
+    {
+      "token": "比",
+      "f0": 153,
+      "f1": 160
+    },
+    {
+      "token": "他",
+      "f0": 160,
+      "f1": 167
+    },
+    {
+      "token": "有",
+      "f0": 167,
+      "f1": 175
+    },
+    {
+      "token": "味",
+      "f0": 175,
+      "f1": 182
+    },
+    {
+      "token": "觉",
+      "f0": 182,
+      "f1": 189
+    },
+    {
+      "token": "尊",
+      "f0": 189,
+      "f1": 196
+    },
+    {
+      "token": "严",
+      "f0": 196,
+      "f1": 203
+    },
+    {
+      "token": "。",
+      "f0": 203,
+      "f1": 215
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_sec": 0.0,
+      "end_sec": 0.9693478260869565,
+      "start_frame": 0,
+      "end_frame": 29,
+      "emotion_type": "fear",
+      "emotion_value": 38.0,
+      "emotion_level": 2,
+      "text": "板蓝跟泡",
+      "token_start": 0,
+      "token_end": 3,
+      "n_tokens": 4
+    },
+    {
+      "seg_id": 1,
+      "start_sec": 0.9693478260869565,
+      "end_sec": 2.8388043478260863,
+      "start_frame": 29,
+      "end_frame": 85,
+      "emotion_type": "fear",
+      "emotion_value": 98.0,
+      "emotion_level": 4,
+      "text": "面，你居然真是了",
+      "token_start": 4,
+      "token_end": 11,
+      "n_tokens": 8
+    },
+    {
+      "seg_id": 2,
+      "start_sec": 2.8388043478260863,
+      "end_sec": 5.153369565217392,
+      "start_frame": 85,
+      "end_frame": 155,
+      "emotion_type": "sad",
+      "emotion_value": 18.0,
+      "emotion_level": 1,
+      "text": "了，99块的电池都比",
+      "token_start": 11,
+      "token_end": 20,
+      "n_tokens": 10
+    },
+    {
+      "seg_id": 3,
+      "start_sec": 5.153369565217392,
+      "end_sec": 6.488695652173912,
+      "start_frame": 155,
+      "end_frame": 195,
+      "emotion_type": "happy",
+      "emotion_value": 38.0,
+      "emotion_level": 2,
+      "text": "比他有味觉尊",
+      "token_start": 20,
+      "token_end": 25,
+      "n_tokens": 6
+    },
+    {
+      "seg_id": 4,
+      "start_sec": 6.488695652173912,
+      "end_sec": 7.16625,
+      "start_frame": 195,
+      "end_frame": 215,
+      "emotion_type": "happy",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "尊严。",
+      "token_start": 25,
+      "token_end": 27,
+      "n_tokens": 3
+    }
+  ]
+}

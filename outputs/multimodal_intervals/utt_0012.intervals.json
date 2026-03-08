@@ -1,0 +1,309 @@
+{
+  "wav": "utt_0012.wav",
+  "fps": 30,
+  "duration": 8.216188,
+  "text": "你这操作是想炸了实验室吗？电池遇高温或腐蚀性液体可能泄露，甚至爆炸，别拿安全开玩笑啊。",
+  "tokens": [
+    {
+      "token": "你",
+      "f0": 0,
+      "f1": 5
+    },
+    {
+      "token": "这",
+      "f0": 5,
+      "f1": 11
+    },
+    {
+      "token": "操",
+      "f0": 11,
+      "f1": 16
+    },
+    {
+      "token": "作",
+      "f0": 16,
+      "f1": 22
+    },
+    {
+      "token": "是",
+      "f0": 22,
+      "f1": 27
+    },
+    {
+      "token": "想",
+      "f0": 27,
+      "f1": 33
+    },
+    {
+      "token": "炸",
+      "f0": 33,
+      "f1": 38
+    },
+    {
+      "token": "了",
+      "f0": 38,
+      "f1": 43
+    },
+    {
+      "token": "实",
+      "f0": 43,
+      "f1": 49
+    },
+    {
+      "token": "验",
+      "f0": 49,
+      "f1": 54
+    },
+    {
+      "token": "室",
+      "f0": 54,
+      "f1": 60
+    },
+    {
+      "token": "吗",
+      "f0": 60,
+      "f1": 65
+    },
+    {
+      "token": "？",
+      "f0": 65,
+      "f1": 67
+    },
+    {
+      "token": "电",
+      "f0": 67,
+      "f1": 79
+    },
+    {
+      "token": "池",
+      "f0": 79,
+      "f1": 85
+    },
+    {
+      "token": "遇",
+      "f0": 85,
+      "f1": 90
+    },
+    {
+      "token": "高",
+      "f0": 90,
+      "f1": 95
+    },
+    {
+      "token": "温",
+      "f0": 95,
+      "f1": 101
+    },
+    {
+      "token": "或",
+      "f0": 101,
+      "f1": 106
+    },
+    {
+      "token": "腐",
+      "f0": 106,
+      "f1": 112
+    },
+    {
+      "token": "蚀",
+      "f0": 112,
+      "f1": 117
+    },
+    {
+      "token": "性",
+      "f0": 117,
+      "f1": 122
+    },
+    {
+      "token": "液",
+      "f0": 122,
+      "f1": 128
+    },
+    {
+      "token": "体",
+      "f0": 128,
+      "f1": 133
+    },
+    {
+      "token": "可",
+      "f0": 133,
+      "f1": 139
+    },
+    {
+      "token": "能",
+      "f0": 139,
+      "f1": 144
+    },
+    {
+      "token": "泄",
+      "f0": 144,
+      "f1": 150
+    },
+    {
+      "token": "露",
+      "f0": 150,
+      "f1": 155
+    },
+    {
+      "token": "，",
+      "f0": 155,
+      "f1": 164
+    },
+    {
+      "token": "甚",
+      "f0": 164,
+      "f1": 169
+    },
+    {
+      "token": "至",
+      "f0": 169,
+      "f1": 174
+    },
+    {
+      "token": "爆",
+      "f0": 174,
+      "f1": 180
+    },
+    {
+      "token": "炸",
+      "f0": 180,
+      "f1": 185
+    },
+    {
+      "token": "，",
+      "f0": 185,
+      "f1": 198
+    },
+    {
+      "token": "别",
+      "f0": 198,
+      "f1": 199
+    },
+    {
+      "token": "拿",
+      "f0": 199,
+      "f1": 205
+    },
+    {
+      "token": "安",
+      "f0": 205,
+      "f1": 210
+    },
+    {
+      "token": "全",
+      "f0": 210,
+      "f1": 216
+    },
+    {
+      "token": "开",
+      "f0": 216,
+      "f1": 221
+    },
+    {
+      "token": "玩",
+      "f0": 221,
+      "f1": 226
+    },
+    {
+      "token": "笑",
+      "f0": 226,
+      "f1": 232
+    },
+    {
+      "token": "啊",
+      "f0": 232,
+      "f1": 237
+    },
+    {
+      "token": "。",
+      "f0": 237,
+      "f1": 246
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_sec": 0.0,
+      "end_sec": 1.1680708957902004,
+      "start_frame": 0,
+      "end_frame": 35,
+      "emotion_type": "fear",
+      "emotion_value": 130.0,
+      "emotion_level": 5,
+      "text": "你这操作是想炸",
+      "token_start": 0,
+      "token_end": 6,
+      "n_tokens": 7
+    },
+    {
+      "seg_id": 1,
+      "start_sec": 1.1680708957902004,
+      "end_sec": 2.234077344375432,
+      "start_frame": 35,
+      "end_frame": 67,
+      "emotion_type": "angry",
+      "emotion_value": 98.0,
+      "emotion_level": 4,
+      "text": "炸了实验室吗？",
+      "token_start": 6,
+      "token_end": 12,
+      "n_tokens": 7
+    },
+    {
+      "seg_id": 2,
+      "start_sec": 2.234077344375432,
+      "end_sec": 3.0449226749482405,
+      "start_frame": 67,
+      "end_frame": 91,
+      "emotion_type": "sad",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "电池遇高",
+      "token_start": 13,
+      "token_end": 16,
+      "n_tokens": 4
+    },
+    {
+      "seg_id": 3,
+      "start_sec": 3.0449226749482405,
+      "end_sec": 5.851694973084887,
+      "start_frame": 91,
+      "end_frame": 176,
+      "emotion_type": "fear",
+      "emotion_value": 98.0,
+      "emotion_level": 4,
+      "text": "高温或腐蚀性液体可能泄露，甚至爆",
+      "token_start": 16,
+      "token_end": 31,
+      "n_tokens": 16
+    },
+    {
+      "seg_id": 4,
+      "start_sec": 5.851694973084887,
+      "end_sec": 6.58882709178744,
+      "start_frame": 176,
+      "end_frame": 198,
+      "emotion_type": "fear",
+      "emotion_value": 130.0,
+      "emotion_level": 5,
+      "text": "爆炸，",
+      "token_start": 31,
+      "token_end": 33,
+      "n_tokens": 3
+    },
+    {
+      "seg_id": 5,
+      "start_sec": 6.58882709178744,
+      "end_sec": 8.216188,
+      "start_frame": 198,
+      "end_frame": 246,
+      "emotion_type": "angry",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "别拿安全开玩笑啊。",
+      "token_start": 34,
+      "token_end": 42,
+      "n_tokens": 9
+    }
+  ]
+}

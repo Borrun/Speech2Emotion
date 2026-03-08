@@ -1,0 +1,327 @@
+{
+  "wav": "utt_0014.wav",
+  "fps": 30,
+  "duration": 9.1238125,
+  "n_frames": 273,
+  "text": "你这脑洞开的，我差点以为在听科幻相声，要不咱先定一下口感是从哪个维度算的，化学反应还是玄学？",
+  "switch_frames": [
+    77,
+    114,
+    157,
+    222
+  ],
+  "tokens": [
+    {
+      "token": "你",
+      "f0": 0,
+      "f1": 6
+    },
+    {
+      "token": "这",
+      "f0": 6,
+      "f1": 11
+    },
+    {
+      "token": "脑",
+      "f0": 11,
+      "f1": 17
+    },
+    {
+      "token": "洞",
+      "f0": 17,
+      "f1": 23
+    },
+    {
+      "token": "开",
+      "f0": 23,
+      "f1": 28
+    },
+    {
+      "token": "的",
+      "f0": 28,
+      "f1": 34
+    },
+    {
+      "token": "，",
+      "f0": 34,
+      "f1": 43
+    },
+    {
+      "token": "我",
+      "f0": 43,
+      "f1": 49
+    },
+    {
+      "token": "差",
+      "f0": 49,
+      "f1": 54
+    },
+    {
+      "token": "点",
+      "f0": 54,
+      "f1": 60
+    },
+    {
+      "token": "以",
+      "f0": 60,
+      "f1": 65
+    },
+    {
+      "token": "为",
+      "f0": 65,
+      "f1": 71
+    },
+    {
+      "token": "在",
+      "f0": 71,
+      "f1": 77
+    },
+    {
+      "token": "听",
+      "f0": 77,
+      "f1": 82
+    },
+    {
+      "token": "科",
+      "f0": 82,
+      "f1": 88
+    },
+    {
+      "token": "幻",
+      "f0": 88,
+      "f1": 94
+    },
+    {
+      "token": "相",
+      "f0": 94,
+      "f1": 99
+    },
+    {
+      "token": "声",
+      "f0": 99,
+      "f1": 105
+    },
+    {
+      "token": "，",
+      "f0": 105,
+      "f1": 114
+    },
+    {
+      "token": "要",
+      "f0": 114,
+      "f1": 120
+    },
+    {
+      "token": "不",
+      "f0": 120,
+      "f1": 125
+    },
+    {
+      "token": "咱",
+      "f0": 125,
+      "f1": 131
+    },
+    {
+      "token": "先",
+      "f0": 131,
+      "f1": 136
+    },
+    {
+      "token": "定",
+      "f0": 136,
+      "f1": 142
+    },
+    {
+      "token": "一",
+      "f0": 142,
+      "f1": 148
+    },
+    {
+      "token": "下",
+      "f0": 148,
+      "f1": 153
+    },
+    {
+      "token": "口",
+      "f0": 153,
+      "f1": 159
+    },
+    {
+      "token": "感",
+      "f0": 159,
+      "f1": 165
+    },
+    {
+      "token": "是",
+      "f0": 165,
+      "f1": 170
+    },
+    {
+      "token": "从",
+      "f0": 170,
+      "f1": 176
+    },
+    {
+      "token": "哪",
+      "f0": 176,
+      "f1": 182
+    },
+    {
+      "token": "个",
+      "f0": 182,
+      "f1": 187
+    },
+    {
+      "token": "维",
+      "f0": 187,
+      "f1": 193
+    },
+    {
+      "token": "度",
+      "f0": 193,
+      "f1": 199
+    },
+    {
+      "token": "算",
+      "f0": 199,
+      "f1": 204
+    },
+    {
+      "token": "的",
+      "f0": 204,
+      "f1": 210
+    },
+    {
+      "token": "，",
+      "f0": 210,
+      "f1": 222
+    },
+    {
+      "token": "化",
+      "f0": 222,
+      "f1": 224
+    },
+    {
+      "token": "学",
+      "f0": 224,
+      "f1": 230
+    },
+    {
+      "token": "反",
+      "f0": 230,
+      "f1": 236
+    },
+    {
+      "token": "应",
+      "f0": 236,
+      "f1": 241
+    },
+    {
+      "token": "还",
+      "f0": 241,
+      "f1": 247
+    },
+    {
+      "token": "是",
+      "f0": 247,
+      "f1": 253
+    },
+    {
+      "token": "玄",
+      "f0": 253,
+      "f1": 258
+    },
+    {
+      "token": "学",
+      "f0": 258,
+      "f1": 264
+    },
+    {
+      "token": "？",
+      "f0": 264,
+      "f1": 273
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_frame": 0,
+      "end_frame": 77,
+      "start_sec": 0.0,
+      "end_sec": 2.566666666666667,
+      "emotion_type_id": 1,
+      "emotion_type": "sad",
+      "emotion_type_conf": 0.4155844155844156,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.4155844155844156,
+      "text": "你这脑洞开的，我差点以为在",
+      "token_start": 0,
+      "token_end": 12,
+      "n_tokens": 13
+    },
+    {
+      "seg_id": 1,
+      "start_frame": 77,
+      "end_frame": 114,
+      "start_sec": 2.566666666666667,
+      "end_sec": 3.8,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.8648648648648649,
+      "emotion_level": 4,
+      "emotion_level_conf": 0.5135135135135135,
+      "text": "听科幻相声，",
+      "token_start": 13,
+      "token_end": 18,
+      "n_tokens": 6
+    },
+    {
+      "seg_id": 2,
+      "start_frame": 114,
+      "end_frame": 157,
+      "start_sec": 3.8,
+      "end_sec": 5.233333333333333,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.5813953488372093,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.7441860465116279,
+      "text": "要不咱先定一下口",
+      "token_start": 19,
+      "token_end": 26,
+      "n_tokens": 8
+    },
+    {
+      "seg_id": 3,
+      "start_frame": 157,
+      "end_frame": 222,
+      "start_sec": 5.233333333333333,
+      "end_sec": 7.4,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.8153846153846154,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.38461538461538464,
+      "text": "口感是从哪个维度算的，",
+      "token_start": 26,
+      "token_end": 36,
+      "n_tokens": 11
+    },
+    {
+      "seg_id": 4,
+      "start_frame": 222,
+      "end_frame": 273,
+      "start_sec": 7.4,
+      "end_sec": 9.1,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.8235294117647058,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.5686274509803921,
+      "text": "化学反应还是玄学？",
+      "token_start": 37,
+      "token_end": 45,
+      "n_tokens": 9
+    }
+  ]
+}

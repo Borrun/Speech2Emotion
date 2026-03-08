@@ -1,0 +1,307 @@
+{
+  "wav": "utt_0028.wav",
+  "fps": 30,
+  "duration": 6.717625,
+  "text": "终于要解放了，是不是已经订好票了？这波假期打算去哪儿了，还是准备宅家躺平？",
+  "tokens": [
+    {
+      "token": "终",
+      "f0": 0,
+      "f1": 5
+    },
+    {
+      "token": "于",
+      "f0": 5,
+      "f1": 10
+    },
+    {
+      "token": "要",
+      "f0": 10,
+      "f1": 15
+    },
+    {
+      "token": "解",
+      "f0": 15,
+      "f1": 21
+    },
+    {
+      "token": "放",
+      "f0": 21,
+      "f1": 26
+    },
+    {
+      "token": "了",
+      "f0": 26,
+      "f1": 31
+    },
+    {
+      "token": "，",
+      "f0": 31,
+      "f1": 39
+    },
+    {
+      "token": "是",
+      "f0": 39,
+      "f1": 44
+    },
+    {
+      "token": "不",
+      "f0": 44,
+      "f1": 49
+    },
+    {
+      "token": "是",
+      "f0": 49,
+      "f1": 54
+    },
+    {
+      "token": "已",
+      "f0": 54,
+      "f1": 59
+    },
+    {
+      "token": "经",
+      "f0": 59,
+      "f1": 65
+    },
+    {
+      "token": "订",
+      "f0": 65,
+      "f1": 70
+    },
+    {
+      "token": "好",
+      "f0": 70,
+      "f1": 75
+    },
+    {
+      "token": "票",
+      "f0": 75,
+      "f1": 80
+    },
+    {
+      "token": "了",
+      "f0": 80,
+      "f1": 85
+    },
+    {
+      "token": "？",
+      "f0": 85,
+      "f1": 90
+    },
+    {
+      "token": "这",
+      "f0": 90,
+      "f1": 98
+    },
+    {
+      "token": "波",
+      "f0": 98,
+      "f1": 104
+    },
+    {
+      "token": "假",
+      "f0": 104,
+      "f1": 109
+    },
+    {
+      "token": "期",
+      "f0": 109,
+      "f1": 114
+    },
+    {
+      "token": "打",
+      "f0": 114,
+      "f1": 119
+    },
+    {
+      "token": "算",
+      "f0": 119,
+      "f1": 124
+    },
+    {
+      "token": "去",
+      "f0": 124,
+      "f1": 129
+    },
+    {
+      "token": "哪",
+      "f0": 129,
+      "f1": 134
+    },
+    {
+      "token": "儿",
+      "f0": 134,
+      "f1": 139
+    },
+    {
+      "token": "了",
+      "f0": 139,
+      "f1": 145
+    },
+    {
+      "token": "，",
+      "f0": 145,
+      "f1": 153
+    },
+    {
+      "token": "还",
+      "f0": 153,
+      "f1": 158
+    },
+    {
+      "token": "是",
+      "f0": 158,
+      "f1": 163
+    },
+    {
+      "token": "准",
+      "f0": 163,
+      "f1": 168
+    },
+    {
+      "token": "备",
+      "f0": 168,
+      "f1": 173
+    },
+    {
+      "token": "宅",
+      "f0": 173,
+      "f1": 178
+    },
+    {
+      "token": "家",
+      "f0": 178,
+      "f1": 184
+    },
+    {
+      "token": "躺",
+      "f0": 184,
+      "f1": 189
+    },
+    {
+      "token": "平",
+      "f0": 189,
+      "f1": 194
+    },
+    {
+      "token": "？",
+      "f0": 194,
+      "f1": 202
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_sec": 0.0,
+      "end_sec": 0.7000423567977916,
+      "start_frame": 0,
+      "end_frame": 21,
+      "emotion_type": "happy",
+      "emotion_value": 38.0,
+      "emotion_level": 2,
+      "text": "终于要解",
+      "token_start": 0,
+      "token_end": 3,
+      "n_tokens": 4
+    },
+    {
+      "seg_id": 1,
+      "start_sec": 0.7000423567977916,
+      "end_sec": 2.021314354727398,
+      "start_frame": 21,
+      "end_frame": 61,
+      "emotion_type": "happy",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "放了，是不是已经",
+      "token_start": 4,
+      "token_end": 11,
+      "n_tokens": 8
+    },
+    {
+      "seg_id": 2,
+      "start_sec": 2.021314354727398,
+      "end_sec": 2.0313143547273977,
+      "start_frame": 61,
+      "end_frame": 62,
+      "emotion_type": "happy",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "经",
+      "token_start": 11,
+      "token_end": 11,
+      "n_tokens": 1
+    },
+    {
+      "seg_id": 3,
+      "start_sec": 2.0313143547273977,
+      "end_sec": 3.0041552795031055,
+      "start_frame": 61,
+      "end_frame": 90,
+      "emotion_type": "happy",
+      "emotion_value": 98.0,
+      "emotion_level": 4,
+      "text": "经订好票了？",
+      "token_start": 11,
+      "token_end": 16,
+      "n_tokens": 6
+    },
+    {
+      "seg_id": 4,
+      "start_sec": 3.0041552795031055,
+      "end_sec": 4.139985593512768,
+      "start_frame": 90,
+      "end_frame": 124,
+      "emotion_type": "happy",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "这波假期打算",
+      "token_start": 17,
+      "token_end": 22,
+      "n_tokens": 6
+    },
+    {
+      "seg_id": 5,
+      "start_sec": 4.139985593512768,
+      "end_sec": 5.085738181504486,
+      "start_frame": 124,
+      "end_frame": 153,
+      "emotion_type": "happy",
+      "emotion_value": 98.0,
+      "emotion_level": 4,
+      "text": "去哪儿了，",
+      "token_start": 23,
+      "token_end": 27,
+      "n_tokens": 5
+    },
+    {
+      "seg_id": 6,
+      "start_sec": 5.085738181504486,
+      "end_sec": 5.836777001380264,
+      "start_frame": 153,
+      "end_frame": 175,
+      "emotion_type": "calm",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "还是准备宅",
+      "token_start": 28,
+      "token_end": 32,
+      "n_tokens": 5
+    },
+    {
+      "seg_id": 7,
+      "start_sec": 5.836777001380264,
+      "end_sec": 6.717625,
+      "start_frame": 175,
+      "end_frame": 202,
+      "emotion_type": "happy",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "宅家躺平？",
+      "token_start": 32,
+      "token_end": 36,
+      "n_tokens": 5
+    }
+  ]
+}

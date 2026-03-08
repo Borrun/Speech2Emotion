@@ -1,0 +1,210 @@
+{
+  "wav": "utt_0016.wav",
+  "fps": 30,
+  "duration": 7.395125,
+  "text": "哎呦这题可太会出啦，我可是靠你养的，得罪谁都不行啊。",
+  "tokens": [
+    {
+      "token": "哎",
+      "f0": 0,
+      "f1": 8
+    },
+    {
+      "token": "呦",
+      "f0": 8,
+      "f1": 16
+    },
+    {
+      "token": "这",
+      "f0": 16,
+      "f1": 24
+    },
+    {
+      "token": "题",
+      "f0": 24,
+      "f1": 32
+    },
+    {
+      "token": "可",
+      "f0": 32,
+      "f1": 40
+    },
+    {
+      "token": "太",
+      "f0": 40,
+      "f1": 48
+    },
+    {
+      "token": "会",
+      "f0": 48,
+      "f1": 56
+    },
+    {
+      "token": "出",
+      "f0": 56,
+      "f1": 64
+    },
+    {
+      "token": "啦",
+      "f0": 64,
+      "f1": 72
+    },
+    {
+      "token": "，",
+      "f0": 72,
+      "f1": 94
+    },
+    {
+      "token": "我",
+      "f0": 94,
+      "f1": 95
+    },
+    {
+      "token": "可",
+      "f0": 95,
+      "f1": 101
+    },
+    {
+      "token": "是",
+      "f0": 101,
+      "f1": 109
+    },
+    {
+      "token": "靠",
+      "f0": 109,
+      "f1": 117
+    },
+    {
+      "token": "你",
+      "f0": 117,
+      "f1": 125
+    },
+    {
+      "token": "养",
+      "f0": 125,
+      "f1": 133
+    },
+    {
+      "token": "的",
+      "f0": 133,
+      "f1": 141
+    },
+    {
+      "token": "，",
+      "f0": 141,
+      "f1": 156
+    },
+    {
+      "token": "得",
+      "f0": 156,
+      "f1": 161
+    },
+    {
+      "token": "罪",
+      "f0": 161,
+      "f1": 169
+    },
+    {
+      "token": "谁",
+      "f0": 169,
+      "f1": 177
+    },
+    {
+      "token": "都",
+      "f0": 177,
+      "f1": 185
+    },
+    {
+      "token": "不",
+      "f0": 185,
+      "f1": 193
+    },
+    {
+      "token": "行",
+      "f0": 193,
+      "f1": 201
+    },
+    {
+      "token": "啊",
+      "f0": 201,
+      "f1": 209
+    },
+    {
+      "token": "。",
+      "f0": 209,
+      "f1": 222
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_sec": 0.0,
+      "end_sec": 1.112586093857833,
+      "start_frame": 0,
+      "end_frame": 33,
+      "emotion_type": "fear",
+      "emotion_value": 130.0,
+      "emotion_level": 5,
+      "text": "哎呦这题可",
+      "token_start": 0,
+      "token_end": 4,
+      "n_tokens": 5
+    },
+    {
+      "seg_id": 1,
+      "start_sec": 1.112586093857833,
+      "end_sec": 1.673982746721877,
+      "start_frame": 33,
+      "end_frame": 50,
+      "emotion_type": "fear",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "可太会",
+      "token_start": 4,
+      "token_end": 6,
+      "n_tokens": 3
+    },
+    {
+      "seg_id": 2,
+      "start_sec": 1.673982746721877,
+      "end_sec": 3.1489248619737746,
+      "start_frame": 50,
+      "end_frame": 94,
+      "emotion_type": "fear",
+      "emotion_value": 130.0,
+      "emotion_level": 5,
+      "text": "会出啦，",
+      "token_start": 6,
+      "token_end": 9,
+      "n_tokens": 4
+    },
+    {
+      "seg_id": 3,
+      "start_sec": 3.1489248619737746,
+      "end_sec": 5.185263630089717,
+      "start_frame": 94,
+      "end_frame": 156,
+      "emotion_type": "sad",
+      "emotion_value": 38.0,
+      "emotion_level": 2,
+      "text": "我可是靠你养的，",
+      "token_start": 10,
+      "token_end": 17,
+      "n_tokens": 8
+    },
+    {
+      "seg_id": 4,
+      "start_sec": 5.185263630089717,
+      "end_sec": 7.395125,
+      "start_frame": 156,
+      "end_frame": 222,
+      "emotion_type": "fear",
+      "emotion_value": 98.0,
+      "emotion_level": 4,
+      "text": "得罪谁都不行啊。",
+      "token_start": 18,
+      "token_end": 25,
+      "n_tokens": 8
+    }
+  ]
+}

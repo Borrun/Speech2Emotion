@@ -1,0 +1,245 @@
+{
+  "wav": "utt_0007.wav",
+  "fps": 30,
+  "duration": 6.538,
+  "text": "你这脑洞开的海豹和企鹅隔了个地球呢，他们连微信都加不了，怎么约饭？",
+  "tokens": [
+    {
+      "token": "你",
+      "f0": 0,
+      "f1": 6
+    },
+    {
+      "token": "这",
+      "f0": 6,
+      "f1": 11
+    },
+    {
+      "token": "脑",
+      "f0": 11,
+      "f1": 17
+    },
+    {
+      "token": "洞",
+      "f0": 17,
+      "f1": 23
+    },
+    {
+      "token": "开",
+      "f0": 23,
+      "f1": 28
+    },
+    {
+      "token": "的",
+      "f0": 28,
+      "f1": 34
+    },
+    {
+      "token": "海",
+      "f0": 34,
+      "f1": 39
+    },
+    {
+      "token": "豹",
+      "f0": 39,
+      "f1": 45
+    },
+    {
+      "token": "和",
+      "f0": 45,
+      "f1": 51
+    },
+    {
+      "token": "企",
+      "f0": 51,
+      "f1": 56
+    },
+    {
+      "token": "鹅",
+      "f0": 56,
+      "f1": 62
+    },
+    {
+      "token": "隔",
+      "f0": 62,
+      "f1": 68
+    },
+    {
+      "token": "了",
+      "f0": 68,
+      "f1": 73
+    },
+    {
+      "token": "个",
+      "f0": 73,
+      "f1": 79
+    },
+    {
+      "token": "地",
+      "f0": 79,
+      "f1": 84
+    },
+    {
+      "token": "球",
+      "f0": 84,
+      "f1": 90
+    },
+    {
+      "token": "呢",
+      "f0": 90,
+      "f1": 96
+    },
+    {
+      "token": "，",
+      "f0": 96,
+      "f1": 114
+    },
+    {
+      "token": "他",
+      "f0": 114,
+      "f1": 115
+    },
+    {
+      "token": "们",
+      "f0": 115,
+      "f1": 116
+    },
+    {
+      "token": "连",
+      "f0": 116,
+      "f1": 122
+    },
+    {
+      "token": "微",
+      "f0": 122,
+      "f1": 127
+    },
+    {
+      "token": "信",
+      "f0": 127,
+      "f1": 133
+    },
+    {
+      "token": "都",
+      "f0": 133,
+      "f1": 139
+    },
+    {
+      "token": "加",
+      "f0": 139,
+      "f1": 144
+    },
+    {
+      "token": "不",
+      "f0": 144,
+      "f1": 150
+    },
+    {
+      "token": "了",
+      "f0": 150,
+      "f1": 155
+    },
+    {
+      "token": "，",
+      "f0": 155,
+      "f1": 170
+    },
+    {
+      "token": "怎",
+      "f0": 170,
+      "f1": 171
+    },
+    {
+      "token": "么",
+      "f0": 171,
+      "f1": 176
+    },
+    {
+      "token": "约",
+      "f0": 176,
+      "f1": 181
+    },
+    {
+      "token": "饭",
+      "f0": 181,
+      "f1": 187
+    },
+    {
+      "token": "？",
+      "f0": 187,
+      "f1": 196
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_sec": 0.0,
+      "end_sec": 1.511545893719807,
+      "start_frame": 0,
+      "end_frame": 45,
+      "emotion_type": "fear",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "你这脑洞开的海豹",
+      "token_start": 0,
+      "token_end": 7,
+      "n_tokens": 8
+    },
+    {
+      "seg_id": 1,
+      "start_sec": 1.511545893719807,
+      "end_sec": 3.8036811594202895,
+      "start_frame": 45,
+      "end_frame": 114,
+      "emotion_type": "sad",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "和企鹅隔了个地球呢，",
+      "token_start": 8,
+      "token_end": 17,
+      "n_tokens": 10
+    },
+    {
+      "seg_id": 2,
+      "start_sec": 3.8036811594202895,
+      "end_sec": 5.188888888888889,
+      "start_frame": 114,
+      "end_frame": 156,
+      "emotion_type": "sad",
+      "emotion_value": 98.0,
+      "emotion_level": 4,
+      "text": "他们连微信都加不了，",
+      "token_start": 18,
+      "token_end": 27,
+      "n_tokens": 10
+    },
+    {
+      "seg_id": 3,
+      "start_sec": 5.188888888888889,
+      "end_sec": 5.667169082125604,
+      "start_frame": 156,
+      "end_frame": 170,
+      "emotion_type": "happy",
+      "emotion_value": 38.0,
+      "emotion_level": 2,
+      "text": "，",
+      "token_start": 27,
+      "token_end": 27,
+      "n_tokens": 1
+    },
+    {
+      "seg_id": 4,
+      "start_sec": 5.667169082125604,
+      "end_sec": 6.538,
+      "start_frame": 170,
+      "end_frame": 196,
+      "emotion_type": "happy",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "怎么约饭？",
+      "token_start": 28,
+      "token_end": 32,
+      "n_tokens": 5
+    }
+  ]
+}

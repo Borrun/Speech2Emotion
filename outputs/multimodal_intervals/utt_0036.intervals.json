@@ -1,0 +1,265 @@
+{
+  "wav": "utt_0036.wav",
+  "fps": 30,
+  "duration": 7.505313,
+  "text": "哎呦，这话可冤死我了，我明明听的可认真了，是不是你表达太飘，自己都飞走了。",
+  "tokens": [
+    {
+      "token": "哎",
+      "f0": 0,
+      "f1": 6
+    },
+    {
+      "token": "呦",
+      "f0": 6,
+      "f1": 11
+    },
+    {
+      "token": "，",
+      "f0": 11,
+      "f1": 20
+    },
+    {
+      "token": "这",
+      "f0": 20,
+      "f1": 26
+    },
+    {
+      "token": "话",
+      "f0": 26,
+      "f1": 32
+    },
+    {
+      "token": "可",
+      "f0": 32,
+      "f1": 37
+    },
+    {
+      "token": "冤",
+      "f0": 37,
+      "f1": 43
+    },
+    {
+      "token": "死",
+      "f0": 43,
+      "f1": 48
+    },
+    {
+      "token": "我",
+      "f0": 48,
+      "f1": 54
+    },
+    {
+      "token": "了",
+      "f0": 54,
+      "f1": 60
+    },
+    {
+      "token": "，",
+      "f0": 60,
+      "f1": 69
+    },
+    {
+      "token": "我",
+      "f0": 69,
+      "f1": 74
+    },
+    {
+      "token": "明",
+      "f0": 74,
+      "f1": 80
+    },
+    {
+      "token": "明",
+      "f0": 80,
+      "f1": 86
+    },
+    {
+      "token": "听",
+      "f0": 86,
+      "f1": 91
+    },
+    {
+      "token": "的",
+      "f0": 91,
+      "f1": 97
+    },
+    {
+      "token": "可",
+      "f0": 97,
+      "f1": 102
+    },
+    {
+      "token": "认",
+      "f0": 102,
+      "f1": 108
+    },
+    {
+      "token": "真",
+      "f0": 108,
+      "f1": 114
+    },
+    {
+      "token": "了",
+      "f0": 114,
+      "f1": 119
+    },
+    {
+      "token": "，",
+      "f0": 119,
+      "f1": 128
+    },
+    {
+      "token": "是",
+      "f0": 128,
+      "f1": 134
+    },
+    {
+      "token": "不",
+      "f0": 134,
+      "f1": 140
+    },
+    {
+      "token": "是",
+      "f0": 140,
+      "f1": 145
+    },
+    {
+      "token": "你",
+      "f0": 145,
+      "f1": 151
+    },
+    {
+      "token": "表",
+      "f0": 151,
+      "f1": 156
+    },
+    {
+      "token": "达",
+      "f0": 156,
+      "f1": 162
+    },
+    {
+      "token": "太",
+      "f0": 162,
+      "f1": 168
+    },
+    {
+      "token": "飘",
+      "f0": 168,
+      "f1": 173
+    },
+    {
+      "token": "，",
+      "f0": 173,
+      "f1": 190
+    },
+    {
+      "token": "自",
+      "f0": 190,
+      "f1": 191
+    },
+    {
+      "token": "己",
+      "f0": 191,
+      "f1": 194
+    },
+    {
+      "token": "都",
+      "f0": 194,
+      "f1": 199
+    },
+    {
+      "token": "飞",
+      "f0": 199,
+      "f1": 205
+    },
+    {
+      "token": "走",
+      "f0": 205,
+      "f1": 210
+    },
+    {
+      "token": "了",
+      "f0": 210,
+      "f1": 216
+    },
+    {
+      "token": "。",
+      "f0": 216,
+      "f1": 225
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_sec": 0.0,
+      "end_sec": 1.1084451221532092,
+      "start_frame": 0,
+      "end_frame": 33,
+      "emotion_type": "sad",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "哎呦，这话可",
+      "token_start": 0,
+      "token_end": 5,
+      "n_tokens": 6
+    },
+    {
+      "seg_id": 1,
+      "start_sec": 1.1084451221532092,
+      "end_sec": 2.9006040579710146,
+      "start_frame": 33,
+      "end_frame": 87,
+      "emotion_type": "sad",
+      "emotion_value": 130.0,
+      "emotion_level": 5,
+      "text": "可冤死我了，我明明听",
+      "token_start": 5,
+      "token_end": 14,
+      "n_tokens": 10
+    },
+    {
+      "seg_id": 2,
+      "start_sec": 2.9006040579710146,
+      "end_sec": 4.894769347826086,
+      "start_frame": 87,
+      "end_frame": 147,
+      "emotion_type": "sad",
+      "emotion_value": 98.0,
+      "emotion_level": 4,
+      "text": "听的可认真了，是不是你",
+      "token_start": 14,
+      "token_end": 24,
+      "n_tokens": 11
+    },
+    {
+      "seg_id": 3,
+      "start_sec": 4.894769347826086,
+      "end_sec": 6.329532426501036,
+      "start_frame": 147,
+      "end_frame": 190,
+      "emotion_type": "fear",
+      "emotion_value": 38.0,
+      "emotion_level": 2,
+      "text": "你表达太飘，",
+      "token_start": 24,
+      "token_end": 29,
+      "n_tokens": 6
+    },
+    {
+      "seg_id": 4,
+      "start_sec": 6.329532426501036,
+      "end_sec": 7.505313,
+      "start_frame": 190,
+      "end_frame": 225,
+      "emotion_type": "sad",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "自己都飞走了。",
+      "token_start": 30,
+      "token_end": 36,
+      "n_tokens": 7
+    }
+  ]
+}

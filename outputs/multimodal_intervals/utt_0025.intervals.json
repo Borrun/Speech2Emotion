@@ -1,0 +1,308 @@
+{
+  "wav": "utt_0025.wav",
+  "fps": 30,
+  "duration": 7.70625,
+  "text": "哇，谁让你这么激动啊，快说说看是谁，该不会是那个总在楼下咖啡店偶遇的神秘帅哥吧。",
+  "tokens": [
+    {
+      "token": "哇",
+      "f0": 0,
+      "f1": 5
+    },
+    {
+      "token": "，",
+      "f0": 5,
+      "f1": 14
+    },
+    {
+      "token": "谁",
+      "f0": 14,
+      "f1": 20
+    },
+    {
+      "token": "让",
+      "f0": 20,
+      "f1": 25
+    },
+    {
+      "token": "你",
+      "f0": 25,
+      "f1": 31
+    },
+    {
+      "token": "这",
+      "f0": 31,
+      "f1": 36
+    },
+    {
+      "token": "么",
+      "f0": 36,
+      "f1": 41
+    },
+    {
+      "token": "激",
+      "f0": 41,
+      "f1": 47
+    },
+    {
+      "token": "动",
+      "f0": 47,
+      "f1": 52
+    },
+    {
+      "token": "啊",
+      "f0": 52,
+      "f1": 58
+    },
+    {
+      "token": "，",
+      "f0": 58,
+      "f1": 75
+    },
+    {
+      "token": "快",
+      "f0": 75,
+      "f1": 76
+    },
+    {
+      "token": "说",
+      "f0": 76,
+      "f1": 77
+    },
+    {
+      "token": "说",
+      "f0": 77,
+      "f1": 83
+    },
+    {
+      "token": "看",
+      "f0": 83,
+      "f1": 88
+    },
+    {
+      "token": "是",
+      "f0": 88,
+      "f1": 94
+    },
+    {
+      "token": "谁",
+      "f0": 94,
+      "f1": 99
+    },
+    {
+      "token": "，",
+      "f0": 99,
+      "f1": 109
+    },
+    {
+      "token": "该",
+      "f0": 109,
+      "f1": 113
+    },
+    {
+      "token": "不",
+      "f0": 113,
+      "f1": 119
+    },
+    {
+      "token": "会",
+      "f0": 119,
+      "f1": 124
+    },
+    {
+      "token": "是",
+      "f0": 124,
+      "f1": 130
+    },
+    {
+      "token": "那",
+      "f0": 130,
+      "f1": 135
+    },
+    {
+      "token": "个",
+      "f0": 135,
+      "f1": 141
+    },
+    {
+      "token": "总",
+      "f0": 141,
+      "f1": 146
+    },
+    {
+      "token": "在",
+      "f0": 146,
+      "f1": 151
+    },
+    {
+      "token": "楼",
+      "f0": 151,
+      "f1": 157
+    },
+    {
+      "token": "下",
+      "f0": 157,
+      "f1": 162
+    },
+    {
+      "token": "咖",
+      "f0": 162,
+      "f1": 168
+    },
+    {
+      "token": "啡",
+      "f0": 168,
+      "f1": 173
+    },
+    {
+      "token": "店",
+      "f0": 173,
+      "f1": 179
+    },
+    {
+      "token": "偶",
+      "f0": 179,
+      "f1": 184
+    },
+    {
+      "token": "遇",
+      "f0": 184,
+      "f1": 190
+    },
+    {
+      "token": "的",
+      "f0": 190,
+      "f1": 195
+    },
+    {
+      "token": "神",
+      "f0": 195,
+      "f1": 200
+    },
+    {
+      "token": "秘",
+      "f0": 200,
+      "f1": 206
+    },
+    {
+      "token": "帅",
+      "f0": 206,
+      "f1": 211
+    },
+    {
+      "token": "哥",
+      "f0": 211,
+      "f1": 217
+    },
+    {
+      "token": "吧",
+      "f0": 217,
+      "f1": 222
+    },
+    {
+      "token": "。",
+      "f0": 222,
+      "f1": 231
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_sec": 0.0,
+      "end_sec": 0.8615683229813664,
+      "start_frame": 0,
+      "end_frame": 26,
+      "emotion_type": "happy",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "哇，谁让你",
+      "token_start": 0,
+      "token_end": 4,
+      "n_tokens": 5
+    },
+    {
+      "seg_id": 1,
+      "start_sec": 0.8615683229813664,
+      "end_sec": 1.7656832298136649,
+      "start_frame": 26,
+      "end_frame": 53,
+      "emotion_type": "happy",
+      "emotion_value": 98.0,
+      "emotion_level": 4,
+      "text": "你这么激动啊",
+      "token_start": 4,
+      "token_end": 9,
+      "n_tokens": 6
+    },
+    {
+      "seg_id": 2,
+      "start_sec": 1.7656832298136649,
+      "end_sec": 2.488975155279503,
+      "start_frame": 53,
+      "end_frame": 75,
+      "emotion_type": "happy",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "啊，",
+      "token_start": 9,
+      "token_end": 10,
+      "n_tokens": 2
+    },
+    {
+      "seg_id": 3,
+      "start_sec": 2.488975155279503,
+      "end_sec": 3.6329114396044453,
+      "start_frame": 75,
+      "end_frame": 109,
+      "emotion_type": "happy",
+      "emotion_value": 98.0,
+      "emotion_level": 4,
+      "text": "快说说看是谁，",
+      "token_start": 11,
+      "token_end": 17,
+      "n_tokens": 7
+    },
+    {
+      "seg_id": 4,
+      "start_sec": 3.6329114396044453,
+      "end_sec": 4.658850931677018,
+      "start_frame": 109,
+      "end_frame": 140,
+      "emotion_type": "calm",
+      "emotion_value": 5.0,
+      "emotion_level": 0,
+      "text": "该不会是那个",
+      "token_start": 18,
+      "token_end": 23,
+      "n_tokens": 6
+    },
+    {
+      "seg_id": 5,
+      "start_sec": 4.658850931677018,
+      "end_sec": 6.286257763975155,
+      "start_frame": 140,
+      "end_frame": 189,
+      "emotion_type": "sad",
+      "emotion_value": 18.0,
+      "emotion_level": 1,
+      "text": "个总在楼下咖啡店偶遇",
+      "token_start": 23,
+      "token_end": 32,
+      "n_tokens": 10
+    },
+    {
+      "seg_id": 6,
+      "start_sec": 6.286257763975155,
+      "end_sec": 7.70625,
+      "start_frame": 189,
+      "end_frame": 231,
+      "emotion_type": "happy",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "遇的神秘帅哥吧。",
+      "token_start": 32,
+      "token_end": 39,
+      "n_tokens": 8
+    }
+  ]
+}

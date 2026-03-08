@@ -1,0 +1,247 @@
+{
+  "wav": "utt_0008.wav",
+  "fps": 30,
+  "duration": 6.261125,
+  "n_frames": 187,
+  "text": "你这对比让我瞬间失去判断能力了，等等，你该不会真试过哪个吧。",
+  "switch_frames": [
+    28,
+    80,
+    102,
+    130
+  ],
+  "tokens": [
+    {
+      "token": "你",
+      "f0": 0,
+      "f1": 6
+    },
+    {
+      "token": "这",
+      "f0": 6,
+      "f1": 12
+    },
+    {
+      "token": "对",
+      "f0": 12,
+      "f1": 18
+    },
+    {
+      "token": "比",
+      "f0": 18,
+      "f1": 24
+    },
+    {
+      "token": "让",
+      "f0": 24,
+      "f1": 29
+    },
+    {
+      "token": "我",
+      "f0": 29,
+      "f1": 35
+    },
+    {
+      "token": "瞬",
+      "f0": 35,
+      "f1": 41
+    },
+    {
+      "token": "间",
+      "f0": 41,
+      "f1": 47
+    },
+    {
+      "token": "失",
+      "f0": 47,
+      "f1": 53
+    },
+    {
+      "token": "去",
+      "f0": 53,
+      "f1": 59
+    },
+    {
+      "token": "判",
+      "f0": 59,
+      "f1": 65
+    },
+    {
+      "token": "断",
+      "f0": 65,
+      "f1": 71
+    },
+    {
+      "token": "能",
+      "f0": 71,
+      "f1": 76
+    },
+    {
+      "token": "力",
+      "f0": 76,
+      "f1": 82
+    },
+    {
+      "token": "了",
+      "f0": 82,
+      "f1": 88
+    },
+    {
+      "token": "，",
+      "f0": 88,
+      "f1": 102
+    },
+    {
+      "token": "等",
+      "f0": 102,
+      "f1": 103
+    },
+    {
+      "token": "等",
+      "f0": 103,
+      "f1": 109
+    },
+    {
+      "token": "，",
+      "f0": 109,
+      "f1": 119
+    },
+    {
+      "token": "你",
+      "f0": 119,
+      "f1": 125
+    },
+    {
+      "token": "该",
+      "f0": 125,
+      "f1": 131
+    },
+    {
+      "token": "不",
+      "f0": 131,
+      "f1": 136
+    },
+    {
+      "token": "会",
+      "f0": 136,
+      "f1": 142
+    },
+    {
+      "token": "真",
+      "f0": 142,
+      "f1": 148
+    },
+    {
+      "token": "试",
+      "f0": 148,
+      "f1": 154
+    },
+    {
+      "token": "过",
+      "f0": 154,
+      "f1": 160
+    },
+    {
+      "token": "哪",
+      "f0": 160,
+      "f1": 166
+    },
+    {
+      "token": "个",
+      "f0": 166,
+      "f1": 172
+    },
+    {
+      "token": "吧",
+      "f0": 172,
+      "f1": 178
+    },
+    {
+      "token": "。",
+      "f0": 178,
+      "f1": 187
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_frame": 0,
+      "end_frame": 28,
+      "start_sec": 0.0,
+      "end_sec": 0.9333333333333333,
+      "emotion_type_id": 1,
+      "emotion_type": "sad",
+      "emotion_type_conf": 0.5714285714285714,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.6071428571428571,
+      "text": "你这对比让",
+      "token_start": 0,
+      "token_end": 4,
+      "n_tokens": 5
+    },
+    {
+      "seg_id": 1,
+      "start_frame": 28,
+      "end_frame": 80,
+      "start_sec": 0.9333333333333333,
+      "end_sec": 2.6666666666666665,
+      "emotion_type_id": 3,
+      "emotion_type": "fear",
+      "emotion_type_conf": 0.75,
+      "emotion_level": 4,
+      "emotion_level_conf": 0.34615384615384615,
+      "text": "让我瞬间失去判断能力",
+      "token_start": 4,
+      "token_end": 13,
+      "n_tokens": 10
+    },
+    {
+      "seg_id": 2,
+      "start_frame": 80,
+      "end_frame": 102,
+      "start_sec": 2.6666666666666665,
+      "end_sec": 3.4,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.6363636363636364,
+      "emotion_level": 4,
+      "emotion_level_conf": 0.5,
+      "text": "力了，",
+      "token_start": 13,
+      "token_end": 15,
+      "n_tokens": 3
+    },
+    {
+      "seg_id": 3,
+      "start_frame": 102,
+      "end_frame": 130,
+      "start_sec": 3.4,
+      "end_sec": 4.333333333333333,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.6428571428571429,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.8928571428571429,
+      "text": "等等，你该",
+      "token_start": 16,
+      "token_end": 20,
+      "n_tokens": 5
+    },
+    {
+      "seg_id": 4,
+      "start_frame": 130,
+      "end_frame": 187,
+      "start_sec": 4.333333333333333,
+      "end_sec": 6.233333333333333,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.6491228070175439,
+      "emotion_level": 4,
+      "emotion_level_conf": 0.5614035087719298,
+      "text": "该不会真试过哪个吧。",
+      "token_start": 20,
+      "token_end": 29,
+      "n_tokens": 10
+    }
+  ]
+}

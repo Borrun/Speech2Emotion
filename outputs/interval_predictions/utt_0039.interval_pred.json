@@ -1,0 +1,242 @@
+{
+  "wav": "utt_0039.wav",
+  "fps": 30,
+  "duration": 6.037875,
+  "n_frames": 180,
+  "text": "呵呵你这开心写在脸上了吧，是不是有啥好事藏不住了，快交代。",
+  "switch_frames": [
+    28,
+    64,
+    104,
+    160
+  ],
+  "tokens": [
+    {
+      "token": "呵",
+      "f0": 0,
+      "f1": 6
+    },
+    {
+      "token": "呵",
+      "f0": 6,
+      "f1": 12
+    },
+    {
+      "token": "你",
+      "f0": 12,
+      "f1": 18
+    },
+    {
+      "token": "这",
+      "f0": 18,
+      "f1": 23
+    },
+    {
+      "token": "开",
+      "f0": 23,
+      "f1": 29
+    },
+    {
+      "token": "心",
+      "f0": 29,
+      "f1": 35
+    },
+    {
+      "token": "写",
+      "f0": 35,
+      "f1": 41
+    },
+    {
+      "token": "在",
+      "f0": 41,
+      "f1": 47
+    },
+    {
+      "token": "脸",
+      "f0": 47,
+      "f1": 53
+    },
+    {
+      "token": "上",
+      "f0": 53,
+      "f1": 58
+    },
+    {
+      "token": "了",
+      "f0": 58,
+      "f1": 64
+    },
+    {
+      "token": "吧",
+      "f0": 64,
+      "f1": 70
+    },
+    {
+      "token": "，",
+      "f0": 70,
+      "f1": 79
+    },
+    {
+      "token": "是",
+      "f0": 79,
+      "f1": 85
+    },
+    {
+      "token": "不",
+      "f0": 85,
+      "f1": 91
+    },
+    {
+      "token": "是",
+      "f0": 91,
+      "f1": 97
+    },
+    {
+      "token": "有",
+      "f0": 97,
+      "f1": 103
+    },
+    {
+      "token": "啥",
+      "f0": 103,
+      "f1": 109
+    },
+    {
+      "token": "好",
+      "f0": 109,
+      "f1": 115
+    },
+    {
+      "token": "事",
+      "f0": 115,
+      "f1": 120
+    },
+    {
+      "token": "藏",
+      "f0": 120,
+      "f1": 126
+    },
+    {
+      "token": "不",
+      "f0": 126,
+      "f1": 132
+    },
+    {
+      "token": "住",
+      "f0": 132,
+      "f1": 138
+    },
+    {
+      "token": "了",
+      "f0": 138,
+      "f1": 144
+    },
+    {
+      "token": "，",
+      "f0": 144,
+      "f1": 160
+    },
+    {
+      "token": "快",
+      "f0": 160,
+      "f1": 161
+    },
+    {
+      "token": "交",
+      "f0": 161,
+      "f1": 165
+    },
+    {
+      "token": "代",
+      "f0": 165,
+      "f1": 171
+    },
+    {
+      "token": "。",
+      "f0": 171,
+      "f1": 180
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_frame": 0,
+      "end_frame": 28,
+      "start_sec": 0.0,
+      "end_sec": 0.9333333333333333,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.6071428571428571,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.42857142857142855,
+      "text": "呵呵你这开",
+      "token_start": 0,
+      "token_end": 4,
+      "n_tokens": 5
+    },
+    {
+      "seg_id": 1,
+      "start_frame": 28,
+      "end_frame": 64,
+      "start_sec": 0.9333333333333333,
+      "end_sec": 2.1333333333333333,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.5,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.7222222222222222,
+      "text": "开心写在脸上了",
+      "token_start": 4,
+      "token_end": 10,
+      "n_tokens": 7
+    },
+    {
+      "seg_id": 2,
+      "start_frame": 64,
+      "end_frame": 104,
+      "start_sec": 2.1333333333333333,
+      "end_sec": 3.466666666666667,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.825,
+      "emotion_level": 4,
+      "emotion_level_conf": 0.575,
+      "text": "吧，是不是有啥",
+      "token_start": 11,
+      "token_end": 17,
+      "n_tokens": 7
+    },
+    {
+      "seg_id": 3,
+      "start_frame": 104,
+      "end_frame": 160,
+      "start_sec": 3.466666666666667,
+      "end_sec": 5.333333333333333,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.8571428571428571,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.8035714285714286,
+      "text": "啥好事藏不住了，",
+      "token_start": 17,
+      "token_end": 24,
+      "n_tokens": 8
+    },
+    {
+      "seg_id": 4,
+      "start_frame": 160,
+      "end_frame": 180,
+      "start_sec": 5.333333333333333,
+      "end_sec": 6.0,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.95,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.45,
+      "text": "快交代。",
+      "token_start": 25,
+      "token_end": 28,
+      "n_tokens": 4
+    }
+  ]
+}

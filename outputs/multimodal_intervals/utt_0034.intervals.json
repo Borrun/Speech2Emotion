@@ -1,0 +1,309 @@
+{
+  "wav": "utt_0034.wav",
+  "fps": 30,
+  "duration": 8.3335,
+  "text": "查麻辣烫的味儿了吧，下班路上烧一份，老板都懂你这种急迫，实在不行，先囤包方便面压压惊。",
+  "tokens": [
+    {
+      "token": "查",
+      "f0": 0,
+      "f1": 5
+    },
+    {
+      "token": "麻",
+      "f0": 5,
+      "f1": 11
+    },
+    {
+      "token": "辣",
+      "f0": 11,
+      "f1": 16
+    },
+    {
+      "token": "烫",
+      "f0": 16,
+      "f1": 22
+    },
+    {
+      "token": "的",
+      "f0": 22,
+      "f1": 27
+    },
+    {
+      "token": "味",
+      "f0": 27,
+      "f1": 33
+    },
+    {
+      "token": "儿",
+      "f0": 33,
+      "f1": 38
+    },
+    {
+      "token": "了",
+      "f0": 38,
+      "f1": 43
+    },
+    {
+      "token": "吧",
+      "f0": 43,
+      "f1": 49
+    },
+    {
+      "token": "，",
+      "f0": 49,
+      "f1": 55
+    },
+    {
+      "token": "下",
+      "f0": 55,
+      "f1": 63
+    },
+    {
+      "token": "班",
+      "f0": 63,
+      "f1": 68
+    },
+    {
+      "token": "路",
+      "f0": 68,
+      "f1": 74
+    },
+    {
+      "token": "上",
+      "f0": 74,
+      "f1": 79
+    },
+    {
+      "token": "烧",
+      "f0": 79,
+      "f1": 85
+    },
+    {
+      "token": "一",
+      "f0": 85,
+      "f1": 90
+    },
+    {
+      "token": "份",
+      "f0": 90,
+      "f1": 96
+    },
+    {
+      "token": "，",
+      "f0": 96,
+      "f1": 104
+    },
+    {
+      "token": "老",
+      "f0": 104,
+      "f1": 110
+    },
+    {
+      "token": "板",
+      "f0": 110,
+      "f1": 115
+    },
+    {
+      "token": "都",
+      "f0": 115,
+      "f1": 121
+    },
+    {
+      "token": "懂",
+      "f0": 121,
+      "f1": 126
+    },
+    {
+      "token": "你",
+      "f0": 126,
+      "f1": 132
+    },
+    {
+      "token": "这",
+      "f0": 132,
+      "f1": 137
+    },
+    {
+      "token": "种",
+      "f0": 137,
+      "f1": 142
+    },
+    {
+      "token": "急",
+      "f0": 142,
+      "f1": 148
+    },
+    {
+      "token": "迫",
+      "f0": 148,
+      "f1": 153
+    },
+    {
+      "token": "，",
+      "f0": 153,
+      "f1": 161
+    },
+    {
+      "token": "实",
+      "f0": 161,
+      "f1": 167
+    },
+    {
+      "token": "在",
+      "f0": 167,
+      "f1": 173
+    },
+    {
+      "token": "不",
+      "f0": 173,
+      "f1": 178
+    },
+    {
+      "token": "行",
+      "f0": 178,
+      "f1": 184
+    },
+    {
+      "token": "，",
+      "f0": 184,
+      "f1": 197
+    },
+    {
+      "token": "先",
+      "f0": 197,
+      "f1": 198
+    },
+    {
+      "token": "囤",
+      "f0": 198,
+      "f1": 203
+    },
+    {
+      "token": "包",
+      "f0": 203,
+      "f1": 209
+    },
+    {
+      "token": "方",
+      "f0": 209,
+      "f1": 214
+    },
+    {
+      "token": "便",
+      "f0": 214,
+      "f1": 220
+    },
+    {
+      "token": "面",
+      "f0": 220,
+      "f1": 225
+    },
+    {
+      "token": "压",
+      "f0": 225,
+      "f1": 230
+    },
+    {
+      "token": "压",
+      "f0": 230,
+      "f1": 236
+    },
+    {
+      "token": "惊",
+      "f0": 236,
+      "f1": 241
+    },
+    {
+      "token": "。",
+      "f0": 241,
+      "f1": 250
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_sec": 0.0,
+      "end_sec": 1.8488241005593695,
+      "start_frame": 0,
+      "end_frame": 55,
+      "emotion_type": "happy",
+      "emotion_value": 38.0,
+      "emotion_level": 2,
+      "text": "查麻辣烫的味儿了吧，",
+      "token_start": 0,
+      "token_end": 9,
+      "n_tokens": 10
+    },
+    {
+      "seg_id": 1,
+      "start_sec": 1.8488241005593695,
+      "end_sec": 2.4960241545893718,
+      "start_frame": 55,
+      "end_frame": 75,
+      "emotion_type": "calm",
+      "emotion_value": 5.0,
+      "emotion_level": 0,
+      "text": "下班路上",
+      "token_start": 10,
+      "token_end": 13,
+      "n_tokens": 4
+    },
+    {
+      "seg_id": 2,
+      "start_sec": 2.4960241545893718,
+      "end_sec": 4.457185990338164,
+      "start_frame": 75,
+      "end_frame": 134,
+      "emotion_type": "happy",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "上烧一份，老板都懂你这",
+      "token_start": 13,
+      "token_end": 23,
+      "n_tokens": 11
+    },
+    {
+      "seg_id": 3,
+      "start_sec": 4.457185990338164,
+      "end_sec": 5.3658768115942035,
+      "start_frame": 134,
+      "end_frame": 161,
+      "emotion_type": "happy",
+      "emotion_value": 98.0,
+      "emotion_level": 4,
+      "text": "这种急迫，",
+      "token_start": 23,
+      "token_end": 27,
+      "n_tokens": 5
+    },
+    {
+      "seg_id": 4,
+      "start_sec": 5.3658768115942035,
+      "end_sec": 6.5736304347826096,
+      "start_frame": 161,
+      "end_frame": 197,
+      "emotion_type": "happy",
+      "emotion_value": 38.0,
+      "emotion_level": 2,
+      "text": "实在不行，",
+      "token_start": 28,
+      "token_end": 32,
+      "n_tokens": 5
+    },
+    {
+      "seg_id": 5,
+      "start_sec": 6.5736304347826096,
+      "end_sec": 8.3335,
+      "start_frame": 197,
+      "end_frame": 250,
+      "emotion_type": "happy",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "先囤包方便面压压惊。",
+      "token_start": 33,
+      "token_end": 42,
+      "n_tokens": 10
+    }
+  ]
+}

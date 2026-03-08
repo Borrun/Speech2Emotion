@@ -1,0 +1,337 @@
+{
+  "wav": "utt_0005.wav",
+  "fps": 30,
+  "duration": 9.390625,
+  "n_frames": 281,
+  "text": "火锅咕嘟咕嘟冒泡的时候，烦恼也跟着煮开了吧。你不是总说辣到流眼泪，反而觉得爽，今晚干脆放纵一回。",
+  "switch_frames": [
+    82,
+    139,
+    208,
+    235
+  ],
+  "tokens": [
+    {
+      "token": "火",
+      "f0": 0,
+      "f1": 6
+    },
+    {
+      "token": "锅",
+      "f0": 6,
+      "f1": 11
+    },
+    {
+      "token": "咕",
+      "f0": 11,
+      "f1": 17
+    },
+    {
+      "token": "嘟",
+      "f0": 17,
+      "f1": 22
+    },
+    {
+      "token": "咕",
+      "f0": 22,
+      "f1": 28
+    },
+    {
+      "token": "嘟",
+      "f0": 28,
+      "f1": 33
+    },
+    {
+      "token": "冒",
+      "f0": 33,
+      "f1": 39
+    },
+    {
+      "token": "泡",
+      "f0": 39,
+      "f1": 44
+    },
+    {
+      "token": "的",
+      "f0": 44,
+      "f1": 50
+    },
+    {
+      "token": "时",
+      "f0": 50,
+      "f1": 55
+    },
+    {
+      "token": "候",
+      "f0": 55,
+      "f1": 61
+    },
+    {
+      "token": "，",
+      "f0": 61,
+      "f1": 69
+    },
+    {
+      "token": "烦",
+      "f0": 69,
+      "f1": 75
+    },
+    {
+      "token": "恼",
+      "f0": 75,
+      "f1": 80
+    },
+    {
+      "token": "也",
+      "f0": 80,
+      "f1": 86
+    },
+    {
+      "token": "跟",
+      "f0": 86,
+      "f1": 91
+    },
+    {
+      "token": "着",
+      "f0": 91,
+      "f1": 97
+    },
+    {
+      "token": "煮",
+      "f0": 97,
+      "f1": 102
+    },
+    {
+      "token": "开",
+      "f0": 102,
+      "f1": 108
+    },
+    {
+      "token": "了",
+      "f0": 108,
+      "f1": 114
+    },
+    {
+      "token": "吧",
+      "f0": 114,
+      "f1": 119
+    },
+    {
+      "token": "。",
+      "f0": 119,
+      "f1": 128
+    },
+    {
+      "token": "你",
+      "f0": 128,
+      "f1": 133
+    },
+    {
+      "token": "不",
+      "f0": 133,
+      "f1": 139
+    },
+    {
+      "token": "是",
+      "f0": 139,
+      "f1": 144
+    },
+    {
+      "token": "总",
+      "f0": 144,
+      "f1": 150
+    },
+    {
+      "token": "说",
+      "f0": 150,
+      "f1": 155
+    },
+    {
+      "token": "辣",
+      "f0": 155,
+      "f1": 161
+    },
+    {
+      "token": "到",
+      "f0": 161,
+      "f1": 166
+    },
+    {
+      "token": "流",
+      "f0": 166,
+      "f1": 172
+    },
+    {
+      "token": "眼",
+      "f0": 172,
+      "f1": 177
+    },
+    {
+      "token": "泪",
+      "f0": 177,
+      "f1": 183
+    },
+    {
+      "token": "，",
+      "f0": 183,
+      "f1": 192
+    },
+    {
+      "token": "反",
+      "f0": 192,
+      "f1": 197
+    },
+    {
+      "token": "而",
+      "f0": 197,
+      "f1": 203
+    },
+    {
+      "token": "觉",
+      "f0": 203,
+      "f1": 208
+    },
+    {
+      "token": "得",
+      "f0": 208,
+      "f1": 214
+    },
+    {
+      "token": "爽",
+      "f0": 214,
+      "f1": 219
+    },
+    {
+      "token": "，",
+      "f0": 219,
+      "f1": 235
+    },
+    {
+      "token": "今",
+      "f0": 235,
+      "f1": 236
+    },
+    {
+      "token": "晚",
+      "f0": 236,
+      "f1": 239
+    },
+    {
+      "token": "干",
+      "f0": 239,
+      "f1": 245
+    },
+    {
+      "token": "脆",
+      "f0": 245,
+      "f1": 250
+    },
+    {
+      "token": "放",
+      "f0": 250,
+      "f1": 256
+    },
+    {
+      "token": "纵",
+      "f0": 256,
+      "f1": 261
+    },
+    {
+      "token": "一",
+      "f0": 261,
+      "f1": 267
+    },
+    {
+      "token": "回",
+      "f0": 267,
+      "f1": 272
+    },
+    {
+      "token": "。",
+      "f0": 272,
+      "f1": 281
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_frame": 0,
+      "end_frame": 82,
+      "start_sec": 0.0,
+      "end_sec": 2.7333333333333334,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.5,
+      "emotion_level": 0,
+      "emotion_level_conf": 0.43902439024390244,
+      "text": "火锅咕嘟咕嘟冒泡的时候，烦恼也",
+      "token_start": 0,
+      "token_end": 14,
+      "n_tokens": 15
+    },
+    {
+      "seg_id": 1,
+      "start_frame": 82,
+      "end_frame": 139,
+      "start_sec": 2.7333333333333334,
+      "end_sec": 4.633333333333334,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.9473684210526315,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.5789473684210527,
+      "text": "也跟着煮开了吧。你不",
+      "token_start": 14,
+      "token_end": 23,
+      "n_tokens": 10
+    },
+    {
+      "seg_id": 2,
+      "start_frame": 139,
+      "end_frame": 208,
+      "start_sec": 4.633333333333334,
+      "end_sec": 6.933333333333334,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.4782608695652174,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.4927536231884058,
+      "text": "是总说辣到流眼泪，反而觉",
+      "token_start": 24,
+      "token_end": 35,
+      "n_tokens": 12
+    },
+    {
+      "seg_id": 3,
+      "start_frame": 208,
+      "end_frame": 235,
+      "start_sec": 6.933333333333334,
+      "end_sec": 7.833333333333333,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.9259259259259259,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.5185185185185185,
+      "text": "得爽，",
+      "token_start": 36,
+      "token_end": 38,
+      "n_tokens": 3
+    },
+    {
+      "seg_id": 4,
+      "start_frame": 235,
+      "end_frame": 281,
+      "start_sec": 7.833333333333333,
+      "end_sec": 9.366666666666667,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.9347826086956522,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.41304347826086957,
+      "text": "今晚干脆放纵一回。",
+      "token_start": 39,
+      "token_end": 47,
+      "n_tokens": 9
+    }
+  ]
+}

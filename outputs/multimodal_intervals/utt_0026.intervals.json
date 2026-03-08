@@ -1,0 +1,226 @@
+{
+  "wav": "utt_0026.wav",
+  "fps": 30,
+  "duration": 6.16625,
+  "text": "天呐，现在人没事吧，疼不疼，要不要先处理伤口，还是已经去医院了？",
+  "tokens": [
+    {
+      "token": "天",
+      "f0": 0,
+      "f1": 5
+    },
+    {
+      "token": "呐",
+      "f0": 5,
+      "f1": 11
+    },
+    {
+      "token": "，",
+      "f0": 11,
+      "f1": 19
+    },
+    {
+      "token": "现",
+      "f0": 19,
+      "f1": 24
+    },
+    {
+      "token": "在",
+      "f0": 24,
+      "f1": 30
+    },
+    {
+      "token": "人",
+      "f0": 30,
+      "f1": 35
+    },
+    {
+      "token": "没",
+      "f0": 35,
+      "f1": 40
+    },
+    {
+      "token": "事",
+      "f0": 40,
+      "f1": 45
+    },
+    {
+      "token": "吧",
+      "f0": 45,
+      "f1": 51
+    },
+    {
+      "token": "，",
+      "f0": 51,
+      "f1": 59
+    },
+    {
+      "token": "疼",
+      "f0": 59,
+      "f1": 64
+    },
+    {
+      "token": "不",
+      "f0": 64,
+      "f1": 70
+    },
+    {
+      "token": "疼",
+      "f0": 70,
+      "f1": 75
+    },
+    {
+      "token": "，",
+      "f0": 75,
+      "f1": 76
+    },
+    {
+      "token": "要",
+      "f0": 76,
+      "f1": 89
+    },
+    {
+      "token": "不",
+      "f0": 89,
+      "f1": 94
+    },
+    {
+      "token": "要",
+      "f0": 94,
+      "f1": 99
+    },
+    {
+      "token": "先",
+      "f0": 99,
+      "f1": 105
+    },
+    {
+      "token": "处",
+      "f0": 105,
+      "f1": 110
+    },
+    {
+      "token": "理",
+      "f0": 110,
+      "f1": 115
+    },
+    {
+      "token": "伤",
+      "f0": 115,
+      "f1": 121
+    },
+    {
+      "token": "口",
+      "f0": 121,
+      "f1": 126
+    },
+    {
+      "token": "，",
+      "f0": 126,
+      "f1": 134
+    },
+    {
+      "token": "还",
+      "f0": 134,
+      "f1": 140
+    },
+    {
+      "token": "是",
+      "f0": 140,
+      "f1": 145
+    },
+    {
+      "token": "已",
+      "f0": 145,
+      "f1": 150
+    },
+    {
+      "token": "经",
+      "f0": 150,
+      "f1": 155
+    },
+    {
+      "token": "去",
+      "f0": 155,
+      "f1": 161
+    },
+    {
+      "token": "医",
+      "f0": 161,
+      "f1": 166
+    },
+    {
+      "token": "院",
+      "f0": 166,
+      "f1": 171
+    },
+    {
+      "token": "了",
+      "f0": 171,
+      "f1": 177
+    },
+    {
+      "token": "？",
+      "f0": 177,
+      "f1": 185
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_sec": 0.0,
+      "end_sec": 1.089413388543823,
+      "start_frame": 0,
+      "end_frame": 33,
+      "emotion_type": "sad",
+      "emotion_value": 130.0,
+      "emotion_level": 5,
+      "text": "天呐，现在人",
+      "token_start": 0,
+      "token_end": 5,
+      "n_tokens": 6
+    },
+    {
+      "seg_id": 1,
+      "start_sec": 1.089413388543823,
+      "end_sec": 2.5150129399585923,
+      "start_frame": 33,
+      "end_frame": 75,
+      "emotion_type": "fear",
+      "emotion_value": 130.0,
+      "emotion_level": 5,
+      "text": "人没事吧，疼不疼",
+      "token_start": 5,
+      "token_end": 12,
+      "n_tokens": 8
+    },
+    {
+      "seg_id": 2,
+      "start_sec": 2.5150129399585923,
+      "end_sec": 4.825760869565218,
+      "start_frame": 75,
+      "end_frame": 145,
+      "emotion_type": "sad",
+      "emotion_value": 98.0,
+      "emotion_level": 4,
+      "text": "，要不要先处理伤口，还是",
+      "token_start": 13,
+      "token_end": 24,
+      "n_tokens": 12
+    },
+    {
+      "seg_id": 3,
+      "start_sec": 4.825760869565218,
+      "end_sec": 6.16625,
+      "start_frame": 145,
+      "end_frame": 185,
+      "emotion_type": "sad",
+      "emotion_value": 68.0,
+      "emotion_level": 3,
+      "text": "已经去医院了？",
+      "token_start": 25,
+      "token_end": 31,
+      "n_tokens": 7
+    }
+  ]
+}
