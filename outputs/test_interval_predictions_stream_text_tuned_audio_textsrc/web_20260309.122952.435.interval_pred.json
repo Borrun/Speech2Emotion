@@ -1,0 +1,297 @@
+{
+  "wav": "web_20260309.122952.435.wav",
+  "fps": 30,
+  "duration": 9.220125,
+  "n_frames": 276,
+  "text": "哎呦这是想被我教育一下但骂人多没创意啊不如现在就罚你讲个冷笑话讲不好才这要挨对哦",
+  "switch_frames": [
+    26,
+    141,
+    148,
+    216
+  ],
+  "tokens": [
+    {
+      "token": "哎",
+      "f0": 0,
+      "f1": 7
+    },
+    {
+      "token": "呦",
+      "f0": 7,
+      "f1": 14
+    },
+    {
+      "token": "这",
+      "f0": 14,
+      "f1": 21
+    },
+    {
+      "token": "是",
+      "f0": 21,
+      "f1": 28
+    },
+    {
+      "token": "想",
+      "f0": 28,
+      "f1": 34
+    },
+    {
+      "token": "被",
+      "f0": 34,
+      "f1": 41
+    },
+    {
+      "token": "我",
+      "f0": 41,
+      "f1": 48
+    },
+    {
+      "token": "教",
+      "f0": 48,
+      "f1": 55
+    },
+    {
+      "token": "育",
+      "f0": 55,
+      "f1": 62
+    },
+    {
+      "token": "一",
+      "f0": 62,
+      "f1": 69
+    },
+    {
+      "token": "下",
+      "f0": 69,
+      "f1": 76
+    },
+    {
+      "token": "但",
+      "f0": 76,
+      "f1": 83
+    },
+    {
+      "token": "骂",
+      "f0": 83,
+      "f1": 90
+    },
+    {
+      "token": "人",
+      "f0": 90,
+      "f1": 97
+    },
+    {
+      "token": "多",
+      "f0": 97,
+      "f1": 104
+    },
+    {
+      "token": "没",
+      "f0": 104,
+      "f1": 110
+    },
+    {
+      "token": "创",
+      "f0": 110,
+      "f1": 117
+    },
+    {
+      "token": "意",
+      "f0": 117,
+      "f1": 124
+    },
+    {
+      "token": "啊",
+      "f0": 124,
+      "f1": 131
+    },
+    {
+      "token": "不",
+      "f0": 131,
+      "f1": 138
+    },
+    {
+      "token": "如",
+      "f0": 138,
+      "f1": 145
+    },
+    {
+      "token": "现",
+      "f0": 145,
+      "f1": 152
+    },
+    {
+      "token": "在",
+      "f0": 152,
+      "f1": 159
+    },
+    {
+      "token": "就",
+      "f0": 159,
+      "f1": 166
+    },
+    {
+      "token": "罚",
+      "f0": 166,
+      "f1": 172
+    },
+    {
+      "token": "你",
+      "f0": 172,
+      "f1": 179
+    },
+    {
+      "token": "讲",
+      "f0": 179,
+      "f1": 186
+    },
+    {
+      "token": "个",
+      "f0": 186,
+      "f1": 193
+    },
+    {
+      "token": "冷",
+      "f0": 193,
+      "f1": 200
+    },
+    {
+      "token": "笑",
+      "f0": 200,
+      "f1": 207
+    },
+    {
+      "token": "话",
+      "f0": 207,
+      "f1": 214
+    },
+    {
+      "token": "讲",
+      "f0": 214,
+      "f1": 221
+    },
+    {
+      "token": "不",
+      "f0": 221,
+      "f1": 228
+    },
+    {
+      "token": "好",
+      "f0": 228,
+      "f1": 235
+    },
+    {
+      "token": "才",
+      "f0": 235,
+      "f1": 242
+    },
+    {
+      "token": "这",
+      "f0": 242,
+      "f1": 248
+    },
+    {
+      "token": "要",
+      "f0": 248,
+      "f1": 255
+    },
+    {
+      "token": "挨",
+      "f0": 255,
+      "f1": 262
+    },
+    {
+      "token": "对",
+      "f0": 262,
+      "f1": 269
+    },
+    {
+      "token": "哦",
+      "f0": 269,
+      "f1": 276
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_frame": 0,
+      "end_frame": 26,
+      "start_sec": 0.0,
+      "end_sec": 0.8666666666666667,
+      "emotion_type_id": 3,
+      "emotion_type": "fear",
+      "emotion_type_conf": 0.7307692307692307,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.6538461538461539,
+      "text": "哎呦这是",
+      "token_start": 0,
+      "token_end": 3,
+      "n_tokens": 4
+    },
+    {
+      "seg_id": 1,
+      "start_frame": 26,
+      "end_frame": 141,
+      "start_sec": 0.8666666666666667,
+      "end_sec": 4.7,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.6260869565217392,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.391304347826087,
+      "text": "是想被我教育一下但骂人多没创意啊不如",
+      "token_start": 3,
+      "token_end": 20,
+      "n_tokens": 18
+    },
+    {
+      "seg_id": 2,
+      "start_frame": 141,
+      "end_frame": 148,
+      "start_sec": 4.7,
+      "end_sec": 4.933333333333334,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.5714285714285714,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.5714285714285714,
+      "text": "如现",
+      "token_start": 20,
+      "token_end": 21,
+      "n_tokens": 2
+    },
+    {
+      "seg_id": 3,
+      "start_frame": 148,
+      "end_frame": 216,
+      "start_sec": 4.933333333333334,
+      "end_sec": 7.2,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.9558823529411765,
+      "emotion_level": 4,
+      "emotion_level_conf": 0.39705882352941174,
+      "text": "现在就罚你讲个冷笑话讲",
+      "token_start": 21,
+      "token_end": 31,
+      "n_tokens": 11
+    },
+    {
+      "seg_id": 4,
+      "start_frame": 216,
+      "end_frame": 276,
+      "start_sec": 7.2,
+      "end_sec": 9.2,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.8333333333333334,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.7,
+      "text": "讲不好才这要挨对哦",
+      "token_start": 31,
+      "token_end": 39,
+      "n_tokens": 9
+    }
+  ]
+}

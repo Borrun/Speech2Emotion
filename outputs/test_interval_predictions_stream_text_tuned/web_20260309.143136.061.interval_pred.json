@@ -1,0 +1,215 @@
+{
+  "wav": "web_20260309.143136.061.wav",
+  "fps": 30,
+  "duration": 6.638125,
+  "n_frames": 198,
+  "text": "呵呵突然就忠誠心目那我得赶紧把下次见客你脑门上别想来张",
+  "switch_frames": [
+    32,
+    89,
+    171
+  ],
+  "tokens": [
+    {
+      "token": "呵",
+      "f0": 0,
+      "f1": 7
+    },
+    {
+      "token": "呵",
+      "f0": 7,
+      "f1": 15
+    },
+    {
+      "token": "突",
+      "f0": 15,
+      "f1": 22
+    },
+    {
+      "token": "然",
+      "f0": 22,
+      "f1": 29
+    },
+    {
+      "token": "就",
+      "f0": 29,
+      "f1": 37
+    },
+    {
+      "token": "忠",
+      "f0": 37,
+      "f1": 44
+    },
+    {
+      "token": "誠",
+      "f0": 44,
+      "f1": 51
+    },
+    {
+      "token": "心",
+      "f0": 51,
+      "f1": 59
+    },
+    {
+      "token": "目",
+      "f0": 59,
+      "f1": 66
+    },
+    {
+      "token": "那",
+      "f0": 66,
+      "f1": 73
+    },
+    {
+      "token": "我",
+      "f0": 73,
+      "f1": 81
+    },
+    {
+      "token": "得",
+      "f0": 81,
+      "f1": 88
+    },
+    {
+      "token": "赶",
+      "f0": 88,
+      "f1": 95
+    },
+    {
+      "token": "紧",
+      "f0": 95,
+      "f1": 103
+    },
+    {
+      "token": "把",
+      "f0": 103,
+      "f1": 110
+    },
+    {
+      "token": "下",
+      "f0": 110,
+      "f1": 117
+    },
+    {
+      "token": "次",
+      "f0": 117,
+      "f1": 125
+    },
+    {
+      "token": "见",
+      "f0": 125,
+      "f1": 132
+    },
+    {
+      "token": "客",
+      "f0": 132,
+      "f1": 139
+    },
+    {
+      "token": "你",
+      "f0": 139,
+      "f1": 147
+    },
+    {
+      "token": "脑",
+      "f0": 147,
+      "f1": 154
+    },
+    {
+      "token": "门",
+      "f0": 154,
+      "f1": 161
+    },
+    {
+      "token": "上",
+      "f0": 161,
+      "f1": 169
+    },
+    {
+      "token": "别",
+      "f0": 169,
+      "f1": 176
+    },
+    {
+      "token": "想",
+      "f0": 176,
+      "f1": 183
+    },
+    {
+      "token": "来",
+      "f0": 183,
+      "f1": 191
+    },
+    {
+      "token": "张",
+      "f0": 191,
+      "f1": 198
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_frame": 0,
+      "end_frame": 32,
+      "start_sec": 0.0,
+      "end_sec": 1.0666666666666667,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.4375,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.6875,
+      "text": "呵呵突然就",
+      "token_start": 0,
+      "token_end": 4,
+      "n_tokens": 5
+    },
+    {
+      "seg_id": 1,
+      "start_frame": 32,
+      "end_frame": 89,
+      "start_sec": 1.0666666666666667,
+      "end_sec": 2.966666666666667,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.5789473684210527,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.5087719298245614,
+      "text": "就忠誠心目那我得赶",
+      "token_start": 4,
+      "token_end": 12,
+      "n_tokens": 9
+    },
+    {
+      "seg_id": 2,
+      "start_frame": 89,
+      "end_frame": 171,
+      "start_sec": 2.966666666666667,
+      "end_sec": 5.7,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.8780487804878049,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.5121951219512195,
+      "text": "赶紧把下次见客你脑门上别",
+      "token_start": 12,
+      "token_end": 23,
+      "n_tokens": 12
+    },
+    {
+      "seg_id": 3,
+      "start_frame": 171,
+      "end_frame": 198,
+      "start_sec": 5.7,
+      "end_sec": 6.6,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.5925925925925926,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.5925925925925926,
+      "text": "别想来张",
+      "token_start": 23,
+      "token_end": 26,
+      "n_tokens": 4
+    }
+  ]
+}

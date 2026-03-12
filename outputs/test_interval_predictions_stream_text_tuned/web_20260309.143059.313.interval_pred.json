@@ -1,0 +1,354 @@
+{
+  "wav": "web_20260309.143059.313.wav",
+  "fps": 30,
+  "duration": 11.395,
+  "n_frames": 341,
+  "text": "好好我連你手機屏幕朝內邊都不知道差平從哪冒出來的該不會是你剛手華點錯了現在正定這那顆小星星發呆吧",
+  "switch_frames": [
+    32,
+    61,
+    199,
+    269,
+    306
+  ],
+  "tokens": [
+    {
+      "token": "好",
+      "f0": 0,
+      "f1": 7
+    },
+    {
+      "token": "好",
+      "f0": 7,
+      "f1": 14
+    },
+    {
+      "token": "我",
+      "f0": 14,
+      "f1": 21
+    },
+    {
+      "token": "連",
+      "f0": 21,
+      "f1": 28
+    },
+    {
+      "token": "你",
+      "f0": 28,
+      "f1": 36
+    },
+    {
+      "token": "手",
+      "f0": 36,
+      "f1": 43
+    },
+    {
+      "token": "機",
+      "f0": 43,
+      "f1": 50
+    },
+    {
+      "token": "屏",
+      "f0": 50,
+      "f1": 57
+    },
+    {
+      "token": "幕",
+      "f0": 57,
+      "f1": 64
+    },
+    {
+      "token": "朝",
+      "f0": 64,
+      "f1": 71
+    },
+    {
+      "token": "內",
+      "f0": 71,
+      "f1": 78
+    },
+    {
+      "token": "邊",
+      "f0": 78,
+      "f1": 85
+    },
+    {
+      "token": "都",
+      "f0": 85,
+      "f1": 92
+    },
+    {
+      "token": "不",
+      "f0": 92,
+      "f1": 99
+    },
+    {
+      "token": "知",
+      "f0": 99,
+      "f1": 107
+    },
+    {
+      "token": "道",
+      "f0": 107,
+      "f1": 114
+    },
+    {
+      "token": "差",
+      "f0": 114,
+      "f1": 121
+    },
+    {
+      "token": "平",
+      "f0": 121,
+      "f1": 128
+    },
+    {
+      "token": "從",
+      "f0": 128,
+      "f1": 135
+    },
+    {
+      "token": "哪",
+      "f0": 135,
+      "f1": 142
+    },
+    {
+      "token": "冒",
+      "f0": 142,
+      "f1": 149
+    },
+    {
+      "token": "出",
+      "f0": 149,
+      "f1": 156
+    },
+    {
+      "token": "來",
+      "f0": 156,
+      "f1": 163
+    },
+    {
+      "token": "的",
+      "f0": 163,
+      "f1": 170
+    },
+    {
+      "token": "該",
+      "f0": 170,
+      "f1": 178
+    },
+    {
+      "token": "不",
+      "f0": 178,
+      "f1": 185
+    },
+    {
+      "token": "會",
+      "f0": 185,
+      "f1": 192
+    },
+    {
+      "token": "是",
+      "f0": 192,
+      "f1": 199
+    },
+    {
+      "token": "你",
+      "f0": 199,
+      "f1": 206
+    },
+    {
+      "token": "剛",
+      "f0": 206,
+      "f1": 213
+    },
+    {
+      "token": "手",
+      "f0": 213,
+      "f1": 220
+    },
+    {
+      "token": "華",
+      "f0": 220,
+      "f1": 227
+    },
+    {
+      "token": "點",
+      "f0": 227,
+      "f1": 234
+    },
+    {
+      "token": "錯",
+      "f0": 234,
+      "f1": 242
+    },
+    {
+      "token": "了",
+      "f0": 242,
+      "f1": 249
+    },
+    {
+      "token": "現",
+      "f0": 249,
+      "f1": 256
+    },
+    {
+      "token": "在",
+      "f0": 256,
+      "f1": 263
+    },
+    {
+      "token": "正",
+      "f0": 263,
+      "f1": 270
+    },
+    {
+      "token": "定",
+      "f0": 270,
+      "f1": 277
+    },
+    {
+      "token": "這",
+      "f0": 277,
+      "f1": 284
+    },
+    {
+      "token": "那",
+      "f0": 284,
+      "f1": 291
+    },
+    {
+      "token": "顆",
+      "f0": 291,
+      "f1": 298
+    },
+    {
+      "token": "小",
+      "f0": 298,
+      "f1": 305
+    },
+    {
+      "token": "星",
+      "f0": 305,
+      "f1": 313
+    },
+    {
+      "token": "星",
+      "f0": 313,
+      "f1": 320
+    },
+    {
+      "token": "發",
+      "f0": 320,
+      "f1": 327
+    },
+    {
+      "token": "呆",
+      "f0": 327,
+      "f1": 334
+    },
+    {
+      "token": "吧",
+      "f0": 334,
+      "f1": 341
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_frame": 0,
+      "end_frame": 32,
+      "start_sec": 0.0,
+      "end_sec": 1.0666666666666667,
+      "emotion_type_id": 3,
+      "emotion_type": "fear",
+      "emotion_type_conf": 0.5,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.59375,
+      "text": "好好我連你",
+      "token_start": 0,
+      "token_end": 4,
+      "n_tokens": 5
+    },
+    {
+      "seg_id": 1,
+      "start_frame": 32,
+      "end_frame": 61,
+      "start_sec": 1.0666666666666667,
+      "end_sec": 2.033333333333333,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.6551724137931034,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.6896551724137931,
+      "text": "你手機屏幕",
+      "token_start": 4,
+      "token_end": 8,
+      "n_tokens": 5
+    },
+    {
+      "seg_id": 2,
+      "start_frame": 61,
+      "end_frame": 199,
+      "start_sec": 2.033333333333333,
+      "end_sec": 6.633333333333334,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.8405797101449275,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.41304347826086957,
+      "text": "幕朝內邊都不知道差平從哪冒出來的該不會是",
+      "token_start": 8,
+      "token_end": 27,
+      "n_tokens": 20
+    },
+    {
+      "seg_id": 3,
+      "start_frame": 199,
+      "end_frame": 269,
+      "start_sec": 6.633333333333334,
+      "end_sec": 8.966666666666667,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.8,
+      "emotion_level": 4,
+      "emotion_level_conf": 0.44285714285714284,
+      "text": "你剛手華點錯了現在正",
+      "token_start": 28,
+      "token_end": 37,
+      "n_tokens": 10
+    },
+    {
+      "seg_id": 4,
+      "start_frame": 269,
+      "end_frame": 306,
+      "start_sec": 8.966666666666667,
+      "end_sec": 10.2,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.918918918918919,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.4594594594594595,
+      "text": "正定這那顆小星",
+      "token_start": 37,
+      "token_end": 43,
+      "n_tokens": 7
+    },
+    {
+      "seg_id": 5,
+      "start_frame": 306,
+      "end_frame": 341,
+      "start_sec": 10.2,
+      "end_sec": 11.366666666666667,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.8857142857142857,
+      "emotion_level": 4,
+      "emotion_level_conf": 0.42857142857142855,
+      "text": "星星發呆吧",
+      "token_start": 43,
+      "token_end": 47,
+      "n_tokens": 5
+    }
+  ]
+}

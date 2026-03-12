@@ -1,0 +1,43 @@
+{
+  "num_texts": 40,
+  "labels": [
+    "happy",
+    "fear",
+    "angry",
+    "sad",
+    "clam",
+    "confused"
+  ],
+  "distribution": [
+    {
+      "emotion": "happy",
+      "count": 4,
+      "avg_top_score": 0.608621
+    },
+    {
+      "emotion": "fear",
+      "count": 0,
+      "avg_top_score": 0.0
+    },
+    {
+      "emotion": "angry",
+      "count": 2,
+      "avg_top_score": 0.320719
+    },
+    {
+      "emotion": "sad",
+      "count": 1,
+      "avg_top_score": 0.378022
+    },
+    {
+      "emotion": "clam",
+      "count": 0,
+      "avg_top_score": 0.0
+    },
+    {
+      "emotion": "confused",
+      "count": 33,
+      "avg_top_score": 0.481218
+    }
+  ]
+}

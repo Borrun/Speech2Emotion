@@ -1,0 +1,433 @@
+{
+  "wav": "web_20260309.122758.600.wav",
+  "fps": 30,
+  "duration": 13.7213125,
+  "n_frames": 411,
+  "text": "洞洞鞋他可是拖鞋界的叛逆七少年穿得像拖鞋但倔强的拒绝被归类要不咱查查鞋类分类小法点第三条脚后跟露不露走路时会不会飞",
+  "switch_frames": [
+    34,
+    128,
+    167,
+    172,
+    325,
+    330,
+    363
+  ],
+  "tokens": [
+    {
+      "token": "洞",
+      "f0": 0,
+      "f1": 7
+    },
+    {
+      "token": "洞",
+      "f0": 7,
+      "f1": 14
+    },
+    {
+      "token": "鞋",
+      "f0": 14,
+      "f1": 22
+    },
+    {
+      "token": "他",
+      "f0": 22,
+      "f1": 29
+    },
+    {
+      "token": "可",
+      "f0": 29,
+      "f1": 36
+    },
+    {
+      "token": "是",
+      "f0": 36,
+      "f1": 43
+    },
+    {
+      "token": "拖",
+      "f0": 43,
+      "f1": 50
+    },
+    {
+      "token": "鞋",
+      "f0": 50,
+      "f1": 58
+    },
+    {
+      "token": "界",
+      "f0": 58,
+      "f1": 65
+    },
+    {
+      "token": "的",
+      "f0": 65,
+      "f1": 72
+    },
+    {
+      "token": "叛",
+      "f0": 72,
+      "f1": 79
+    },
+    {
+      "token": "逆",
+      "f0": 79,
+      "f1": 87
+    },
+    {
+      "token": "七",
+      "f0": 87,
+      "f1": 94
+    },
+    {
+      "token": "少",
+      "f0": 94,
+      "f1": 101
+    },
+    {
+      "token": "年",
+      "f0": 101,
+      "f1": 108
+    },
+    {
+      "token": "穿",
+      "f0": 108,
+      "f1": 115
+    },
+    {
+      "token": "得",
+      "f0": 115,
+      "f1": 123
+    },
+    {
+      "token": "像",
+      "f0": 123,
+      "f1": 130
+    },
+    {
+      "token": "拖",
+      "f0": 130,
+      "f1": 137
+    },
+    {
+      "token": "鞋",
+      "f0": 137,
+      "f1": 144
+    },
+    {
+      "token": "但",
+      "f0": 144,
+      "f1": 151
+    },
+    {
+      "token": "倔",
+      "f0": 151,
+      "f1": 159
+    },
+    {
+      "token": "强",
+      "f0": 159,
+      "f1": 166
+    },
+    {
+      "token": "的",
+      "f0": 166,
+      "f1": 173
+    },
+    {
+      "token": "拒",
+      "f0": 173,
+      "f1": 180
+    },
+    {
+      "token": "绝",
+      "f0": 180,
+      "f1": 187
+    },
+    {
+      "token": "被",
+      "f0": 187,
+      "f1": 195
+    },
+    {
+      "token": "归",
+      "f0": 195,
+      "f1": 202
+    },
+    {
+      "token": "类",
+      "f0": 202,
+      "f1": 209
+    },
+    {
+      "token": "要",
+      "f0": 209,
+      "f1": 216
+    },
+    {
+      "token": "不",
+      "f0": 216,
+      "f1": 224
+    },
+    {
+      "token": "咱",
+      "f0": 224,
+      "f1": 231
+    },
+    {
+      "token": "查",
+      "f0": 231,
+      "f1": 238
+    },
+    {
+      "token": "查",
+      "f0": 238,
+      "f1": 245
+    },
+    {
+      "token": "鞋",
+      "f0": 245,
+      "f1": 252
+    },
+    {
+      "token": "类",
+      "f0": 252,
+      "f1": 260
+    },
+    {
+      "token": "分",
+      "f0": 260,
+      "f1": 267
+    },
+    {
+      "token": "类",
+      "f0": 267,
+      "f1": 274
+    },
+    {
+      "token": "小",
+      "f0": 274,
+      "f1": 281
+    },
+    {
+      "token": "法",
+      "f0": 281,
+      "f1": 288
+    },
+    {
+      "token": "点",
+      "f0": 288,
+      "f1": 296
+    },
+    {
+      "token": "第",
+      "f0": 296,
+      "f1": 303
+    },
+    {
+      "token": "三",
+      "f0": 303,
+      "f1": 310
+    },
+    {
+      "token": "条",
+      "f0": 310,
+      "f1": 317
+    },
+    {
+      "token": "脚",
+      "f0": 317,
+      "f1": 324
+    },
+    {
+      "token": "后",
+      "f0": 324,
+      "f1": 332
+    },
+    {
+      "token": "跟",
+      "f0": 332,
+      "f1": 339
+    },
+    {
+      "token": "露",
+      "f0": 339,
+      "f1": 346
+    },
+    {
+      "token": "不",
+      "f0": 346,
+      "f1": 353
+    },
+    {
+      "token": "露",
+      "f0": 353,
+      "f1": 361
+    },
+    {
+      "token": "走",
+      "f0": 361,
+      "f1": 368
+    },
+    {
+      "token": "路",
+      "f0": 368,
+      "f1": 375
+    },
+    {
+      "token": "时",
+      "f0": 375,
+      "f1": 382
+    },
+    {
+      "token": "会",
+      "f0": 382,
+      "f1": 389
+    },
+    {
+      "token": "不",
+      "f0": 389,
+      "f1": 397
+    },
+    {
+      "token": "会",
+      "f0": 397,
+      "f1": 404
+    },
+    {
+      "token": "飞",
+      "f0": 404,
+      "f1": 411
+    }
+  ],
+  "intervals": [
+    {
+      "seg_id": 0,
+      "start_frame": 0,
+      "end_frame": 34,
+      "start_sec": 0.0,
+      "end_sec": 1.1333333333333333,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.38235294117647056,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.5294117647058824,
+      "text": "洞洞鞋他可",
+      "token_start": 0,
+      "token_end": 4,
+      "n_tokens": 5
+    },
+    {
+      "seg_id": 1,
+      "start_frame": 34,
+      "end_frame": 128,
+      "start_sec": 1.1333333333333333,
+      "end_sec": 4.266666666666667,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.6595744680851063,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.44680851063829785,
+      "text": "可是拖鞋界的叛逆七少年穿得像",
+      "token_start": 4,
+      "token_end": 17,
+      "n_tokens": 14
+    },
+    {
+      "seg_id": 2,
+      "start_frame": 128,
+      "end_frame": 167,
+      "start_sec": 4.266666666666667,
+      "end_sec": 5.566666666666666,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.8974358974358975,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.6410256410256411,
+      "text": "像拖鞋但倔强的",
+      "token_start": 17,
+      "token_end": 23,
+      "n_tokens": 7
+    },
+    {
+      "seg_id": 3,
+      "start_frame": 167,
+      "end_frame": 172,
+      "start_sec": 5.566666666666666,
+      "end_sec": 5.733333333333333,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 1.0,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.8,
+      "text": "的",
+      "token_start": 23,
+      "token_end": 23,
+      "n_tokens": 1
+    },
+    {
+      "seg_id": 4,
+      "start_frame": 172,
+      "end_frame": 325,
+      "start_sec": 5.733333333333333,
+      "end_sec": 10.833333333333334,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.8169934640522876,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.3660130718954248,
+      "text": "的拒绝被归类要不咱查查鞋类分类小法点第三条脚后",
+      "token_start": 23,
+      "token_end": 45,
+      "n_tokens": 23
+    },
+    {
+      "seg_id": 5,
+      "start_frame": 325,
+      "end_frame": 330,
+      "start_sec": 10.833333333333334,
+      "end_sec": 11.0,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 1.0,
+      "emotion_level": 2,
+      "emotion_level_conf": 1.0,
+      "text": "后",
+      "token_start": 45,
+      "token_end": 45,
+      "n_tokens": 1
+    },
+    {
+      "seg_id": 6,
+      "start_frame": 330,
+      "end_frame": 363,
+      "start_sec": 11.0,
+      "end_sec": 12.1,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.8181818181818182,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.8484848484848485,
+      "text": "后跟露不露走",
+      "token_start": 45,
+      "token_end": 50,
+      "n_tokens": 6
+    },
+    {
+      "seg_id": 7,
+      "start_frame": 363,
+      "end_frame": 411,
+      "start_sec": 12.1,
+      "end_sec": 13.7,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 0.875,
+      "emotion_level": 2,
+      "emotion_level_conf": 0.375,
+      "text": "走路时会不会飞",
+      "token_start": 50,
+      "token_end": 56,
+      "n_tokens": 7
+    }
+  ]
+}
