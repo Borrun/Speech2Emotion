@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Stream Online Outputs</title>
+  <style>
+    body { margin:0; font-family: system-ui, -apple-system, sans-serif; background:#f7f8fb; color:#222; }
+    .wrap { display:grid; grid-template-columns:320px 1fr; height:100vh; }
+    .left { border-right:1px solid #dfe3ec; background:#fff; overflow:auto; }
+    .left .hdr { position:sticky; top:0; background:#fff; z-index:2; padding:12px; border-bottom:1px solid #eef1f6; }
+    .left input, .left select { width:100%; padding:8px 10px; border:1px solid #d7dce6; border-radius:8px; background:#fff; margin-bottom:8px; }
+    #list .item { padding:10px 12px; border-bottom:1px solid #f2f4f8; cursor:pointer; font-size:13px; }
+    #list .item:hover { background:#f7fbff; }
+    #list .item.active { background:#ecf3ff; border-left:4px solid #3b82f6; padding-left:8px; }
+
+    .right { padding:14px; overflow:auto; }
+    .card { background:#fff; border:1px solid #e2e8f0; border-radius:12px; padding:12px; margin-bottom:12px; }
+    .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+    .pill { padding:2px 9px; border-radius:999px; background:#eef2ff; color:#334e9a; font-size:12px; }
+    #wave { width:100%; height:200px; border:1px solid #e5e7eb; border-radius:10px; background:#fcfcff; display:block; }
+    #textBar { position:relative; width:100%; height:80px; border:1px solid #e5e7eb; border-radius:10px; overflow:hidden; }
+    .tok { position:absolute; top:8px; height:64px; border-right:1px solid #f3f4f6; display:flex; align-items:center; justify-content:center; font-size:14px; }
+    .tok.active { background:#ffefc2; font-weight:700; }
+    .tok.punct { color:#975a16; }
+    #emotionCv { width:1000px; height:600px; max-width:100%; border:1px solid #e5e7eb; border-radius:10px; background:#fcfcff; display:block; }
+    #emotionHint { margin-top:6px; font-size:12px; color:#6b7280; }
+
+    .chunks { max-height:280px; overflow:auto; border:1px solid #e5e7eb; border-radius:10px; }
+    .ck { padding:8px 10px; border-bottom:1px solid #f3f4f8; font-size:13px; cursor:pointer; }
+    .ck:hover { background:#f7fbff; }
+    .ck.active { background:#fff4d6; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+    .small { font-size:12px; color:#666; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="left">
+    <div class="hdr">
+      <select id="splitSel">
+        <option value="all">全部</option>
+        <option value="train">训练集（utt_）</option>
+        <option value="test">测试集（web_）</option>
+      </select>
+      <input id="q" placeholder="搜索 wav..."/>
+      <div class="small">数据源: ./stream_online_manifest.json</div>
+    </div>
+    <div id="list"></div>
+  </div>
+
+  <div class="right">
+    <div class="card">
+      <div class="row">
+        <b id="name">-</b>
+        <span class="pill" id="fps">fps=-</span>
+        <span class="pill" id="nFrames">frames=-</span>
+        <span class="pill" id="nChunks">chunks=-</span>
+        <span class="pill" id="nEvents">events=-</span>
+        <span class="pill" id="chunkCfg">chunk=-</span>
+      </div>
+      <div id="meta" style="margin-top:8px; font-size:13px; color:#4b5563;">-</div>
+      <div style="margin-top:10px"><audio id="audio" controls preload="metadata" style="width:100%"></audio></div>
+    </div>
+
+    <div class="card">
+      <b>音频波形 + 文本</b>
+      <div style="height:8px"></div>
+      <canvas id="wave"></canvas>
+      <div style="height:8px"></div>
+      <div id="textBar"></div>
+    </div>
+
+    <div class="card">
+      <b>情绪眼部线条（模板曲线）</b>
+      <div style="height:8px"></div>
+      <canvas id="emotionCv"></canvas>
+      <div id="emotionHint">从 ../../emotions 读取模板并按当前 stable type/level 绘制</div>
+    </div>
+
+    <div class="card">
+      <b>Chunk 输出</b>
+      <div style="height:8px"></div>
+      <div class="chunks" id="chunks"></div>
+    </div>
+
+    <div class="card">
+      <b>当前 Chunk 详情</b>
+      <div style="height:8px"></div>
+      <div id="detail" class="mono">-</div>
+    </div>
+  </div>
+</div>
+
+<script>
+let ALL = [];
+let DATA = [];
+let CUR = null;
+let CUR_CHUNK = -1;
+
+const splitSel = document.getElementById('splitSel');
+const q = document.getElementById('q');
+const listEl = document.getElementById('list');
+const chunksEl = document.getElementById('chunks');
+const audio = document.getElementById('audio');
+const nameEl = document.getElementById('name');
+const fpsEl = document.getElementById('fps');
+const nFramesEl = document.getElementById('nFrames');
+const nChunksEl = document.getElementById('nChunks');
+const nEventsEl = document.getElementById('nEvents');
+const chunkCfgEl = document.getElementById('chunkCfg');
+const metaEl = document.getElementById('meta');
+const detailEl = document.getElementById('detail');
+const waveCv = document.getElementById('wave');
+const textBar = document.getElementById('textBar');
+const emoCv = document.getElementById('emotionCv');
+const emoHint = document.getElementById('emotionHint');
+let AUDIO_CTX = null;
+const TYPE_COLORS = {
+  happy: '#f59e0b',
+  sad: '#2563eb',
+  angry: '#ef4444',
+  fear: '#8b5cf6',
+  calm: '#10b981',
+  confused: '#64748b',
+  comfuse: '#64748b',
+  action: '#14b8a6',
+};
+const EMO_LEVEL_TO_FRAME = { 0: 5, 1: 18, 2: 38, 3: 68, 4: 98, 5: 130 };
+const EMO_FILE_MAP = { happy: 'happy.txt', sad: 'sad.txt', angry: 'angry.txt', fear: 'fear.txt', calm: 'calm.txt' };
+const EMO_CACHE = new Map();
+const EMO_LOADING = new Map();
+
+function resizeCanvas() {
+  const rw = waveCv.getBoundingClientRect();
+  waveCv.width = Math.max(860, Math.floor(rw.width));
+  waveCv.height = Math.max(140, Math.floor(rw.height));
+  emoCv.width = 2000;
+  emoCv.height = 1200;
+}
+
+function wavToAudioPath(wav) {
+  const w = String(wav || '');
+  if (w.startsWith('web_')) return '../../test/' + w;
+  if (w.startsWith('utt_')) return '../../annotater/wavs/' + w;
+  return '';
+}
+
+function normType(x) {
+  const k = String(x || '').toLowerCase().trim();
+  if (k === 'confuse' || k === 'confused') return 'comfuse';
+  return k;
+}
+
+function resolveEmotionFile(curType, prevType) {
+  const cur = normType(curType);
+  const prev = normType(prevType);
+  if (cur === 'comfuse') return prev === 'happy' ? 'happy_comfuse.txt' : 'comfuse.txt';
+  return EMO_FILE_MAP[cur] || null;
+}
+
+function parseEmotionFile(txt) {
+  const frames = new Map();
+  String(txt || '').split(/\r?\n/).forEach(raw => {
+    const line = raw.trim();
+    if (!line) return;
+    const xs = line.split(/\s+/);
+    if (xs.length < 65) return;
+    const fi = Number(xs[0]);
+    if (!Number.isFinite(fi)) return;
+    const coords = [];
+    for (let i = 1; i <= 64; i++) {
+      const v = Number(xs[i]);
+      if (!Number.isFinite(v)) return;
+      coords.push(v);
+    }
+    if (!frames.has(fi)) frames.set(fi, []);
+    const cs = frames.get(fi);
+    if (cs.length < 4) cs.push(coords);
+  });
+  return frames;
+}
+
+function nearestFrameKey(frameMap, target) {
+  let best = null, dmin = Infinity;
+  for (const k of frameMap.keys()) {
+    const d = Math.abs(k - target);
+    if (d < dmin) { dmin = d; best = k; }
+  }
+  return best;
+}
+
+function resampleCurveToPoints(flatXY, targetPoints = 320) {
+  if (!Array.isArray(flatXY) || flatXY.length < 4) return flatXY || [];
+  const pts = [];
+  for (let i = 0; i + 1 < flatXY.length; i += 2) pts.push([flatXY[i], flatXY[i + 1]]);
+  if (pts.length <= 1) return flatXY.slice();
+  const d = [0];
+  for (let i = 1; i < pts.length; i++) {
+    const dx = pts[i][0] - pts[i - 1][0], dy = pts[i][1] - pts[i - 1][1];
+    d.push(d[i - 1] + Math.hypot(dx, dy));
+  }
+  const total = d[d.length - 1];
+  if (total <= 1e-9) return flatXY.slice();
+  const out = [];
+  let seg = 0;
+  for (let i = 0; i < targetPoints; i++) {
+    const t = (i / (targetPoints - 1)) * total;
+    while (seg + 1 < d.length && d[seg + 1] < t) seg += 1;
+    const d0 = d[seg], d1 = d[Math.min(seg + 1, d.length - 1)];
+    const p0 = pts[seg], p1 = pts[Math.min(seg + 1, pts.length - 1)];
+    const a = d1 > d0 ? (t - d0) / (d1 - d0) : 0;
+    out.push(p0[0] * (1 - a) + p1[0] * a, p0[1] * (1 - a) + p1[1] * a);
+  }
+  return out;
+}
+
+function smoothCurve(flatXY, passes = 2) {
+  if (!Array.isArray(flatXY) || flatXY.length < 6) return flatXY || [];
+  let arr = flatXY.slice();
+  for (let p = 0; p < passes; p++) {
+    const out = arr.slice(), n = arr.length / 2;
+    for (let i = 1; i < n - 1; i++) {
+      const i2 = i * 2, l2 = (i - 1) * 2, r2 = (i + 1) * 2;
+      out[i2] = arr[l2] * 0.2 + arr[i2] * 0.6 + arr[r2] * 0.2;
+      out[i2 + 1] = arr[l2 + 1] * 0.2 + arr[i2 + 1] * 0.6 + arr[r2 + 1] * 0.2;
+    }
+    arr = out;
+  }
+  return arr;
+}
+
+function drawSmoothPath(ctx, arr, xToPx, yToPx) {
+  if (!arr || arr.length < 4) return;
+  const n = arr.length / 2;
+  ctx.beginPath();
+  ctx.moveTo(xToPx(arr[0]), yToPx(arr[1]));
+  if (n === 2) {
+    ctx.lineTo(xToPx(arr[2]), yToPx(arr[3]));
+    ctx.stroke();
+    return;
+  }
+  for (let i = 1; i < n - 1; i++) {
+    const i2 = i * 2, nx2 = (i + 1) * 2;
+    const cx = xToPx(arr[i2]), cy = yToPx(arr[i2 + 1]);
+    const mx = (cx + xToPx(arr[nx2])) * 0.5, my = (cy + yToPx(arr[nx2 + 1])) * 0.5;
+    ctx.quadraticCurveTo(cx, cy, mx, my);
+  }
+  const li2 = (n - 1) * 2, pi2 = (n - 2) * 2;
+  ctx.quadraticCurveTo(xToPx(arr[pi2]), yToPx(arr[pi2 + 1]), xToPx(arr[li2]), yToPx(arr[li2 + 1]));
+  ctx.stroke();
+}
+
+async function ensureEmotionFile(file) {
+  if (!file) return null;
+  if (EMO_CACHE.has(file)) return EMO_CACHE.get(file);
+  if (EMO_LOADING.has(file)) return EMO_LOADING.get(file);
+  const p = fetch('../../emotions/' + file)
+    .then(r => r.ok ? r.text() : '')
+    .then(t => parseEmotionFile(t))
+    .catch(() => null)
+    .then(v => { EMO_CACHE.set(file, v); EMO_LOADING.delete(file); return v; });
+  EMO_LOADING.set(file, p);
+  return p;
+}
+
+async function drawEmotion(t = 0) {
+  const w = emoCv.width, h = emoCv.height;
+  const ctx = emoCv.getContext('2d');
+  const xMin = -1200, xMax = 1200, yMin = -600, yMax = 600;
+  const xToPx = (x) => ((x - xMin) / (xMax - xMin)) * w;
+  const yToPx = (y) => h - ((y - yMin) / (yMax - yMin)) * h;
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = '#fcfcff';
+  ctx.fillRect(0, 0, w, h);
+  ctx.strokeStyle = '#d1d5db';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(xToPx(0), 0); ctx.lineTo(xToPx(0), h);
+  ctx.moveTo(0, yToPx(0)); ctx.lineTo(w, yToPx(0));
+  ctx.stroke();
+  if (!CUR || !Array.isArray(CUR.frames) || !CUR.frames.length) return;
+  const f = Math.max(0, Math.min(CUR.frames.length - 1, Math.floor(t * (CUR.fps || 30))));
+  const fr = CUR.frames[f];
+  const prev = f > 0 ? CUR.frames[f - 1] : null;
+  const type = (fr.stable && fr.stable.type) || '';
+  const level = (fr.stable && Number.isFinite(fr.stable.level_id)) ? fr.stable.level_id : 0;
+  const file = resolveEmotionFile(type, prev && prev.stable ? prev.stable.type : '');
+  const map = await ensureEmotionFile(file);
+  if (!map || map.size === 0) {
+    emoHint.textContent = '情绪模板未加载：' + (file || '-');
+    return;
+  }
+  const target = EMO_LEVEL_TO_FRAME[Math.max(0, Math.min(5, Math.round(level)))] || 5;
+  const key = map.has(target) ? target : nearestFrameKey(map, target);
+  const curves = map.get(key);
+  if (!curves || curves.length < 2) {
+    emoHint.textContent = '当前帧无可用眼部曲线';
+    return;
+  }
+  emoHint.textContent = `type=${type || '-'} level=${level} frame=${f} template=${file || '-'}`;
+  // 重点画前两条（眼部）+ 其余淡化
+  const colors = ['#ef4444', '#0ea5e9', '#94a3b8', '#94a3b8'];
+  for (let i = 0; i < Math.min(4, curves.length); i++) {
+    const arr = smoothCurve(resampleCurveToPoints(curves[i].slice(), 320), 2);
+    ctx.strokeStyle = colors[i];
+    ctx.lineWidth = i < 2 ? 3.6 : 1.8;
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    drawSmoothPath(ctx, arr, xToPx, yToPx);
+  }
+}
+
+function tokenWeight(ch) {
+  return /[，,。！？!?；;：:、]/.test(ch) ? 1.6 : 1.0;
+}
+
+function alignTextToFrames(text, totalFrames, switchFrames) {
+  const chars = Array.from(String(text || '')).filter(ch => !/[ \t\r\n]/.test(ch));
+  if (!chars.length) return [];
+  const ws = chars.map(tokenWeight);
+  const sw = ws.reduce((a, b) => a + b, 0) || chars.length;
+  const edges = [0];
+  let acc = 0;
+  ws.forEach(w => { acc += w; edges.push(Math.round(totalFrames * acc / sw)); });
+  edges[0] = 0;
+  edges[edges.length - 1] = totalFrames;
+  for (let i = 1; i < edges.length; i++) if (edges[i] <= edges[i - 1]) edges[i] = Math.min(totalFrames, edges[i - 1] + 1);
+  for (let i = edges.length - 2; i >= 0; i--) if (edges[i] >= edges[i + 1]) edges[i] = Math.max(0, edges[i + 1] - 1);
+  const punctIdx = chars.map((ch, i) => /[，,。！？!?；;：:、]/.test(ch) ? i + 1 : -1).filter(i => i >= 0);
+  punctIdx.forEach(bi => {
+    const pf = edges[bi];
+    let best = null;
+    (switchFrames || []).forEach(sf => {
+      const d = Math.abs(sf - pf);
+      if (d <= 10 && (best === null || d < best[0])) best = [d, sf];
+    });
+    if (best) edges[bi] = best[1];
+  });
+  for (let i = 1; i < edges.length; i++) if (edges[i] <= edges[i - 1]) edges[i] = Math.min(totalFrames, edges[i - 1] + 1);
+  edges[edges.length - 1] = totalFrames;
+  return chars.map((ch, i) => ({ token: ch, f0: edges[i], f1: Math.max(edges[i] + 1, edges[i + 1]) }));
+}
+
+function buildTextBar() {
+  textBar.innerHTML = '';
+  if (!CUR) return;
+  const total = Math.max(1, CUR.n_frames || (CUR.frames || []).length || 1);
+  const tokens = alignTextToFrames(CUR.text || '', total, CUR.boundary_events || []);
+  CUR._tokens = tokens;
+  const frameToTok = new Array(total).fill(-1);
+  tokens.forEach((t, i) => {
+    for (let f = Math.max(0, t.f0); f < Math.min(total, t.f1); f++) frameToTok[f] = i;
+    const d = document.createElement('div');
+    const isP = /[，,。！？!?；;：:、]/.test(t.token);
+    d.className = 'tok' + (isP ? ' punct' : '');
+    d.style.left = (100 * t.f0 / total) + '%';
+    d.style.width = Math.max(0.25, 100 * (t.f1 - t.f0) / total) + '%';
+    d.textContent = t.token;
+    textBar.appendChild(d);
+  });
+  CUR._frameToTok = frameToTok;
+}
+
+function highlightText(tsec) {
+  if (!CUR || !Array.isArray(CUR._frameToTok)) return;
+  const total = CUR._frameToTok.length;
+  const f = Math.max(0, Math.min(total - 1, Math.floor(tsec * (CUR.fps || 30))));
+  const ti = CUR._frameToTok[f];
+  const nodes = textBar.querySelectorAll('.tok');
+  nodes.forEach((n, i) => n.classList.toggle('active', i === ti));
+}
+
+function computePeaks(samples, nBins = 1200) {
+  const n = samples.length;
+  if (!n) return new Array(nBins).fill(0);
+  const out = [];
+  for (let i = 0; i < nBins; i++) {
+    const s = Math.floor(i * n / nBins);
+    const e = Math.max(s + 1, Math.floor((i + 1) * n / nBins));
+    let m = 0;
+    for (let j = s; j < e && j < n; j++) {
+      const v = Math.abs(samples[j]);
+      if (v > m) m = v;
+    }
+    out.push(Math.min(1, m));
+  }
+  return out;
+}
+
+async function ensureAudioPeaks(item) {
+  if (Array.isArray(item._peaks) && item._peaks.length) return item._peaks;
+  const src = wavToAudioPath(item.wav);
+  if (!src) {
+    item._peaks = [];
+    return item._peaks;
+  }
+  try {
+    if (!AUDIO_CTX) AUDIO_CTX = new (window.AudioContext || window.webkitAudioContext)();
+    const resp = await fetch(src);
+    if (!resp.ok) throw new Error('audio HTTP ' + resp.status);
+    const buf = await resp.arrayBuffer();
+    const audioBuf = await AUDIO_CTX.decodeAudioData(buf.slice(0));
+    const ch0 = audioBuf.getChannelData(0);
+    item._peaks = computePeaks(ch0, 1200);
+  } catch (e) {
+    item._peaks = [];
+  }
+  return item._peaks;
+}
+
+function drawWave(t = 0) {
+  const w = waveCv.width, h = waveCv.height;
+  const ctx = waveCv.getContext('2d');
+  ctx.clearRect(0, 0, w, h);
+  ctx.fillStyle = '#fcfcff';
+  ctx.fillRect(0, 0, w, h);
+  if (!CUR) return;
+  if (!Array.isArray(CUR.frames) || !CUR.frames.length) return;
+  const peaks = CUR._peaks || [];
+  const n = Math.max(1, peaks.length);
+  const nf = CUR.frames.length;
+  const levelMax = 5;
+  const xOfFrame = (f) => (f / Math.max(1, nf - 1)) * w;
+  const yOfLevel = (lv) => h - ((Math.max(0, Math.min(levelMax, lv)) / levelMax) * (h - 24) + 12);
+
+  if (CUR_CHUNK >= 0 && CUR_CHUNK < (CUR.chunks || []).length) {
+    const ck = CUR.chunks[CUR_CHUNK];
+    const x0 = xOfFrame(ck.chunk_start);
+    const x1 = xOfFrame(ck.chunk_end);
+    ctx.fillStyle = 'rgba(255, 235, 130, 0.22)';
+    ctx.fillRect(x0, 0, Math.max(2, x1 - x0), h);
+  }
+  ctx.strokeStyle = '#4f46e5';
+  ctx.lineWidth = 1.0;
+  ctx.beginPath();
+  for (let i = 0; i < n; i++) {
+    const x = i * w / Math.max(1, n - 1);
+    const y = h * 0.5;
+    const dy = Math.max(0, Math.min(1, peaks[i] || 0)) * h * 0.45;
+    ctx.moveTo(x, y - dy);
+    ctx.lineTo(x, y + dy);
+  }
+  ctx.stroke();
+
+  // stable emotion level curve in type color
+  ctx.lineWidth = 2.0;
+  for (let i = 1; i < CUR.frames.length; i++) {
+    const a = CUR.frames[i - 1];
+    const b = CUR.frames[i];
+    const ta = String((a.stable && a.stable.type) || '').toLowerCase();
+    ctx.strokeStyle = TYPE_COLORS[ta] || '#2563eb';
+    ctx.beginPath();
+    ctx.moveTo(xOfFrame(i - 1), yOfLevel((a.stable && Number.isFinite(a.stable.level_id)) ? a.stable.level_id : 0));
+    ctx.lineTo(xOfFrame(i), yOfLevel((b.stable && Number.isFinite(b.stable.level_id)) ? b.stable.level_id : 0));
+    ctx.stroke();
+  }
+
+  ctx.strokeStyle = '#d946ef';
+  ctx.lineWidth = 1.1;
+  const totalFrames = Math.max(1, CUR.n_frames || CUR.frames.length || 1);
+  (CUR.boundary_events || []).forEach(f => {
+    const x = (f / totalFrames) * w;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, h);
+    ctx.stroke();
+  });
+  const totalSec = totalFrames / Math.max(1, CUR.fps || 30);
+  const px = (t / Math.max(1e-6, totalSec)) * w;
+  ctx.strokeStyle = '#ef4444';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(px, 0);
+  ctx.lineTo(px, h);
+  ctx.stroke();
+
+  // legend
+  let lx = 10;
+  const legend = ['happy', 'sad', 'angry', 'fear', 'calm', 'confused'];
+  legend.forEach(k => {
+    ctx.fillStyle = TYPE_COLORS[k] || '#333';
+    ctx.fillRect(lx, 6, 12, 5);
+    ctx.fillStyle = '#333';
+    ctx.font = '11px system-ui';
+    ctx.fillText(k, lx + 16, 12);
+    lx += 70;
+  });
+}
+
+function renderDetail(ci) {
+  if (!CUR || ci < 0 || ci >= CUR.chunks.length) {
+    detailEl.textContent = '-';
+    return;
+  }
+  const ck = CUR.chunks[ci];
+  const cf = ck.current_frame || {};
+  detailEl.textContent = JSON.stringify({
+    chunk_range: [ck.chunk_start, ck.chunk_end],
+    boundary_events: ck.boundary_events,
+    current_frame: {
+      frame: cf.frame,
+      t_sec: cf.t_sec,
+      raw: cf.raw,
+      stable: cf.stable,
+      segment_id: cf.segment_id,
+      boundary_event: cf.boundary_event,
+    },
+    segment: ck.segment,
+  }, null, 2);
+}
+
+function renderChunks() {
+  chunksEl.innerHTML = '';
+  if (!CUR) return;
+  (CUR.chunks || []).forEach((ck, i) => {
+    const d = document.createElement('div');
+    d.className = 'ck' + (i === CUR_CHUNK ? ' active' : '');
+    const ev = (ck.boundary_events || []).length;
+    const st = ck.current_frame?.stable || {};
+    d.textContent = `#${i} [${ck.chunk_start}-${ck.chunk_end}] ev=${ev} stable=${st.type||'-'}/L${st.level_id ?? '-'}`;
+    d.onclick = () => {
+      CUR_CHUNK = i;
+      renderChunks();
+      renderDetail(i);
+      drawWave(audio.currentTime || 0);
+      void drawEmotion(audio.currentTime || 0);
+      if (CUR && CUR.fps) audio.currentTime = ck.chunk_start / CUR.fps;
+    };
+    chunksEl.appendChild(d);
+  });
+}
+
+function selectItem(it) {
+  CUR = it;
+  CUR_CHUNK = 0;
+  nameEl.textContent = it.wav || '-';
+  fpsEl.textContent = 'fps=' + (it.fps || '-');
+  nFramesEl.textContent = 'frames=' + ((it.frames || []).length || 0);
+  nChunksEl.textContent = 'chunks=' + ((it.chunks || []).length || 0);
+  nEventsEl.textContent = 'events=' + ((it.boundary_events || []).length || 0);
+  const sm = it.stream_mode || {};
+  chunkCfgEl.textContent = `chunk=${sm.chunk_min ?? '-'}~${sm.chunk_max ?? '-'}`;
+  const bcfg = (sm.boundary_cfg || {});
+  metaEl.textContent = `text_once=${sm.text_once} audio_streaming=${sm.audio_streaming} | ` +
+    `w_audio=${bcfg.w_audio ?? '-'} w_text=${bcfg.w_text ?? '-'} ` +
+    `thr_on=${bcfg.thr_on ?? '-'} thr_off=${bcfg.thr_off ?? '-'} ` +
+    `confirm_win=${bcfg.confirm_win ?? '-'} min_gap=${bcfg.min_gap ?? '-'}`;
+
+  audio.src = wavToAudioPath(it.wav);
+  buildTextBar();
+  highlightText(0);
+  drawWave(0);
+  void ensureAudioPeaks(it).then(() => drawWave(audio.currentTime || 0));
+  renderChunks();
+  renderDetail(CUR_CHUNK);
+  drawWave(0);
+  void drawEmotion(0);
+  [...listEl.querySelectorAll('.item')].forEach(n => n.classList.toggle('active', n.dataset.wav === it.wav));
+}
+
+function applyFilter() {
+  const split = splitSel.value;
+  const key = (q.value || '').trim().toLowerCase();
+  DATA = ALL.filter(it => {
+    const wav = String(it.wav || '');
+    if (split === 'train' && !wav.startsWith('utt_')) return false;
+    if (split === 'test' && !wav.startsWith('web_')) return false;
+    if (key && !wav.toLowerCase().includes(key)) return false;
+    return true;
+  });
+}
+
+function renderList() {
+  applyFilter();
+  listEl.innerHTML = '';
+  DATA.forEach(it => {
+    const d = document.createElement('div');
+    d.className = 'item';
+    d.dataset.wav = it.wav;
+    d.textContent = `${it.wav}  (chunks=${(it.chunks || []).length}, events=${(it.boundary_events || []).length})`;
+    d.onclick = () => selectItem(it);
+    listEl.appendChild(d);
+  });
+  if (!DATA.length) {
+    CUR = null;
+    chunksEl.innerHTML = '';
+    detailEl.textContent = '-';
+    drawWave(0);
+    return;
+  }
+  if (!CUR || !DATA.some(x => x.wav === CUR.wav)) selectItem(DATA[0]);
+}
+
+async function boot() {
+  try {
+    const m = await fetch('./stream_online_manifest.json');
+    if (!m.ok) throw new Error('manifest HTTP ' + m.status);
+    const manifest = await m.json();
+    const files = Array.isArray(manifest.files) ? manifest.files : [];
+    const objs = await Promise.all(files.map(async (fn) => {
+      const r = await fetch('./' + fn);
+      if (!r.ok) return null;
+      return await r.json();
+    }));
+    ALL = objs.filter(Boolean);
+  } catch (e) {
+    metaEl.textContent = '加载失败：请通过本地 HTTP 服务打开 outputs/stream_online/outputs.html';
+    ALL = [];
+  }
+  renderList();
+}
+
+splitSel.addEventListener('change', renderList);
+q.addEventListener('input', renderList);
+audio.addEventListener('timeupdate', () => {
+  drawWave(audio.currentTime || 0);
+  highlightText(audio.currentTime || 0);
+  void drawEmotion(audio.currentTime || 0);
+});
+window.addEventListener('resize', () => { resizeCanvas(); drawWave(audio.currentTime || 0); void drawEmotion(audio.currentTime || 0); });
+
+resizeCanvas();
+boot();
+</script>
+</body>
+</html>

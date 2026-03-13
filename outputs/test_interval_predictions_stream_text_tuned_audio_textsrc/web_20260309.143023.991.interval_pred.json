@@ -8,7 +8,8 @@
     32,
     186,
     209,
-    244
+    244,
+    249
   ],
   "tokens": [
     {
@@ -335,18 +336,34 @@
     {
       "seg_id": 4,
       "start_frame": 244,
-      "end_frame": 323,
+      "end_frame": 249,
       "start_sec": 8.133333333333333,
+      "end_sec": 8.3,
+      "emotion_type_id": 0,
+      "emotion_type": "happy",
+      "emotion_type_conf": 1.0,
+      "emotion_level": 3,
+      "emotion_level_conf": 0.6,
+      "text": "你偷",
+      "token_start": 38,
+      "token_end": 39,
+      "n_tokens": 2
+    },
+    {
+      "seg_id": 5,
+      "start_frame": 249,
+      "end_frame": 323,
+      "start_sec": 8.3,
       "end_sec": 10.766666666666667,
       "emotion_type_id": 0,
       "emotion_type": "happy",
-      "emotion_type_conf": 0.8860759493670886,
+      "emotion_type_conf": 0.8783783783783784,
       "emotion_level": 4,
-      "emotion_level_conf": 0.46835443037974683,
-      "text": "你偷偷在心里给我打了个差评",
-      "token_start": 38,
+      "emotion_level_conf": 0.47297297297297297,
+      "text": "偷偷在心里给我打了个差评",
+      "token_start": 39,
       "token_end": 50,
-      "n_tokens": 13
+      "n_tokens": 12
     }
   ]
 }
