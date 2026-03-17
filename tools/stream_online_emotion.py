@@ -10,7 +10,8 @@ from typing import Deque, Dict, List, Optional, Tuple
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from online_emotion import DetectorConfig, OnlineBoundaryDetector, TextPriorBuilder
+from online_emotion import DetectorConfig, OnlineBoundaryDetector, TextPriorBuilder, TextEmotionConstraint
+from online_emotion.text_emotion import bilingual_sentiment_score
 
 
 Label = Tuple[int, int]
@@ -99,7 +100,7 @@ def chunk_text_and_features(tokens: List[Dict], s: int, e: int) -> Dict:
     pos_hits = sum(1 for w in POS_WORDS if w in low)
     neg_hits = sum(1 for w in NEG_WORDS if w in low)
     n_tok = len(touched)
-    sentiment = 0.0 if n_tok == 0 else (pos_hits - neg_hits) / float(max(1, n_tok))
+    sentiment = bilingual_sentiment_score(txt) if txt.strip() else 0.0
     return {
         "chunk_text": txt,
         "text_features": {
@@ -223,6 +224,14 @@ def run_stream(
     emo_hysteresis: int,
     future_lookahead: int,
     cfg: DetectorConfig,
+    # Layer 1: dynamic w_text
+    dynamic_w_text: bool = False,
+    w_text_max: float = 0.5,
+    # Layer 2+3: text emotion constraint
+    text_emotion: bool = False,
+    sentiment_thr: float = 0.3,
+    text_conf_thr: float = 0.50,
+    text_blend_w: float = 0.35,
 ) -> Dict:
     wav = str(pred.get("wav", ""))
     fps = int(pred.get("fps", 30))
@@ -242,6 +251,27 @@ def run_stream(
 
     emo_state = StreamEmotionState(smooth_win=smooth_win, hysteresis=emo_hysteresis)
 
+    # Layer 1 base weights (restored each chunk when dynamic_w_text is off)
+    base_w_audio = float(cfg.w_audio)
+    base_w_text  = float(cfg.w_text)
+
+    # Pre-compute a simple linear text alignment for per-chunk feature lookup.
+    # (No anchor snapping here—anchors aren't known until after the full pass.)
+    simple_tokens = align_text_to_frames(text=text, total_frames=max(1, n_frames), anchors=[])
+
+    # Layer 2+3 constraint object (None when disabled)
+    text_constraint = (
+        TextEmotionConstraint(
+            sentiment_thr=float(sentiment_thr),
+            text_conf_thr=float(text_conf_thr),
+            text_blend_w=float(text_blend_w),
+        )
+        if text_emotion else None
+    )
+
+    # Per-frame storage of the chunk's text info (needed for post-processing pass)
+    frame_chunk_tinfo: List[Optional[Dict]] = [None] * n_frames
+
     random.seed(int(seed))
     idx = 0
     chunk_ranges: List[Tuple[int, int]] = []
@@ -254,6 +284,17 @@ def run_stream(
         chunk_n = random.randint(max(1, int(chunk_min)), max(1, int(chunk_max)))
         end = min(n_frames, idx + chunk_n)
         sub = p_audio[idx:end]
+
+        # ── Layer 1: dynamic w_text based on chunk sentiment magnitude ────────
+        chunk_tinfo_pre = chunk_text_and_features(tokens=simple_tokens, s=idx, e=end)
+        if dynamic_w_text:
+            sa  = abs(float(chunk_tinfo_pre["text_features"]["sentiment_score"]))
+            dw  = base_w_text + (w_text_max - base_w_text) * min(1.0, sa / max(0.3, base_w_text))
+            dw  = max(base_w_text, min(float(w_text_max), dw))
+            detector.set_weights(1.0 - dw, dw)
+        else:
+            detector.set_weights(base_w_audio, base_w_text)
+
         out = detector.process_chunk(frame_start=idx, p_audio_chunk=sub)
         events = [int(ev.frame_idx) for ev in out.events]
         all_events.extend(events)
@@ -261,6 +302,7 @@ def run_stream(
         chunk_ranges.append((idx, end))
 
         for f in range(idx, end):
+            frame_chunk_tinfo[f] = chunk_tinfo_pre
             raw_label: Label = (int(frames[f].get("type_id", 0)), int(frames[f].get("level_id", 0)))
             stable = emo_state.update(raw_label)
             raw_labels.append(raw_label)
@@ -287,6 +329,25 @@ def run_stream(
         lookahead=int(future_lookahead),
         back=4,
     )
+
+    # ── Layers 2+3: text emotion constraint on refined labels ─────────────────
+    if text_constraint is not None:
+        for i, lb in enumerate(refined):
+            if lb is None:
+                continue
+            tinfo = frame_chunk_tinfo[i]
+            if not tinfo:
+                continue
+            new_type, new_level = text_constraint.apply(
+                type_id=lb[0],
+                level_id=lb[1],
+                chunk_text=tinfo["chunk_text"],
+                text_features=tinfo["text_features"],
+            )
+            if (new_type, new_level) != lb:
+                refined[i] = (new_type, new_level)
+                frame_states[i]["text_constrained"] = True
+
     for i, lb in enumerate(refined):
         frame_states[i]["stable"] = label_name(lb, type_map)
 
@@ -355,6 +416,14 @@ def run_stream(
             "emotion_smooth_win": int(smooth_win),
             "emotion_hysteresis": int(emo_hysteresis),
             "future_lookahead": int(future_lookahead),
+            "text_fusion": {
+                "dynamic_w_text": bool(dynamic_w_text),
+                "w_text_max": float(w_text_max),
+                "text_emotion": bool(text_emotion),
+                "sentiment_thr": float(sentiment_thr),
+                "text_conf_thr": float(text_conf_thr),
+                "text_blend_w": float(text_blend_w),
+            },
             "boundary_cfg": {
                 "w_audio": float(cfg.w_audio),
                 "w_text": float(cfg.w_text),
@@ -398,6 +467,20 @@ def main():
     ap.add_argument("--thr_off", type=float, default=0.42)
     ap.add_argument("--confirm_win", type=int, default=3)
     ap.add_argument("--min_gap", type=int, default=5)
+
+    # Text fusion layers
+    ap.add_argument("--dynamic_w_text", action="store_true",
+                    help="Layer 1: boost w_text when chunk sentiment is strong")
+    ap.add_argument("--w_text_max", type=float, default=0.5,
+                    help="Layer 1: max w_text when dynamic_w_text is on")
+    ap.add_argument("--text_emotion", action="store_true",
+                    help="Layer 2+3: apply text-based emotion type constraint")
+    ap.add_argument("--sentiment_thr", type=float, default=0.3,
+                    help="Layer 2: sentiment magnitude threshold for hard override")
+    ap.add_argument("--text_conf_thr", type=float, default=0.50,
+                    help="Layer 3: min text-distribution confidence to blend")
+    ap.add_argument("--text_blend_w", type=float, default=0.35,
+                    help="Layer 3: text weight in the soft blend")
 
     ap.add_argument("--out", default="")
     args = ap.parse_args()
@@ -446,6 +529,12 @@ def main():
         emo_hysteresis=int(args.emo_hysteresis),
         future_lookahead=int(args.future_lookahead),
         cfg=cfg,
+        dynamic_w_text=bool(args.dynamic_w_text),
+        w_text_max=float(args.w_text_max),
+        text_emotion=bool(args.text_emotion),
+        sentiment_thr=float(args.sentiment_thr),
+        text_conf_thr=float(args.text_conf_thr),
+        text_blend_w=float(args.text_blend_w),
     )
 
     out = args.out.strip()

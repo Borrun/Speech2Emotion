@@ -38,13 +38,18 @@
 <div class="wrap">
   <div class="left">
     <div class="hdr">
+      <select id="manifestSel">
+        <option value="stream_online_manifest_baseline.json">baseline（无文本融合）</option>
+        <option value="stream_online_manifest_tf.json">tf（文本融合 Layer1+2+3）</option>
+        <option value="stream_online_manifest.json">原始存档</option>
+      </select>
       <select id="splitSel">
         <option value="all">全部</option>
         <option value="train">训练集（utt_）</option>
         <option value="test">测试集（web_）</option>
       </select>
       <input id="q" placeholder="搜索 wav..."/>
-      <div class="small">数据源: ./stream_online_manifest.json</div>
+      <div class="small" id="manifestHint">数据源: stream_online_manifest_baseline.json</div>
     </div>
     <div id="list"></div>
   </div>
@@ -98,6 +103,8 @@ let DATA = [];
 let CUR = null;
 let CUR_CHUNK = -1;
 
+const manifestSel = document.getElementById('manifestSel');
+const manifestHint = document.getElementById('manifestHint');
 const splitSel = document.getElementById('splitSel');
 const q = document.getElementById('q');
 const listEl = document.getElementById('list');
@@ -456,6 +463,18 @@ function drawWave(t = 0) {
     ctx.stroke();
   }
 
+  // text_constrained frames — orange tick marks at top
+  const constrainedFrames = (CUR.frames || [])
+    .map((fr, i) => fr.text_constrained ? i : -1).filter(i => i >= 0);
+  if (constrainedFrames.length) {
+    ctx.strokeStyle = 'rgba(234,88,12,0.75)';
+    ctx.lineWidth = 1.5;
+    constrainedFrames.forEach(f => {
+      const x = xOfFrame(f);
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 14); ctx.stroke();
+    });
+  }
+
   ctx.strokeStyle = '#d946ef';
   ctx.lineWidth = 1.1;
   const totalFrames = Math.max(1, CUR.n_frames || CUR.frames.length || 1);
@@ -593,8 +612,10 @@ function renderList() {
 }
 
 async function boot() {
+  const manifestFile = manifestSel ? manifestSel.value : 'stream_online_manifest.json';
+  if (manifestHint) manifestHint.textContent = '数据源: ' + manifestFile;
   try {
-    const m = await fetch('./stream_online_manifest.json');
+    const m = await fetch('./' + manifestFile);
     if (!m.ok) throw new Error('manifest HTTP ' + m.status);
     const manifest = await m.json();
     const files = Array.isArray(manifest.files) ? manifest.files : [];
@@ -611,6 +632,7 @@ async function boot() {
   renderList();
 }
 
+manifestSel.addEventListener('change', () => { CUR = null; ALL = []; boot(); });
 splitSel.addEventListener('change', renderList);
 q.addEventListener('input', renderList);
 audio.addEventListener('timeupdate', () => {

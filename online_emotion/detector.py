@@ -57,6 +57,11 @@ class OnlineBoundaryDetector:
         self._reset_candidate()
         return ev
 
+    def set_weights(self, w_audio: float, w_text: float) -> None:
+        """Layer 1: update fusion weights dynamically between chunks."""
+        self.cfg.w_audio = float(w_audio)
+        self.cfg.w_text  = float(w_text)
+
     def _reset_candidate(self):
         self._candidate_peak_idx = None
         self._candidate_peak_fused = -1.0
