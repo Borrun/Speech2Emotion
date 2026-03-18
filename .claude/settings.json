@@ -1,0 +1,46 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \":*)",
+      "Bash(python -m textblob.download_corpora)",
+      "Bash(python -c \"import nltk; nltk.download\\(''''punkt_tab'''', quiet=True\\); nltk.download\\(''''averaged_perceptron_tagger_eng'''', quiet=True\\); print\\(''''done''''\\)\")",
+      "Read(//Users/Zhuanz1/Downloads/cpp_emotion/**)",
+      "Bash(grep -r \"import torch\\\\|import torchaudio\\\\|import numpy\\\\|import scipy\" /Users/Zhuanz1/Speech2Emotion/*.py)",
+      "Bash(grep -h \"^import\\\\|^from\" /Users/Zhuanz1/Speech2Emotion/models/*.py /Users/Zhuanz1/Speech2Emotion/infer/*.py /Users/Zhuanz1/Speech2Emotion/train/*.py)",
+      "Bash(python tools/export_onnx.py)",
+      "Bash(mkdir -p /Users/Zhuanz1/Downloads/cpp_emotion/models)",
+      "Bash(cp /Users/Zhuanz1/Speech2Emotion/outputs/emotion_tcn.onnx /Users/Zhuanz1/Downloads/cpp_emotion/models/emotion_tcn.onnx)",
+      "Bash(mkdir -p /Users/Zhuanz1/Downloads/cpp_emotion/include/Speech2Emotion)",
+      "Bash(mkdir -p /Users/Zhuanz1/Downloads/cpp_emotion/src/Speech2Emotion)",
+      "Bash(brew list:*)",
+      "Bash(brew install:*)",
+      "Read(//opt/homebrew/**)",
+      "Bash(mkdir -p build_s2e)",
+      "Bash(cmake -B build_s2e -DONNXRUNTIME_ROOT=/opt/homebrew/opt/onnxruntime)",
+      "Bash(cmake --build build_s2e --parallel 4)",
+      "Bash(cmake --build /Users/Zhuanz1/Downloads/cpp_emotion/build_s2e --parallel 4)",
+      "Read(//Users/Zhuanz1/vivideye/**)",
+      "Read(//Users/Zhuanz1/RubyAR/RubyAR/CppLibs/**)",
+      "Bash(grep -r \"emotion_engine\\\\|emotion_code\\\\|S2E\\\\|audioChunkPCM\" /Users/Zhuanz1/RubyAR/RubyAR/CppLibs --include=*.h --include=*.hpp --include=*.mm --include=*.swift)",
+      "Bash(grep -r \"emotion_engine\\\\|emotion_code\\\\|S2E\" /Users/Zhuanz1/vivideye --include=*.h --include=*.hpp --include=*.cpp)",
+      "Bash(find /Users/Zhuanz1/vivideye -name *audio* -o -name *rhythm*)",
+      "Bash(grep -E \"\\\\.\\(h|mm|swift\\)$\")",
+      "Bash(python tools/export_onnx.py --ckpt outputs/ckpt_bnd_v1/best.pt --out outputs/emotion_tcn.onnx)",
+      "Bash(cp /Users/Zhuanz1/Speech2Emotion/outputs/emotion_tcn.onnx /Users/Zhuanz1/RubyAR/RubyAR/Resources/GPTModels/emotion_tcn.onnx)",
+      "Read(//Users/Zhuanz1/RubyAR/RubyAR/Resources/GPTModels/**)",
+      "Bash(ls /Users/Zhuanz1/Speech2Emotion/outputs/emotion_tcn*)",
+      "Read(//Users/Zhuanz1/RubyAR/RubyAR/Managers/FaceAR/FaceTool/**)",
+      "Read(//Users/Zhuanz1/RubyAR/RubyAR/Managers/**)",
+      "Read(//Users/Zhuanz1/RubyAR/RubyAR/**)"
+    ],
+    "additionalDirectories": [
+      "/Users/Zhuanz1/Downloads/cpp_emotion/include/Speech2Emotion",
+      "/Users/Zhuanz1/Downloads/cpp_emotion/src/Speech2Emotion",
+      "/Users/Zhuanz1/Downloads/cpp_emotion/include/EmotionEngine",
+      "/Users/Zhuanz1/Downloads/cpp_emotion/src/EmotionEngine",
+      "/Users/Zhuanz1/Downloads/cpp_emotion",
+      "/Users/Zhuanz1/RubyAR/RubyAR/CppLibs/VAD/include",
+      "/Users/Zhuanz1/RubyAR/RubyAR/CppLibs/MyObject"
+    ]
+  }
+}

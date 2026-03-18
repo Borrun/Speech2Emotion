@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 -m json.tool)",
+      "Bash(python tools/scan_stream_all.py --tag baseline)",
+      "Bash(python tools/scan_stream_all.py --tag tf --dynamic_w_text --text_emotion)",
+      "Bash(python tools/eval_text_fusion.py --tags baseline tf)",
+      "Bash(pip install:*)",
+      "Bash(python -c \":*)"
+    ]
+  }
+}

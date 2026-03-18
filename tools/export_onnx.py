@@ -18,6 +18,7 @@ import os
 import sys
 
 import numpy as np
+import onnx
 import torch
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -80,7 +81,15 @@ def export(ckpt_path: str, out_path: str) -> None:
         },
         opset_version=17,
     )
-    print("Export done.")
+
+    # Force single-file: inline any external data back into the .onnx
+    data_file = out_path + ".data"
+    model_proto = onnx.load(out_path)
+    onnx.save_model(model_proto, out_path, save_as_external_data=False)
+    if os.path.exists(data_file):
+        os.remove(data_file)
+        print("Removed external data file.")
+    print("Export done (single-file).")
 
 
 def verify(ckpt_path: str, onnx_path: str) -> None:

@@ -1,0 +1,8886 @@
+{
+  "wav": "web_20260309.143059.313.wav",
+  "fps": 30,
+  "n_frames": 341,
+  "text": "哈哈我连你手机屏幕朝哪边都不知道差评从哪冒出来的该不会是你刚手划点错了现在正盯着那颗小星星发呆吧",
+  "stream_mode": {
+    "text_once": true,
+    "audio_streaming": true,
+    "chunk_min": 10,
+    "chunk_max": 15,
+    "seed": 7,
+    "emotion_smooth_win": 5,
+    "emotion_hysteresis": 3,
+    "future_lookahead": 8,
+    "text_fusion": {
+      "dynamic_w_text": true,
+      "w_text_max": 0.5,
+      "text_emotion": true,
+      "sentiment_thr": 0.3,
+      "text_conf_thr": 0.5,
+      "text_blend_w": 0.35
+    },
+    "boundary_cfg": {
+      "w_audio": 0.8,
+      "w_text": 0.2,
+      "thr_on": 0.62,
+      "thr_off": 0.42,
+      "confirm_win": 3,
+      "min_gap": 5
+    }
+  },
+  "boundary_events": [
+    32,
+    61,
+    199,
+    269,
+    306
+  ],
+  "chunks": [
+    {
+      "chunk_start": 0,
+      "chunk_end": 11,
+      "chunk_frames": 12,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 11,
+        "t_sec": 0.36666666666666664,
+        "raw": {
+          "type_id": 1,
+          "type": "sad",
+          "level_id": 3
+        },
+        "stable_causal": {
+          "type_id": 1,
+          "type": "sad",
+          "level_id": 3
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "segment_id": 0,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 0,
+        "start_frame": 0,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "prev_major": {
+          "type_id": -1,
+          "type": "",
+          "level_id": -1
+        }
+      },
+      "chunk_text": "哈哈",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 12,
+      "chunk_end": 22,
+      "chunk_frames": 11,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 22,
+        "t_sec": 0.7333333333333333,
+        "raw": {
+          "type_id": 3,
+          "type": "fear",
+          "level_id": 5
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable": {
+          "type_id": 3,
+          "type": "fear",
+          "level_id": 3
+        },
+        "segment_id": 0,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 0,
+        "start_frame": 0,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "prev_major": {
+          "type_id": -1,
+          "type": "",
+          "level_id": -1
+        }
+      },
+      "chunk_text": "哈我连",
+      "text_features": {
+        "n_tokens": 3,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 23,
+      "chunk_end": 35,
+      "chunk_frames": 13,
+      "boundary_events": [
+        32
+      ],
+      "current_frame": {
+        "frame": 35,
+        "t_sec": 1.1666666666666667,
+        "raw": {
+          "type_id": 1,
+          "type": "sad",
+          "level_id": 3
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "segment_id": 1,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 1,
+        "start_frame": 32,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "连你",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 36,
+      "chunk_end": 50,
+      "chunk_frames": 15,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 50,
+        "t_sec": 1.6666666666666667,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 5
+        },
+        "segment_id": 1,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 1,
+        "start_frame": 32,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "手机屏",
+      "text_features": {
+        "n_tokens": 3,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 51,
+      "chunk_end": 60,
+      "chunk_frames": 10,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 60,
+        "t_sec": 2.0,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 2
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 5
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "segment_id": 1,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 1,
+        "start_frame": 32,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "屏幕",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 61,
+      "chunk_end": 70,
+      "chunk_frames": 10,
+      "boundary_events": [
+        61
+      ],
+      "current_frame": {
+        "frame": 70,
+        "t_sec": 2.3333333333333335,
+        "raw": {
+          "type_id": 1,
+          "type": "sad",
+          "level_id": 2
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "segment_id": 2,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 2,
+        "start_frame": 61,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 2
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "幕朝",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 71,
+      "chunk_end": 84,
+      "chunk_frames": 14,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 84,
+        "t_sec": 2.8,
+        "raw": {
+          "type_id": 1,
+          "type": "sad",
+          "level_id": 4
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable": {
+          "type_id": 1,
+          "type": "sad",
+          "level_id": 4
+        },
+        "segment_id": 2,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 2,
+        "start_frame": 61,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "哪边",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 85,
+      "chunk_end": 94,
+      "chunk_frames": 10,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 94,
+        "t_sec": 3.1333333333333333,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "segment_id": 2,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 2,
+        "start_frame": 61,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "都不",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 95,
+      "chunk_end": 106,
+      "chunk_frames": 12,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 106,
+        "t_sec": 3.533333333333333,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "segment_id": 2,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 2,
+        "start_frame": 61,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "不知",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 107,
+      "chunk_end": 120,
+      "chunk_frames": 14,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 120,
+        "t_sec": 4.0,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "segment_id": 2,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 2,
+        "start_frame": 61,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "道差",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 121,
+      "chunk_end": 130,
+      "chunk_frames": 10,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 130,
+        "t_sec": 4.333333333333333,
+        "raw": {
+          "type_id": 1,
+          "type": "sad",
+          "level_id": 3
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "segment_id": 2,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 2,
+        "start_frame": 61,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "评从",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 131,
+      "chunk_end": 144,
+      "chunk_frames": 14,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 144,
+        "t_sec": 4.8,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "segment_id": 2,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 2,
+        "start_frame": 61,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "从哪冒",
+      "text_features": {
+        "n_tokens": 3,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 145,
+      "chunk_end": 155,
+      "chunk_frames": 11,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 155,
+        "t_sec": 5.166666666666667,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 2
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "segment_id": 2,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 2,
+        "start_frame": 61,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "冒出",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 156,
+      "chunk_end": 165,
+      "chunk_frames": 10,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 165,
+        "t_sec": 5.5,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "segment_id": 2,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 2,
+        "start_frame": 61,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "来的",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 166,
+      "chunk_end": 175,
+      "chunk_frames": 10,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 175,
+        "t_sec": 5.833333333333333,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "segment_id": 2,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 2,
+        "start_frame": 61,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "的该",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 176,
+      "chunk_end": 188,
+      "chunk_frames": 13,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 188,
+        "t_sec": 6.266666666666667,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "segment_id": 2,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 2,
+        "start_frame": 61,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "该不会",
+      "text_features": {
+        "n_tokens": 3,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 189,
+      "chunk_end": 201,
+      "chunk_frames": 13,
+      "boundary_events": [
+        199
+      ],
+      "current_frame": {
+        "frame": 201,
+        "t_sec": 6.7,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "segment_id": 3,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 3,
+        "start_frame": 199,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "会是你",
+      "text_features": {
+        "n_tokens": 3,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 202,
+      "chunk_end": 211,
+      "chunk_frames": 10,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 211,
+        "t_sec": 7.033333333333333,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "segment_id": 3,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 3,
+        "start_frame": 199,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "你刚",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 212,
+      "chunk_end": 222,
+      "chunk_frames": 11,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 222,
+        "t_sec": 7.4,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 2
+        },
+        "stable_causal": {
+          "type_id": 1,
+          "type": "sad",
+          "level_id": 2
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "segment_id": 3,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 3,
+        "start_frame": 199,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "刚手划",
+      "text_features": {
+        "n_tokens": 3,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 223,
+      "chunk_end": 232,
+      "chunk_frames": 10,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 232,
+        "t_sec": 7.733333333333333,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "segment_id": 3,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 3,
+        "start_frame": 199,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "划点",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 233,
+      "chunk_end": 246,
+      "chunk_frames": 14,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 246,
+        "t_sec": 8.2,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable_causal": {
+          "type_id": 1,
+          "type": "sad",
+          "level_id": 3
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 0
+        },
+        "segment_id": 3,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 3,
+        "start_frame": 199,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "点错了",
+      "text_features": {
+        "n_tokens": 3,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 247,
+      "chunk_end": 259,
+      "chunk_frames": 13,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 259,
+        "t_sec": 8.633333333333333,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "segment_id": 3,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 3,
+        "start_frame": 199,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        }
+      },
+      "chunk_text": "了现在",
+      "text_features": {
+        "n_tokens": 3,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 260,
+      "chunk_end": 269,
+      "chunk_frames": 10,
+      "boundary_events": [
+        269
+      ],
+      "current_frame": {
+        "frame": 269,
+        "t_sec": 8.966666666666667,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 2
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 2
+        },
+        "segment_id": 4,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 4,
+        "start_frame": 269,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 2
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        }
+      },
+      "chunk_text": "在正",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 270,
+      "chunk_end": 283,
+      "chunk_frames": 14,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 283,
+        "t_sec": 9.433333333333334,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 2
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 2
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 2
+        },
+        "segment_id": 4,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 4,
+        "start_frame": 269,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 2
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        }
+      },
+      "chunk_text": "盯着",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 284,
+      "chunk_end": 293,
+      "chunk_frames": 10,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 293,
+        "t_sec": 9.766666666666667,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "segment_id": 4,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 4,
+        "start_frame": 269,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 2
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        }
+      },
+      "chunk_text": "那颗",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 294,
+      "chunk_end": 304,
+      "chunk_frames": 11,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 304,
+        "t_sec": 10.133333333333333,
+        "raw": {
+          "type_id": 1,
+          "type": "sad",
+          "level_id": 2
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "segment_id": 4,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 4,
+        "start_frame": 269,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        }
+      },
+      "chunk_text": "颗小",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 305,
+      "chunk_end": 319,
+      "chunk_frames": 15,
+      "boundary_events": [
+        306
+      ],
+      "current_frame": {
+        "frame": 319,
+        "t_sec": 10.633333333333333,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 2
+        },
+        "segment_id": 5,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 5,
+        "start_frame": 306,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        }
+      },
+      "chunk_text": "星星",
+      "text_features": {
+        "n_tokens": 2,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 320,
+      "chunk_end": 334,
+      "chunk_frames": 15,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 334,
+        "t_sec": 11.133333333333333,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "segment_id": 5,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 5,
+        "start_frame": 306,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        }
+      },
+      "chunk_text": "发呆吧",
+      "text_features": {
+        "n_tokens": 3,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    },
+    {
+      "chunk_start": 335,
+      "chunk_end": 340,
+      "chunk_frames": 6,
+      "boundary_events": [],
+      "current_frame": {
+        "frame": 340,
+        "t_sec": 11.333333333333334,
+        "raw": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable_causal": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "stable": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 3
+        },
+        "segment_id": 5,
+        "boundary_event": false
+      },
+      "segment": {
+        "id": 5,
+        "start_frame": 306,
+        "major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        },
+        "prev_major": {
+          "type_id": 0,
+          "type": "happy",
+          "level_id": 4
+        }
+      },
+      "chunk_text": "吧",
+      "text_features": {
+        "n_tokens": 1,
+        "punct_count": 0,
+        "pos_hits": 0,
+        "neg_hits": 0,
+        "sentiment_score": 0.0
+      }
+    }
+  ],
+  "final_segment": {
+    "id": 5,
+    "start_frame": 306,
+    "major": {
+      "type_id": 0,
+      "type": "happy",
+      "level_id": 4
+    }
+  },
+  "frames": [
+    {
+      "frame": 0,
+      "t_sec": 0.0,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 1,
+      "t_sec": 0.03333333333333333,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 2,
+      "t_sec": 0.06666666666666667,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 3,
+      "t_sec": 0.1,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 4,
+      "t_sec": 0.13333333333333333,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 5,
+      "t_sec": 0.16666666666666666,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 6,
+      "t_sec": 0.2,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 7,
+      "t_sec": 0.23333333333333334,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 8,
+      "t_sec": 0.26666666666666666,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 9,
+      "t_sec": 0.3,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 10,
+      "t_sec": 0.3333333333333333,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 11,
+      "t_sec": 0.36666666666666664,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 12,
+      "t_sec": 0.4,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 13,
+      "t_sec": 0.43333333333333335,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 14,
+      "t_sec": 0.4666666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 15,
+      "t_sec": 0.5,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 16,
+      "t_sec": 0.5333333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 17,
+      "t_sec": 0.5666666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 18,
+      "t_sec": 0.6,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 19,
+      "t_sec": 0.6333333333333333,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 20,
+      "t_sec": 0.6666666666666666,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 21,
+      "t_sec": 0.7,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 22,
+      "t_sec": 0.7333333333333333,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 23,
+      "t_sec": 0.7666666666666667,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 24,
+      "t_sec": 0.8,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 25,
+      "t_sec": 0.8333333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 26,
+      "t_sec": 0.8666666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 27,
+      "t_sec": 0.9,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 28,
+      "t_sec": 0.9333333333333333,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 29,
+      "t_sec": 0.9666666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 30,
+      "t_sec": 1.0,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 31,
+      "t_sec": 1.0333333333333334,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 0,
+      "boundary_event": false
+    },
+    {
+      "frame": 32,
+      "t_sec": 1.0666666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": true
+    },
+    {
+      "frame": 33,
+      "t_sec": 1.1,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 34,
+      "t_sec": 1.1333333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 35,
+      "t_sec": 1.1666666666666667,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 36,
+      "t_sec": 1.2,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 37,
+      "t_sec": 1.2333333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 38,
+      "t_sec": 1.2666666666666666,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 39,
+      "t_sec": 1.3,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 40,
+      "t_sec": 1.3333333333333333,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 41,
+      "t_sec": 1.3666666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 42,
+      "t_sec": 1.4,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 43,
+      "t_sec": 1.4333333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 44,
+      "t_sec": 1.4666666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 45,
+      "t_sec": 1.5,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 46,
+      "t_sec": 1.5333333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 47,
+      "t_sec": 1.5666666666666667,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 48,
+      "t_sec": 1.6,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 49,
+      "t_sec": 1.6333333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 50,
+      "t_sec": 1.6666666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 51,
+      "t_sec": 1.7,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 52,
+      "t_sec": 1.7333333333333334,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 53,
+      "t_sec": 1.7666666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 54,
+      "t_sec": 1.8,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 55,
+      "t_sec": 1.8333333333333333,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 56,
+      "t_sec": 1.8666666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 57,
+      "t_sec": 1.9,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 58,
+      "t_sec": 1.9333333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 59,
+      "t_sec": 1.9666666666666666,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 60,
+      "t_sec": 2.0,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 1,
+      "boundary_event": false
+    },
+    {
+      "frame": 61,
+      "t_sec": 2.033333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": true
+    },
+    {
+      "frame": 62,
+      "t_sec": 2.066666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 63,
+      "t_sec": 2.1,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 64,
+      "t_sec": 2.1333333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 65,
+      "t_sec": 2.1666666666666665,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 66,
+      "t_sec": 2.2,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 67,
+      "t_sec": 2.2333333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 68,
+      "t_sec": 2.2666666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 69,
+      "t_sec": 2.3,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 70,
+      "t_sec": 2.3333333333333335,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 71,
+      "t_sec": 2.3666666666666667,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 72,
+      "t_sec": 2.4,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 73,
+      "t_sec": 2.433333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 74,
+      "t_sec": 2.466666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 75,
+      "t_sec": 2.5,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 76,
+      "t_sec": 2.533333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 77,
+      "t_sec": 2.566666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 78,
+      "t_sec": 2.6,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 79,
+      "t_sec": 2.6333333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 80,
+      "t_sec": 2.6666666666666665,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 81,
+      "t_sec": 2.7,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 82,
+      "t_sec": 2.7333333333333334,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 83,
+      "t_sec": 2.7666666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 84,
+      "t_sec": 2.8,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 85,
+      "t_sec": 2.8333333333333335,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 86,
+      "t_sec": 2.8666666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 87,
+      "t_sec": 2.9,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 88,
+      "t_sec": 2.933333333333333,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 89,
+      "t_sec": 2.966666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 90,
+      "t_sec": 3.0,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 91,
+      "t_sec": 3.033333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 92,
+      "t_sec": 3.066666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 93,
+      "t_sec": 3.1,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 94,
+      "t_sec": 3.1333333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 95,
+      "t_sec": 3.1666666666666665,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 96,
+      "t_sec": 3.2,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 97,
+      "t_sec": 3.2333333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 98,
+      "t_sec": 3.2666666666666666,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 99,
+      "t_sec": 3.3,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 100,
+      "t_sec": 3.3333333333333335,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 101,
+      "t_sec": 3.3666666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 102,
+      "t_sec": 3.4,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 103,
+      "t_sec": 3.433333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 104,
+      "t_sec": 3.466666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 105,
+      "t_sec": 3.5,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 106,
+      "t_sec": 3.533333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 107,
+      "t_sec": 3.566666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 108,
+      "t_sec": 3.6,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 109,
+      "t_sec": 3.6333333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 110,
+      "t_sec": 3.6666666666666665,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 111,
+      "t_sec": 3.7,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 112,
+      "t_sec": 3.7333333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 113,
+      "t_sec": 3.7666666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 114,
+      "t_sec": 3.8,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 115,
+      "t_sec": 3.8333333333333335,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 116,
+      "t_sec": 3.8666666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 117,
+      "t_sec": 3.9,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 118,
+      "t_sec": 3.933333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 119,
+      "t_sec": 3.966666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 120,
+      "t_sec": 4.0,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 121,
+      "t_sec": 4.033333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 122,
+      "t_sec": 4.066666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 123,
+      "t_sec": 4.1,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 124,
+      "t_sec": 4.133333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 125,
+      "t_sec": 4.166666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 126,
+      "t_sec": 4.2,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 127,
+      "t_sec": 4.233333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 128,
+      "t_sec": 4.266666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 129,
+      "t_sec": 4.3,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 130,
+      "t_sec": 4.333333333333333,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 131,
+      "t_sec": 4.366666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 132,
+      "t_sec": 4.4,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 133,
+      "t_sec": 4.433333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 134,
+      "t_sec": 4.466666666666667,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 135,
+      "t_sec": 4.5,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 136,
+      "t_sec": 4.533333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 137,
+      "t_sec": 4.566666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 138,
+      "t_sec": 4.6,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 139,
+      "t_sec": 4.633333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 140,
+      "t_sec": 4.666666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 141,
+      "t_sec": 4.7,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 142,
+      "t_sec": 4.733333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 143,
+      "t_sec": 4.766666666666667,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 144,
+      "t_sec": 4.8,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 145,
+      "t_sec": 4.833333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 146,
+      "t_sec": 4.866666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 147,
+      "t_sec": 4.9,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 148,
+      "t_sec": 4.933333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 149,
+      "t_sec": 4.966666666666667,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 150,
+      "t_sec": 5.0,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 151,
+      "t_sec": 5.033333333333333,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 152,
+      "t_sec": 5.066666666666666,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 153,
+      "t_sec": 5.1,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 154,
+      "t_sec": 5.133333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 155,
+      "t_sec": 5.166666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 156,
+      "t_sec": 5.2,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 157,
+      "t_sec": 5.233333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 158,
+      "t_sec": 5.266666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 159,
+      "t_sec": 5.3,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 160,
+      "t_sec": 5.333333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 161,
+      "t_sec": 5.366666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 162,
+      "t_sec": 5.4,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 163,
+      "t_sec": 5.433333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 164,
+      "t_sec": 5.466666666666667,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 165,
+      "t_sec": 5.5,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 166,
+      "t_sec": 5.533333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 167,
+      "t_sec": 5.566666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 168,
+      "t_sec": 5.6,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 169,
+      "t_sec": 5.633333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 170,
+      "t_sec": 5.666666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 171,
+      "t_sec": 5.7,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 172,
+      "t_sec": 5.733333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 173,
+      "t_sec": 5.766666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 174,
+      "t_sec": 5.8,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 175,
+      "t_sec": 5.833333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 176,
+      "t_sec": 5.866666666666666,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 177,
+      "t_sec": 5.9,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 178,
+      "t_sec": 5.933333333333334,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 179,
+      "t_sec": 5.966666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 180,
+      "t_sec": 6.0,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 181,
+      "t_sec": 6.033333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 182,
+      "t_sec": 6.066666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 183,
+      "t_sec": 6.1,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 184,
+      "t_sec": 6.133333333333334,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 185,
+      "t_sec": 6.166666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 186,
+      "t_sec": 6.2,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 187,
+      "t_sec": 6.233333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 188,
+      "t_sec": 6.266666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 189,
+      "t_sec": 6.3,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 190,
+      "t_sec": 6.333333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 191,
+      "t_sec": 6.366666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 192,
+      "t_sec": 6.4,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 193,
+      "t_sec": 6.433333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 194,
+      "t_sec": 6.466666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 195,
+      "t_sec": 6.5,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 196,
+      "t_sec": 6.533333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 197,
+      "t_sec": 6.566666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 198,
+      "t_sec": 6.6,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 2,
+      "boundary_event": false
+    },
+    {
+      "frame": 199,
+      "t_sec": 6.633333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": true
+    },
+    {
+      "frame": 200,
+      "t_sec": 6.666666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 201,
+      "t_sec": 6.7,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 202,
+      "t_sec": 6.733333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 203,
+      "t_sec": 6.766666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 204,
+      "t_sec": 6.8,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 205,
+      "t_sec": 6.833333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 206,
+      "t_sec": 6.866666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 207,
+      "t_sec": 6.9,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 208,
+      "t_sec": 6.933333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 209,
+      "t_sec": 6.966666666666667,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 210,
+      "t_sec": 7.0,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 211,
+      "t_sec": 7.033333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 212,
+      "t_sec": 7.066666666666666,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 213,
+      "t_sec": 7.1,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 214,
+      "t_sec": 7.133333333333334,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 215,
+      "t_sec": 7.166666666666667,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 216,
+      "t_sec": 7.2,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 5
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 217,
+      "t_sec": 7.233333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 218,
+      "t_sec": 7.266666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 219,
+      "t_sec": 7.3,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 220,
+      "t_sec": 7.333333333333333,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 221,
+      "t_sec": 7.366666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 222,
+      "t_sec": 7.4,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 223,
+      "t_sec": 7.433333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 224,
+      "t_sec": 7.466666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 225,
+      "t_sec": 7.5,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 226,
+      "t_sec": 7.533333333333333,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 227,
+      "t_sec": 7.566666666666666,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 228,
+      "t_sec": 7.6,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 229,
+      "t_sec": 7.633333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 230,
+      "t_sec": 7.666666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 231,
+      "t_sec": 7.7,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 232,
+      "t_sec": 7.733333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 233,
+      "t_sec": 7.766666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 234,
+      "t_sec": 7.8,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 235,
+      "t_sec": 7.833333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 236,
+      "t_sec": 7.866666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 237,
+      "t_sec": 7.9,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 238,
+      "t_sec": 7.933333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 239,
+      "t_sec": 7.966666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 240,
+      "t_sec": 8.0,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 241,
+      "t_sec": 8.033333333333333,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 242,
+      "t_sec": 8.066666666666666,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 0
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 243,
+      "t_sec": 8.1,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 0
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 244,
+      "t_sec": 8.133333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 0
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 245,
+      "t_sec": 8.166666666666666,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 0
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 246,
+      "t_sec": 8.2,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 0
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 247,
+      "t_sec": 8.233333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 0
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 248,
+      "t_sec": 8.266666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 0
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 249,
+      "t_sec": 8.3,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 0
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 250,
+      "t_sec": 8.333333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 0
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 0
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 251,
+      "t_sec": 8.366666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 0
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 252,
+      "t_sec": 8.4,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 0
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 253,
+      "t_sec": 8.433333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 0
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 254,
+      "t_sec": 8.466666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 0
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 255,
+      "t_sec": 8.5,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 0
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 256,
+      "t_sec": 8.533333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 257,
+      "t_sec": 8.566666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 258,
+      "t_sec": 8.6,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 259,
+      "t_sec": 8.633333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 260,
+      "t_sec": 8.666666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 261,
+      "t_sec": 8.7,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 262,
+      "t_sec": 8.733333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 263,
+      "t_sec": 8.766666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 264,
+      "t_sec": 8.8,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 265,
+      "t_sec": 8.833333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 266,
+      "t_sec": 8.866666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 267,
+      "t_sec": 8.9,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 268,
+      "t_sec": 8.933333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 3,
+      "boundary_event": false
+    },
+    {
+      "frame": 269,
+      "t_sec": 8.966666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 270,
+      "t_sec": 9.0,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 271,
+      "t_sec": 9.033333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 272,
+      "t_sec": 9.066666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 273,
+      "t_sec": 9.1,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 274,
+      "t_sec": 9.133333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 275,
+      "t_sec": 9.166666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 276,
+      "t_sec": 9.2,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 277,
+      "t_sec": 9.233333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 278,
+      "t_sec": 9.266666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 279,
+      "t_sec": 9.3,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 280,
+      "t_sec": 9.333333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 281,
+      "t_sec": 9.366666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 282,
+      "t_sec": 9.4,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 283,
+      "t_sec": 9.433333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 284,
+      "t_sec": 9.466666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 285,
+      "t_sec": 9.5,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 286,
+      "t_sec": 9.533333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 287,
+      "t_sec": 9.566666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 288,
+      "t_sec": 9.6,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 289,
+      "t_sec": 9.633333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 290,
+      "t_sec": 9.666666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 291,
+      "t_sec": 9.7,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 292,
+      "t_sec": 9.733333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 293,
+      "t_sec": 9.766666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 294,
+      "t_sec": 9.8,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 295,
+      "t_sec": 9.833333333333334,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 296,
+      "t_sec": 9.866666666666667,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 297,
+      "t_sec": 9.9,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 298,
+      "t_sec": 9.933333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 299,
+      "t_sec": 9.966666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 300,
+      "t_sec": 10.0,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 301,
+      "t_sec": 10.033333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 302,
+      "t_sec": 10.066666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 303,
+      "t_sec": 10.1,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 304,
+      "t_sec": 10.133333333333333,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 305,
+      "t_sec": 10.166666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 4,
+      "boundary_event": false
+    },
+    {
+      "frame": 306,
+      "t_sec": 10.2,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": true
+    },
+    {
+      "frame": 307,
+      "t_sec": 10.233333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 308,
+      "t_sec": 10.266666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 309,
+      "t_sec": 10.3,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 310,
+      "t_sec": 10.333333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 311,
+      "t_sec": 10.366666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 312,
+      "t_sec": 10.4,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 313,
+      "t_sec": 10.433333333333334,
+      "raw": {
+        "type_id": 3,
+        "type": "fear",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 314,
+      "t_sec": 10.466666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 315,
+      "t_sec": 10.5,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 316,
+      "t_sec": 10.533333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 317,
+      "t_sec": 10.566666666666666,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 318,
+      "t_sec": 10.6,
+      "raw": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 319,
+      "t_sec": 10.633333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 320,
+      "t_sec": 10.666666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 321,
+      "t_sec": 10.7,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 322,
+      "t_sec": 10.733333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 323,
+      "t_sec": 10.766666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 1,
+        "type": "sad",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 324,
+      "t_sec": 10.8,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 325,
+      "t_sec": 10.833333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 326,
+      "t_sec": 10.866666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 327,
+      "t_sec": 10.9,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 328,
+      "t_sec": 10.933333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 329,
+      "t_sec": 10.966666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 330,
+      "t_sec": 11.0,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 331,
+      "t_sec": 11.033333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 332,
+      "t_sec": 11.066666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 333,
+      "t_sec": 11.1,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 334,
+      "t_sec": 11.133333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 335,
+      "t_sec": 11.166666666666666,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 336,
+      "t_sec": 11.2,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 337,
+      "t_sec": 11.233333333333333,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 338,
+      "t_sec": 11.266666666666667,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 2
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 339,
+      "t_sec": 11.3,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 4
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    },
+    {
+      "frame": 340,
+      "t_sec": 11.333333333333334,
+      "raw": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable_causal": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "stable": {
+        "type_id": 0,
+        "type": "happy",
+        "level_id": 3
+      },
+      "segment_id": 5,
+      "boundary_event": false
+    }
+  ],
+  "tokens": [
+    {
+      "token": "哈",
+      "f0": 0,
+      "f1": 7
+    },
+    {
+      "token": "哈",
+      "f0": 7,
+      "f1": 14
+    },
+    {
+      "token": "我",
+      "f0": 14,
+      "f1": 21
+    },
+    {
+      "token": "连",
+      "f0": 21,
+      "f1": 28
+    },
+    {
+      "token": "你",
+      "f0": 28,
+      "f1": 36
+    },
+    {
+      "token": "手",
+      "f0": 36,
+      "f1": 43
+    },
+    {
+      "token": "机",
+      "f0": 43,
+      "f1": 50
+    },
+    {
+      "token": "屏",
+      "f0": 50,
+      "f1": 57
+    },
+    {
+      "token": "幕",
+      "f0": 57,
+      "f1": 64
+    },
+    {
+      "token": "朝",
+      "f0": 64,
+      "f1": 71
+    },
+    {
+      "token": "哪",
+      "f0": 71,
+      "f1": 78
+    },
+    {
+      "token": "边",
+      "f0": 78,
+      "f1": 85
+    },
+    {
+      "token": "都",
+      "f0": 85,
+      "f1": 92
+    },
+    {
+      "token": "不",
+      "f0": 92,
+      "f1": 99
+    },
+    {
+      "token": "知",
+      "f0": 99,
+      "f1": 107
+    },
+    {
+      "token": "道",
+      "f0": 107,
+      "f1": 114
+    },
+    {
+      "token": "差",
+      "f0": 114,
+      "f1": 121
+    },
+    {
+      "token": "评",
+      "f0": 121,
+      "f1": 128
+    },
+    {
+      "token": "从",
+      "f0": 128,
+      "f1": 135
+    },
+    {
+      "token": "哪",
+      "f0": 135,
+      "f1": 142
+    },
+    {
+      "token": "冒",
+      "f0": 142,
+      "f1": 149
+    },
+    {
+      "token": "出",
+      "f0": 149,
+      "f1": 156
+    },
+    {
+      "token": "来",
+      "f0": 156,
+      "f1": 163
+    },
+    {
+      "token": "的",
+      "f0": 163,
+      "f1": 170
+    },
+    {
+      "token": "该",
+      "f0": 170,
+      "f1": 178
+    },
+    {
+      "token": "不",
+      "f0": 178,
+      "f1": 185
+    },
+    {
+      "token": "会",
+      "f0": 185,
+      "f1": 192
+    },
+    {
+      "token": "是",
+      "f0": 192,
+      "f1": 199
+    },
+    {
+      "token": "你",
+      "f0": 199,
+      "f1": 206
+    },
+    {
+      "token": "刚",
+      "f0": 206,
+      "f1": 213
+    },
+    {
+      "token": "手",
+      "f0": 213,
+      "f1": 220
+    },
+    {
+      "token": "划",
+      "f0": 220,
+      "f1": 227
+    },
+    {
+      "token": "点",
+      "f0": 227,
+      "f1": 234
+    },
+    {
+      "token": "错",
+      "f0": 234,
+      "f1": 242
+    },
+    {
+      "token": "了",
+      "f0": 242,
+      "f1": 249
+    },
+    {
+      "token": "现",
+      "f0": 249,
+      "f1": 256
+    },
+    {
+      "token": "在",
+      "f0": 256,
+      "f1": 263
+    },
+    {
+      "token": "正",
+      "f0": 263,
+      "f1": 270
+    },
+    {
+      "token": "盯",
+      "f0": 270,
+      "f1": 277
+    },
+    {
+      "token": "着",
+      "f0": 277,
+      "f1": 284
+    },
+    {
+      "token": "那",
+      "f0": 284,
+      "f1": 291
+    },
+    {
+      "token": "颗",
+      "f0": 291,
+      "f1": 298
+    },
+    {
+      "token": "小",
+      "f0": 298,
+      "f1": 305
+    },
+    {
+      "token": "星",
+      "f0": 305,
+      "f1": 313
+    },
+    {
+      "token": "星",
+      "f0": 313,
+      "f1": 320
+    },
+    {
+      "token": "发",
+      "f0": 320,
+      "f1": 327
+    },
+    {
+      "token": "呆",
+      "f0": 327,
+      "f1": 334
+    },
+    {
+      "token": "吧",
+      "f0": 334,
+      "f1": 341
+    }
+  ]
+}
