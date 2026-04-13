@@ -196,8 +196,8 @@ def main():
     else:
         print("[aug] disabled")
 
-    tr_ds = EmotionSeqDataset(cfg, tr_items, aug_config=aug_cfg)
-    val_ds = EmotionSeqDataset(cfg, val_items, aug_config=None)
+    tr_ds = EmotionSeqDataset(cfg, tr_items, aug_config=aug_cfg, estimate_bnd_ratio=True)
+    val_ds = EmotionSeqDataset(cfg, val_items, aug_config=None, estimate_bnd_ratio=False)
 
     tr_loader = DataLoader(tr_ds, batch_size=args.batch_size, shuffle=True, num_workers=0, collate_fn=collate)
     val_loader = DataLoader(val_ds, batch_size=args.batch_size, shuffle=False, num_workers=0, collate_fn=collate)

@@ -292,6 +292,7 @@ class EmotionSeqDataset(torch.utils.data.Dataset):
         cfg: DataConfig,
         items: List[Dict[str, Any]],
         aug_config: Optional[AugConfig] = None,
+        estimate_bnd_ratio: bool = True,
     ):
         self.cfg = cfg
         self.items = items
@@ -305,23 +306,21 @@ class EmotionSeqDataset(torch.utils.data.Dataset):
         )
 
         self._bnd_pos_ratio = 0.02
-        self._estimate_boundary_ratio()
+        if estimate_bnd_ratio:
+            self._estimate_boundary_ratio()
 
     @property
     def bnd_pos_ratio(self) -> float:
         return float(self._bnd_pos_ratio)
 
     def _estimate_boundary_ratio(self):
+        """用 jsonl 中的 duration 字段估算边界比例，完全不加载音频。"""
         tot = 0
         pos = 0
         for obj in self.items:
-            wav_path = os.path.join(self.cfg.wav_dir, obj["wav"])
-            if not os.path.isfile(wav_path):
-                continue
-            wav = load_wav(wav_path, sr=self.cfg.sample_rate)
             duration = obj.get("duration", None)
             if duration is None:
-                duration = wav.size(1) / float(self.cfg.sample_rate)
+                continue  # 无 duration 跳过，避免 OOM
             y_type, y_lvl = sample_30fps_targets(obj.get("curve", []), float(duration), fps=self.cfg.fps)
             bnd = torch.zeros_like(y_type, dtype=torch.float32)
             bnd[1:] = ((y_type[1:] != y_type[:-1]) | (y_lvl[1:] != y_lvl[:-1])).float()
