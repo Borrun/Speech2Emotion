@@ -56,12 +56,11 @@ def speed_perturb(wav: torch.Tensor, sr: int, factor: float) -> torch.Tensor:
     """
     变速：factor > 1 加速（时长变短），factor < 1 减速（时长变长）。
     原理：将 wav 视为以 sr*factor 采样，重采样回 sr。
+    注意：必须用采样率值（如 16000）而非样本长度，否则 torchaudio 会分配巨型 filter 导致 OOM。
     """
     if abs(factor - 1.0) < 1e-6:
         return wav
-    orig_len = wav.size(1)
-    new_len = max(1, int(round(orig_len / factor)))
-    return torchaudio.functional.resample(wav, orig_len, new_len)
+    return torchaudio.functional.resample(wav, int(sr * factor), sr)
 
 
 def add_noise(wav: torch.Tensor, snr_db: float) -> torch.Tensor:
