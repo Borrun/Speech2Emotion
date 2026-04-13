@@ -9,7 +9,7 @@ from torch.utils.data import DataLoader
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from train.emotion_data import DataConfig, EmotionSeqDataset, collate, ALLOWED_TYPES
+from train.emotion_data import DataConfig, EmotionSeqDataset, collate, ALLOWED_TYPES, load_items
 from models.model_emotion_tcn import EmotionTCN
 from train.train_emotion_tcn import evaluate
 
@@ -169,7 +169,8 @@ def main():
     device = "cuda" if torch.cuda.is_available() else "cpu"
 
     cfg = DataConfig(wav_dir=args.wav_dir, label_path=args.label_path)
-    ds = EmotionSeqDataset(cfg)
+    items = load_items(args.label_path)
+    ds = EmotionSeqDataset(cfg, items, aug_config=None, estimate_bnd_ratio=False)
     loader = DataLoader(ds, batch_size=4, shuffle=False, num_workers=0, collate_fn=collate)
 
     ckpt = torch.load(args.ckpt, map_location="cpu")
