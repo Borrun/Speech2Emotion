@@ -45,9 +45,16 @@
 <div class="wrap">
   <div class="left">
     <div class="hdr">
-      <b>音频列表</b> 
-      <span class="pill" id="countPill">0</span>
-      <span class="pill ok" id="donePill">完成: 0</span>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px">
+        <b>音频列表</b>
+        <span class="pill ok" id="donePill">完成: 0</span>
+      </div>
+      <select id="folderSelect" style="width:100%; padding:5px; border-radius:5px; border:1px solid #ddd; font-size:13px">
+        <option value="">全部</option>
+      </select>
+      <div style="margin-top:6px; font-size:12px; color:#888">
+        共 <span id="countPill">0</span> 个文件
+      </div>
     </div>
     <ul class="list" id="fileList"></ul>
   </div>
@@ -88,6 +95,11 @@
             <option value="angry">angry (3)</option>
             <option value="fear">fear (4)</option>
             <option value="calm" selected>calm (5)</option>
+            <option value="happy_confused">happy_confused (6)</option>
+            <option value="sad_confused">sad_confused (7)</option>
+            <option value="angry_confused">angry_confused (8)</option>
+            <option value="fear_confused">fear_confused (9)</option>
+            <option value="calm_confused">calm_confused (0)</option>
           </select>
         </div>
         <div id="typeLegend" class="legend"></div>
@@ -118,10 +130,15 @@
 <script>
   const FPS = 30;
   const LEVEL_MAPPING = {0:5, 1:18, 2:38, 3:68, 4:98, 5:130};
-  const TYPES = ["happy","sad","angry","fear","calm"];
-  const TYPE_COLORS = { happy: "#f6a21a", sad: "#5b7bd5", angry: "#d64545", fear: "#7a5bd5", calm: "#2e8b57" };
+  const TYPES = ["happy","sad","angry","fear","calm",
+                 "happy_confused","sad_confused","angry_confused","fear_confused","calm_confused"];
+  const TYPE_COLORS = {
+    happy: "#f6a21a", sad: "#5b7bd5", angry: "#d64545", fear: "#7a5bd5", calm: "#2e8b57",
+    happy_confused: "#999", sad_confused: "#999", angry_confused: "#999",
+    fear_confused: "#999", calm_confused: "#999"
+  };
 
-  let files = [], curIndex = -1, wavesurfer = null;
+  let files = [], filteredFiles = [], curIndex = -1, wavesurfer = null;
   let duration = 0, curve = [], selectedIndex = null, draggingIndex = null;
   let dragOffset = {dx:0, dy:0}, hoveredSeg = null;
 
@@ -281,24 +298,24 @@
   }
 
   async function loadIndex(idx) {
-    if (idx < 0 || idx >= files.length) return;
+    if (idx < 0 || idx >= filteredFiles.length) return;
     curIndex = idx;
-    const file = files[idx];
-    document.getElementById('curName').textContent = file.wav;
+    const file = filteredFiles[idx];
+    document.getElementById('curName').textContent = file.wav.split('/').pop();
     if (wavesurfer) wavesurfer.destroy();
+    const audioUrl = '/audio/' + file.wav.split('/').map(encodeURIComponent).join('/');
     wavesurfer = WaveSurfer.create({
       container: '#wave', height: 160, waveColor: '#ccc', progressColor: '#446',
-      url: `/audio/${encodeURIComponent(file.wav)}`, interact: true
+      url: audioUrl, interact: true
     });
 
     wavesurfer.on('ready', async () => {
       duration = wavesurfer.getDuration();
       elTotalTime.textContent = duration.toFixed(2);
       document.getElementById('durDisplay').textContent = duration.toFixed(2);
-      
-      const lbl = await fetchJSON(`/api/label/${encodeURIComponent(file.wav)}`);
-      
-      // 默认生成一条从头到尾的 calm 0 情绪线
+
+      const lbl = await fetchJSON(`/api/label/${file.wav.split('/').map(encodeURIComponent).join('/')}`);
+
       if (!lbl.curve || lbl.curve.length < 2) {
         curve = [
           { t: 0, type: "calm", value: 5 },
@@ -324,7 +341,7 @@
     });
   }
 
-  elMainSlider.oninput = () => wavesurfer.setTime((elMainSlider.value / 1000) * duration);
+  elMainSlider.oninput = () => wavesurfer && wavesurfer.setTime((elMainSlider.value / 1000) * duration);
 
   window.onmousemove = (e) => {
     if (draggingIndex === null) return;
@@ -351,45 +368,71 @@
 
   async function saveLabel() {
     if (curIndex < 0) return;
-    const payload = { wav: files[curIndex].wav, fps: FPS, duration, curve, text: document.getElementById('audioText').value };
+    const payload = { wav: filteredFiles[curIndex].wav, fps: FPS, duration, curve, text: document.getElementById('audioText').value };
     await fetchJSON('/api/save', { method:'POST', body: JSON.stringify(payload) });
-    files[curIndex].labeled = true;
+    const master = files.find(f => f.wav === filteredFiles[curIndex].wav);
+    if (master) master.labeled = true;
+    filteredFiles[curIndex].labeled = true;
     document.getElementById('ptCount').textContent = curve.length;
     renderList();
   }
 
+  function applyFolderFilter() {
+    const sel = document.getElementById('folderSelect').value;
+    filteredFiles = sel ? files.filter(f => f.folder === sel) : files.slice();
+    curIndex = -1;
+    renderList();
+    if (filteredFiles.length) loadIndex(0);
+  }
+
   function renderList() {
     const list = document.getElementById('fileList');
-    list.innerHTML = files.map((f, i) => `
+    list.innerHTML = filteredFiles.map((f, i) => `
       <li class="item ${i === curIndex ? 'active' : ''}" onclick="loadIndex(${i})">
-        <span style="font-size:13px">${f.wav}</span>
+        <span style="font-size:13px">${f.wav.split('/').pop()}</span>
         <span class="pill ${f.labeled ? 'ok' : ''}">${f.labeled ? '✓' : ''}</span>
       </li>
     `).join('');
-    document.getElementById('countPill').textContent = files.length;
-    document.getElementById('donePill').textContent = `完成: ${files.filter(f => f.labeled).length}`;
+    document.getElementById('countPill').textContent = filteredFiles.length;
+    document.getElementById('donePill').textContent = `完成: ${filteredFiles.filter(f => f.labeled).length}`;
   }
 
   document.addEventListener('keydown', (e) => {
-    if (e.target.tagName === 'TEXTAREA') return;
-    if (e.code === 'Space') { e.preventDefault(); wavesurfer.playPause(); }
+    if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') return;
+    if (e.code === 'Space') { e.preventDefault(); wavesurfer && wavesurfer.playPause(); }
     if (e.key === 'p') loadIndex(curIndex - 1);
     if (e.key === 'n') loadIndex(curIndex + 1);
     if (["1","2","3","4","5"].includes(e.key)) document.getElementById('segType').value = TYPES[parseInt(e.key)-1];
+    if (["6","7","8","9"].includes(e.key)) document.getElementById('segType').value = TYPES[parseInt(e.key)-1];
+    if (e.key === "0") document.getElementById('segType').value = TYPES[9];
   });
 
   window.onresize = () => draw();
-  fetchJSON('/api/files').then(data => { files = data; renderList(); if(data.length) loadIndex(0); });
-  document.getElementById('btnPlay').onclick = () => wavesurfer.playPause();
+  fetchJSON('/api/files').then(data => {
+    files = data;
+    filteredFiles = files.slice();
+    const folders = [...new Set(files.map(f => f.folder).filter(Boolean))].sort();
+    const sel = document.getElementById('folderSelect');
+    folders.forEach(fd => {
+      const opt = document.createElement('option');
+      opt.value = fd; opt.textContent = fd;
+      sel.appendChild(opt);
+    });
+    sel.onchange = applyFolderFilter;
+    renderList();
+    if (filteredFiles.length) loadIndex(0);
+  });
+  document.getElementById('btnPlay').onclick = () => wavesurfer && wavesurfer.playPause();
   document.getElementById('btnSave').onclick = () => saveLabel();
   document.getElementById('btnPrev').onclick = () => loadIndex(curIndex - 1);
   document.getElementById('btnNext').onclick = () => loadIndex(curIndex + 1);
   document.getElementById('btnExport').onclick = async () => {
-    const data = await fetchJSON(`/api/export/${encodeURIComponent(files[curIndex].wav)}`);
+    if (curIndex < 0) return;
+    const data = await fetchJSON(`/api/export/${filteredFiles[curIndex].wav.split('/').map(encodeURIComponent).join('/')}`);
     const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = `${files[curIndex].wav.split('.')[0]}.json`;
+    a.download = `${filteredFiles[curIndex].wav.replace(/\//g,'_').split('.')[0]}.json`;
     a.click();
   };
 </script>

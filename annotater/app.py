@@ -1,7 +1,6 @@
 import os
 import json
 from flask import Flask, jsonify, request, send_from_directory, abort
-from pathlib import Path
 
 # 获取当前脚本所在的文件夹绝对路径
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -18,7 +17,8 @@ app = Flask(__name__, template_folder=BASE_DIR)
 DEFAULT_FPS = 30
 
 # + action: 表示需要行为表现
-ALLOWED_TYPES = ["happy", "sad", "angry", "fear", "calm"]
+ALLOWED_TYPES = ["happy", "sad", "angry", "fear", "calm",
+                 "happy_confused", "sad_confused", "angry_confused", "fear_confused", "calm_confused"]
 
 # 6-level intensity mapping (from config.cpp)
 LEVEL_INTENSITY_MAPPING = {0: 5.0, 1: 18.0, 2: 38.0, 3: 68.0, 4: 98.0, 5: 130.0}
@@ -447,17 +447,22 @@ def api_files():
         return jsonify({"error": f"Missing wavs dir: {AUDIO_DIR}"}), 400
 
     labels = load_labels()
-    files = [fn for fn in os.listdir(AUDIO_DIR) if fn.lower().endswith(".wav")]
-    files.sort()
-
     out = []
-    for fn in files:
-        obj = labels.get(fn, {})
-        out.append({
-            "wav": fn,
-            "fps": int(obj.get("fps", DEFAULT_FPS)),
-            "labeled": fn in labels
-        })
+    for folder in sorted(os.listdir(AUDIO_DIR)):
+        folder_path = os.path.join(AUDIO_DIR, folder)
+        if not os.path.isdir(folder_path):
+            continue
+        for fn in sorted(os.listdir(folder_path)):
+            if not fn.lower().endswith(".wav"):
+                continue
+            wav_key = f"{folder}/{fn}"
+            obj = labels.get(wav_key, {})
+            out.append({
+                "wav": wav_key,
+                "folder": folder,
+                "fps": int(obj.get("fps", DEFAULT_FPS)),
+                "labeled": wav_key in labels,
+            })
     return jsonify(out)
 
 @app.get("/api/label/<path:wav>")
@@ -492,20 +497,8 @@ def api_shape(wav):
     if not frames:
         return jsonify({"error": f"Missing shape txt: {txt_path}"}), 404
 
-    # find closest available frame if exact not present
     if fi not in frames:
-        # simple nearest search within small window first
-        for d in range(1, 6):
-            if (fi-d) in frames:
-                fi = fi-d; break
-            if (fi+d) in frames:
-                fi = fi+d; break
-        if fi not in frames:
-            # fallback: clamp
-            if max_frame is not None:
-                fi = int(clamp(fi, 0, max_frame))
-            if fi not in frames:
-                return jsonify({"error": f"Frame not found: {fi}"}), 404
+        fi = min(frames.keys(), key=lambda x: abs(x - fi))
 
     groups = frames.get(fi, [])
     # pad to 4 with empty groups (front-end will skip empty)
@@ -543,14 +536,7 @@ def api_emo_shape(etype):
         return jsonify({"error": f"Missing template txt: {meta.get('path')}"}), 404
 
     if frame not in frames:
-        # allow nearest within small window
-        for d in range(1, 6):
-            if (frame-d) in frames:
-                frame = frame-d; break
-            if (frame+d) in frames:
-                frame = frame+d; break
-        if frame not in frames:
-            return jsonify({"error": f"Frame not found: {frame}"}), 404
+        frame = min(frames.keys(), key=lambda x: abs(x - frame))
 
     return jsonify({"type": etype, "frame": frame, "groups": frames[frame]})
 
@@ -661,5 +647,6 @@ def audio(filename):
         abort(404)
     return send_from_directory(AUDIO_DIR, filename, as_attachment=False)
 
+
 if __name__ == "__main__":
-    app.run(host="127.0.0.1", port=7860, debug=False, use_reloader=False)
+    app.run(host="127.0.0.1", port=7861, debug=False, use_reloader=False)

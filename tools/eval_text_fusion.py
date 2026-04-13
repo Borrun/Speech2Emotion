@@ -27,7 +27,18 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 LABELS_PATH = "./annotater/labels_new.jsonl"
 OUT_DIR     = "./outputs/stream_online"
 
-TYPE_MAP = ["happy", "sad", "angry", "fear", "calm", "confused"]
+TYPE_MAP = [
+    "happy",
+    "sad",
+    "angry",
+    "fear",
+    "calm",
+    "happy_confused",
+    "sad_confused",
+    "angry_confused",
+    "fear_confused",
+    "calm_confused",
+]
 TYPE_IDX = {t: i for i, t in enumerate(TYPE_MAP)}
 
 
@@ -116,7 +127,7 @@ def compute_metrics(gt: List[Tuple[int,int]], pred: List[Tuple[int,int]],
 
 
 def confusion_counts(gt: List[Tuple[int,int]], pred: List[Tuple[int,int]],
-                     n_types: int = 6) -> List[List[int]]:
+                     n_types: int = len(TYPE_MAP)) -> List[List[int]]:
     mat = [[0]*n_types for _ in range(n_types)]
     for i in range(min(len(gt), len(pred))):
         mat[gt[i][0]][pred[i][0]] += 1

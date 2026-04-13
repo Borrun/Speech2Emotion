@@ -1,7 +1,9 @@
 import os
 import json
-from dataclasses import dataclass
-from typing import Any, Dict, List, Tuple
+import random
+import warnings
+from dataclasses import dataclass, field
+from typing import Any, Dict, List, Optional, Tuple
 
 import torch
 import torchaudio
@@ -13,8 +15,19 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from models.featurizer import CausalLogMelFeaturizer
 
 
-# ✅ 7 类：新增 action
-ALLOWED_TYPES = ["happy", "sad", "angry", "fear", "calm", "confused", "action"]
+# 10 类：5 个基础情绪 + 5 个 *_confused 复合情绪
+ALLOWED_TYPES = [
+    "happy",
+    "sad",
+    "angry",
+    "fear",
+    "calm",
+    "happy_confused",
+    "sad_confused",
+    "angry_confused",
+    "fear_confused",
+    "calm_confused",
+]
 TYPE2ID = {t: i for i, t in enumerate(ALLOWED_TYPES)}
 ID2TYPE = {i: t for t, i in TYPE2ID.items()}
 
@@ -28,12 +41,125 @@ LEVEL_THRESHOLDS = {
 }
 
 
+@dataclass
+class AugConfig:
+    # 变速：从列表中随机选一个 factor，每个以 p_speed 概率施加
+    speed_factors: List[float] = field(default_factory=lambda: [0.9, 0.95, 1.05, 1.1])
+    p_speed: float = 0.5
+    # 加噪：以 p_noise 概率施加高斯白噪，SNR 从 [snr_min, snr_max] 均匀采样
+    p_noise: float = 0.5
+    snr_min_db: float = 15.0
+    snr_max_db: float = 30.0
+
+
+def speed_perturb(wav: torch.Tensor, sr: int, factor: float) -> torch.Tensor:
+    """
+    变速：factor > 1 加速（时长变短），factor < 1 减速（时长变长）。
+    原理：将 wav 视为以 sr*factor 采样，重采样回 sr。
+    """
+    if abs(factor - 1.0) < 1e-6:
+        return wav
+    orig_len = wav.size(1)
+    new_len = max(1, int(round(orig_len / factor)))
+    return torchaudio.functional.resample(wav, orig_len, new_len)
+
+
+def add_noise(wav: torch.Tensor, snr_db: float) -> torch.Tensor:
+    """加高斯白噪，按 SNR(dB) 控制强度。"""
+    signal_rms = wav.pow(2).mean().sqrt().clamp(min=1e-9)
+    noise_rms = signal_rms / (10.0 ** (snr_db / 20.0))
+    noise = torch.randn_like(wav) * noise_rms
+    return wav + noise
+
+
 def clamp(x: float, lo: float, hi: float) -> float:
     try:
         x = float(x)
     except Exception:
         x = lo
     return max(lo, min(hi, x))
+
+
+def load_wav(path: str, sr: int = 16000) -> torch.Tensor:
+    wav = None
+    sample_rate = None
+
+    try:
+        wav, sample_rate = torchaudio.load(path)
+    except Exception:
+        try:
+            import soundfile as sf
+
+            data, sample_rate = sf.read(path, dtype="float32", always_2d=True)
+            wav = torch.from_numpy(data.T)
+        except Exception:
+            try:
+                from scipy.io import wavfile
+                from scipy.io.wavfile import WavFileWarning
+
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore", WavFileWarning)
+                    sample_rate, data = wavfile.read(path)
+                wav = torch.from_numpy(data)
+                if wav.dim() == 1:
+                    wav = wav.unsqueeze(0)
+                else:
+                    wav = wav.transpose(0, 1)
+                if wav.dtype.is_floating_point:
+                    wav = wav.to(torch.float32)
+                elif wav.dtype == torch.uint8:
+                    wav = (wav.to(torch.float32) - 128.0) / 128.0
+                elif wav.dtype == torch.int16:
+                    wav = wav.to(torch.float32) / 32768.0
+                elif wav.dtype == torch.int32:
+                    wav = wav.to(torch.float32) / 2147483648.0
+                else:
+                    wav = wav.to(torch.float32)
+            except Exception:
+                import wave
+
+                with wave.open(path, "rb") as wf:
+                    sample_rate = int(wf.getframerate())
+                    n_channels = int(wf.getnchannels())
+                    sampwidth = int(wf.getsampwidth())
+                    n_frames = int(wf.getnframes())
+                    pcm = wf.readframes(n_frames)
+
+                if sampwidth == 1:
+                    dtype = torch.uint8
+                    scale = 128.0
+                    offset = 128.0
+                elif sampwidth == 2:
+                    dtype = torch.int16
+                    scale = 32768.0
+                    offset = 0.0
+                elif sampwidth == 4:
+                    dtype = torch.int32
+                    scale = 2147483648.0
+                    offset = 0.0
+                else:
+                    raise RuntimeError(f"unsupported wav sample width: {sampwidth}")
+
+                raw = torch.frombuffer(pcm, dtype=dtype)
+                if n_channels > 1:
+                    raw = raw.view(-1, n_channels).transpose(0, 1)
+                else:
+                    raw = raw.view(1, -1)
+                wav = raw.to(torch.float32)
+                if sampwidth == 1:
+                    wav = (wav - offset) / scale
+                else:
+                    wav = wav / scale
+
+    if wav is None or sample_rate is None:
+        raise RuntimeError(f"failed to load wav: {path}")
+    if wav.dim() == 1:
+        wav = wav.unsqueeze(0)
+    if wav.size(0) > 1:
+        wav = wav.mean(dim=0, keepdim=True)
+    if int(sample_rate) != int(sr):
+        wav = torchaudio.functional.resample(wav, int(sample_rate), int(sr))
+    return wav.contiguous()
 
 
 def norm_type(t: str) -> str:
@@ -121,6 +247,11 @@ def sample_30fps_targets(curve: Any, duration: float, fps: int = 30) -> Tuple[to
     return y_type, y_lvl
 
 
+def scale_curve(curve: List[Dict[str, Any]], factor: float) -> List[Dict[str, Any]]:
+    """将 curve 中所有时间戳除以 factor（配合变速使用）。"""
+    return [{"t": p["t"] / factor, "type": p["type"], "value": p["value"]} for p in curve]
+
+
 @dataclass
 class DataConfig:
     wav_dir: str
@@ -132,29 +263,39 @@ class DataConfig:
     n_mels: int = 80
 
 
+def load_items(label_path: str) -> List[Dict[str, Any]]:
+    """从 jsonl 读取合法条目列表。"""
+    items: List[Dict[str, Any]] = []
+    with open(label_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            obj = json.loads(line)
+            wav = obj.get("wav", None)
+            curve = obj.get("curve", None)
+            if not wav or not isinstance(curve, list) or len(curve) < 2:
+                continue
+            items.append(obj)
+    return items
+
+
 class EmotionSeqDataset(torch.utils.data.Dataset):
     """
-    Reads annotater/labels_new.jsonl
-    returns:
-      mel: [T, M]
-      y_type: [T]
-      y_lvl: [T]
-      y_bnd: [T] 0/1 if (type or lvl) changes from previous frame
+    参数：
+      cfg         : DataConfig
+      items       : 条目列表（由外部按 train/val 切分后传入）
+      aug_config  : AugConfig 或 None（None 表示不增广）
     """
-    def __init__(self, cfg: DataConfig):
+    def __init__(
+        self,
+        cfg: DataConfig,
+        items: List[Dict[str, Any]],
+        aug_config: Optional[AugConfig] = None,
+    ):
         self.cfg = cfg
-        self.items: List[Dict[str, Any]] = []
-        with open(cfg.label_path, "r", encoding="utf-8") as f:
-            for line in f:
-                line = line.strip()
-                if not line:
-                    continue
-                obj = json.loads(line)
-                wav = obj.get("wav", None)
-                curve = obj.get("curve", None)
-                if not wav or not isinstance(curve, list) or len(curve) < 2:
-                    continue
-                self.items.append(obj)
+        self.items = items
+        self.aug = aug_config
 
         self.feat = CausalLogMelFeaturizer(
             sample_rate=cfg.sample_rate,
@@ -174,15 +315,10 @@ class EmotionSeqDataset(torch.utils.data.Dataset):
         tot = 0
         pos = 0
         for obj in self.items:
-            wav_name = obj["wav"]
-            wav_path = os.path.join(self.cfg.wav_dir, wav_name)
+            wav_path = os.path.join(self.cfg.wav_dir, obj["wav"])
             if not os.path.isfile(wav_path):
                 continue
-            wav, sr = torchaudio.load(wav_path)
-            if wav.size(0) > 1:
-                wav = wav.mean(dim=0, keepdim=True)
-            if sr != self.cfg.sample_rate:
-                wav = torchaudio.functional.resample(wav, sr, self.cfg.sample_rate)
+            wav = load_wav(wav_path, sr=self.cfg.sample_rate)
             duration = obj.get("duration", None)
             if duration is None:
                 duration = wav.size(1) / float(self.cfg.sample_rate)
@@ -197,29 +333,33 @@ class EmotionSeqDataset(torch.utils.data.Dataset):
     def __len__(self):
         return len(self.items)
 
-    def _load_wav(self, wav_name: str) -> Tuple[torch.Tensor, float]:
-        path = os.path.join(self.cfg.wav_dir, wav_name)
-        wav, sr = torchaudio.load(path)
-        if wav.size(0) > 1:
-            wav = wav.mean(dim=0, keepdim=True)
-        if sr != self.cfg.sample_rate:
-            wav = torchaudio.functional.resample(wav, sr, self.cfg.sample_rate)
-        duration = wav.size(1) / float(self.cfg.sample_rate)
-        return wav, float(duration)
-
     def __getitem__(self, idx):
         obj = self.items[idx]
         wav_name = obj["wav"]
-        wav, dur_audio = self._load_wav(wav_name)
+        path = os.path.join(self.cfg.wav_dir, wav_name)
+        wav = load_wav(path, sr=self.cfg.sample_rate)
 
         duration = obj.get("duration", None)
-        duration = float(duration) if duration is not None else float(dur_audio)
+        duration = float(duration) if duration is not None else wav.size(1) / float(self.cfg.sample_rate)
+        curve = obj.get("curve", [])
 
-        y_type, y_lvl = sample_30fps_targets(obj.get("curve", []), duration, fps=self.cfg.fps)
+        # --- 增广 ---
+        if self.aug is not None:
+            # 变速
+            if self.aug.speed_factors and random.random() < self.aug.p_speed:
+                factor = random.choice(self.aug.speed_factors)
+                wav = speed_perturb(wav, self.cfg.sample_rate, factor)
+                duration = duration / factor
+                curve = scale_curve(normalize_curve(curve, obj.get("duration", duration) * factor), factor)
 
+            # 加噪
+            if random.random() < self.aug.p_noise:
+                snr = random.uniform(self.aug.snr_min_db, self.aug.snr_max_db)
+                wav = add_noise(wav, snr)
+
+        y_type, y_lvl = sample_30fps_targets(curve, duration, fps=self.cfg.fps)
         mel = self.feat(wav)  # [T, M]
 
-        # align by truncation (rounding differences at tail)
         T = min(int(mel.size(0)), int(y_type.numel()))
         mel = mel[:T]
         y_type = y_type[:T]

@@ -16,9 +16,9 @@ The exported model has:
 import argparse
 import os
 import sys
+from typing import Optional
 
 import numpy as np
-import onnx
 import torch
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
@@ -57,7 +57,23 @@ def load_model(ckpt_path: str) -> EmotionTCN:
     return model
 
 
+def _try_import_onnx() -> Optional[object]:
+    try:
+        import onnx  # type: ignore
+        return onnx
+    except ImportError:
+        return None
+
+
 def export(ckpt_path: str, out_path: str) -> None:
+    onnx = _try_import_onnx()
+    if onnx is None:
+        raise SystemExit(
+            "Missing dependency: onnx\n"
+            "Install it in the current environment, for example:\n"
+            "  pip install onnx"
+        )
+
     print(f"Loading checkpoint: {ckpt_path}")
     model  = load_model(ckpt_path)
     export_model = EmotionTCNExport(model)

@@ -10,7 +10,9 @@ from torch.utils.data import DataLoader
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from train.emotion_data import DataConfig, EmotionSeqDataset, collate, ALLOWED_TYPES
+from train.emotion_data import (
+    DataConfig, AugConfig, EmotionSeqDataset, collate, ALLOWED_TYPES, load_items,
+)
 from models.model_emotion_tcn import EmotionTCN
 
 
@@ -20,22 +22,24 @@ def set_seed(seed: int):
     torch.cuda.manual_seed_all(seed)
 
 
-def split_indices(n: int, val_ratio: float, seed: int):
-    idx = list(range(n))
+def split_by_category(items, val_category: str, n_val: int, seed: int):
+    """
+    从 val_category 目录中随机取 n_val 条作验证集，其余全部作训练集。
+    val_category 条目不足 n_val 时全取。
+    """
     rng = random.Random(seed)
-    rng.shuffle(idx)
-    n_val = max(1, int(round(n * val_ratio)))
-    return idx[n_val:], idx[:n_val]
+    cat_prefix = val_category.rstrip("/") + "/"
+    cat_idx = [i for i, it in enumerate(items) if it["wav"].startswith(cat_prefix)]
+    other_idx = [i for i, it in enumerate(items) if not it["wav"].startswith(cat_prefix)]
+
+    rng.shuffle(cat_idx)
+    val_idx = cat_idx[:n_val]
+    tr_idx = other_idx + cat_idx[n_val:]  # 剩余 cat 条目也进训练集
+    return tr_idx, val_idx
 
 
 @torch.no_grad()
 def evaluate(model, loader, device: str):
-    """
-    Returns:
-      acc_type, acc_lvl, f1_bnd (best over threshold sweep),
-      thr_bnd, p_bnd, r_bnd,
-      loss_type, loss_lvl, loss_bnd
-    """
     model.eval()
     ce = nn.CrossEntropyLoss(ignore_index=-100, reduction="sum")
     bce = nn.BCEWithLogitsLoss(reduction="sum")
@@ -47,7 +51,6 @@ def evaluate(model, loader, device: str):
     loss_lvl = 0.0
     loss_bnd = 0.0
 
-    # collect boundary probabilities & GT to sweep thresholds
     bnd_probs_all = []
     bnd_gt_all = []
 
@@ -59,13 +62,12 @@ def evaluate(model, loader, device: str):
         mask = batch["mask"].to(device)
 
         out = model(mel)
-        type_logits = out["type"]   # [B,T,n_types]
-        lvl_logits = out["lvl"]     # [B,T,n_levels]
-        bnd_logits = out["bnd"]     # [B,T] or None
+        type_logits = out["type"]
+        lvl_logits = out["lvl"]
+        bnd_logits = out["bnd"]
 
         n_types = int(type_logits.size(-1))
         n_levels = int(lvl_logits.size(-1))
-
         flat_mask = mask.view(-1)
 
         loss_type += float(ce(type_logits.reshape(-1, n_types), y_type.view(-1)).item())
@@ -92,22 +94,18 @@ def evaluate(model, loader, device: str):
     best_r = 0.0
 
     if len(bnd_probs_all) > 0:
-        probs = torch.cat(bnd_probs_all, dim=0)  # [N]
-        gt = torch.cat(bnd_gt_all, dim=0)        # [N] bool
+        probs = torch.cat(bnd_probs_all, dim=0)
+        gt = torch.cat(bnd_gt_all, dim=0)
 
-        # sweep thresholds: 0.10..0.90 step 0.02
         for thr_i in range(10, 91, 2):
             thr = thr_i / 100.0
             pred = probs > thr
-
             tp = int((pred & gt).sum().item())
             fp = int((pred & ~gt).sum().item())
             fn = int((~pred & gt).sum().item())
-
             p = tp / (tp + fp + 1e-8)
             r = tp / (tp + fn + 1e-8)
             f1 = 2 * p * r / (p + r + 1e-8)
-
             if f1 > best_f1:
                 best_f1 = f1
                 best_thr = thr
@@ -137,7 +135,6 @@ def main():
     ap.add_argument("--lr", type=float, default=2e-4)
     ap.add_argument("--weight_decay", type=float, default=1e-3)
     ap.add_argument("--seed", type=int, default=1234)
-    ap.add_argument("--val_ratio", type=float, default=0.2)
     ap.add_argument("--channels", type=int, default=128)
     ap.add_argument("--layers", type=int, default=6)
     ap.add_argument("--dropout", type=float, default=0.1)
@@ -148,9 +145,20 @@ def main():
     ap.add_argument("--w_lvl", type=float, default=0.7)
     ap.add_argument("--w_bnd", type=float, default=0.3)
     ap.add_argument("--grad_clip", type=float, default=1.0)
-
-    # ✅ 新增：pos_weight 上限，防止边界 FP 爆炸（你现在就是 70+ 的典型）
     ap.add_argument("--pos_weight_cap", type=float, default=20.0)
+
+    # 验证集切分
+    ap.add_argument("--val_category", type=str, default="不确定基调",
+                    help="从该目录随机取 n_val 条作验证集，其余（含该目录剩余）作训练集")
+    ap.add_argument("--n_val", type=int, default=15,
+                    help="验证集条数")
+
+    # 增广
+    ap.add_argument("--no_aug", action="store_true", help="禁用数据增广")
+    ap.add_argument("--aug_p_speed", type=float, default=0.5)
+    ap.add_argument("--aug_p_noise", type=float, default=0.5)
+    ap.add_argument("--aug_snr_min", type=float, default=15.0)
+    ap.add_argument("--aug_snr_max", type=float, default=30.0)
 
     args = ap.parse_args()
 
@@ -164,18 +172,38 @@ def main():
     if args.use_boundary_head:
         use_bnd = True
 
-    cfg = DataConfig(wav_dir=args.wav_dir, label_path=args.label_path)
-    ds = EmotionSeqDataset(cfg)
-    tr_idx, val_idx = split_indices(len(ds), args.val_ratio, args.seed)
+    # 加载所有条目，按类别切分
+    all_items = load_items(args.label_path)
+    tr_idx, val_idx = split_by_category(all_items, args.val_category, args.n_val, args.seed)
+    tr_items = [all_items[i] for i in tr_idx]
+    val_items = [all_items[i] for i in val_idx]
 
-    tr_ds = torch.utils.data.Subset(ds, tr_idx)
-    val_ds = torch.utils.data.Subset(ds, val_idx)
+    print(f"[split] train={len(tr_items)}  val={len(val_items)}  (val_cat='{args.val_category}' n_val={args.n_val})")
+
+    cfg = DataConfig(wav_dir=args.wav_dir, label_path=args.label_path)
+
+    aug_cfg = None
+    if not args.no_aug:
+        aug_cfg = AugConfig(
+            speed_factors=[0.9, 0.95, 1.05, 1.1],
+            p_speed=args.aug_p_speed,
+            p_noise=args.aug_p_noise,
+            snr_min_db=args.aug_snr_min,
+            snr_max_db=args.aug_snr_max,
+        )
+        print(f"[aug] speed_factors={aug_cfg.speed_factors} p_speed={aug_cfg.p_speed} "
+              f"p_noise={aug_cfg.p_noise} snr=[{aug_cfg.snr_min_db},{aug_cfg.snr_max_db}]dB")
+    else:
+        print("[aug] disabled")
+
+    tr_ds = EmotionSeqDataset(cfg, tr_items, aug_config=aug_cfg)
+    val_ds = EmotionSeqDataset(cfg, val_items, aug_config=None)
 
     tr_loader = DataLoader(tr_ds, batch_size=args.batch_size, shuffle=True, num_workers=0, collate_fn=collate)
     val_loader = DataLoader(val_ds, batch_size=args.batch_size, shuffle=False, num_workers=0, collate_fn=collate)
 
-    n_types = len(ALLOWED_TYPES)   # 7
-    n_levels = 6                   # 0..5
+    n_types = len(ALLOWED_TYPES)
+    n_levels = 6
 
     model = EmotionTCN(
         n_mels=cfg.n_mels,
@@ -192,14 +220,14 @@ def main():
     ce_type = nn.CrossEntropyLoss(ignore_index=-100, label_smoothing=args.label_smoothing)
     ce_lvl = nn.CrossEntropyLoss(ignore_index=-100, label_smoothing=args.label_smoothing)
 
-    # boundary imbalance with clip
-    pos_ratio = float(ds.bnd_pos_ratio)
+    pos_ratio = float(tr_ds.bnd_pos_ratio)
     raw_pos_weight = (1.0 - pos_ratio) / max(pos_ratio, 1e-6)
     clipped_pos_weight = min(raw_pos_weight, float(args.pos_weight_cap))
     pos_weight = torch.tensor([clipped_pos_weight], device=device)
     bce_bnd = nn.BCEWithLogitsLoss(pos_weight=pos_weight)
 
-    print(f"[bnd] pos_ratio={pos_ratio:.6f} raw_pos_weight={raw_pos_weight:.2f} cap={args.pos_weight_cap:.2f} used_pos_weight={clipped_pos_weight:.2f}")
+    print(f"[bnd] pos_ratio={pos_ratio:.6f} raw_pos_weight={raw_pos_weight:.2f} "
+          f"cap={args.pos_weight_cap:.2f} used_pos_weight={clipped_pos_weight:.2f}")
 
     best = -1.0
 
@@ -216,13 +244,12 @@ def main():
             mask = batch["mask"].to(device)
 
             out = model(mel)
-            type_logits = out["type"]  # [B,T,n_types]
-            lvl_logits = out["lvl"]    # [B,T,n_levels]
-            bnd_logits = out["bnd"]    # [B,T] or None
+            type_logits = out["type"]
+            lvl_logits = out["lvl"]
+            bnd_logits = out["bnd"]
 
             loss_type = ce_type(type_logits.reshape(-1, n_types), y_type.view(-1))
             loss_lvl = ce_lvl(lvl_logits.reshape(-1, n_levels), y_lvl.view(-1))
-
             loss = args.w_type * loss_type + args.w_lvl * loss_lvl
 
             if bnd_logits is not None:

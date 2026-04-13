@@ -59,12 +59,18 @@
     .card { border:1px solid #eee; border-radius: 10px; padding:8px 10px; }
     .card .k { font-size:12px; color:#666; }
     .card .v { font-size:14px; font-weight:600; margin-top:2px; }
+    .shapeGrid { display:grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap:12px; }
+    .shapeCard { border:1px solid #eee; border-radius:12px; padding:10px; background:#fff; }
+    .shapeHead { display:flex; justify-content:space-between; gap:8px; align-items:center; margin-bottom:8px; }
+    .shapeMeta { font-size:12px; color:#666; }
+    .shapeSvg { width:100%; height:220px; background:#fafafa; border-radius:8px; display:block; }
 
     @media (max-width: 980px){
       .wrap { grid-template-columns: 1fr; }
       .left { height: 40vh; }
       .right { height: 60vh; }
       .infoGrid{ grid-template-columns: repeat(3, minmax(0,1fr)); }
+      .shapeGrid{ grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -154,6 +160,25 @@
     <div class="panel">
       <div class="hint" id="hoverInfo">Hover: —</div>
     </div>
+
+    <div class="panel">
+      <div class="shapeGrid">
+        <div class="shapeCard">
+          <div class="shapeHead">
+            <b>Label 眼睛曲线</b>
+            <span class="shapeMeta" id="lblShapeMeta">—</span>
+          </div>
+          <svg id="lblShapeSvg" class="shapeSvg"></svg>
+        </div>
+        <div class="shapeCard">
+          <div class="shapeHead">
+            <b>Pred 眼睛曲线</b>
+            <span class="shapeMeta" id="predShapeMeta">—</span>
+          </div>
+          <svg id="predShapeSvg" class="shapeSvg"></svg>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -162,12 +187,17 @@
   const VALUE_MIN = 0;
   const VALUE_MAX = 150;
 
-  const TYPES = ["happy","sad","angry","fear","calm","confused","action"];
+  const LEVEL_TO_VALUE = [5, 18, 38, 68, 98, 130];
+  const DEFAULT_TYPES = [
+    "happy","sad","angry","fear","calm",
+    "happy_confused","sad_confused","angry_confused","fear_confused","calm_confused"
+  ];
 
   let files = [];
   let curIndex = -1;
   let wave = null;
   let duration = 0;
+  let activeTypeMap = [...DEFAULT_TYPES];
 
   // unified timeline fps for frame-based metrics/hover/boundaries
   // IMPORTANT: do NOT use label fps here (label may be 100); use pred fps (typically 30)
@@ -182,6 +212,9 @@
   let predSegs = [];
   let lblBnds = [];
   let predBnds = [];
+  const shapeCache = new Map();
+  let lastLblShapeKey = "";
+  let lastPredShapeKey = "";
 
   // DOM
   const elList = document.getElementById('fileList');
@@ -209,6 +242,10 @@
   const elPBnd = document.getElementById('pBnd');
   const elRFBnd = document.getElementById('rfBnd');
   const elHoverInfo = document.getElementById('hoverInfo');
+  const elLblShapeSvg = document.getElementById('lblShapeSvg');
+  const elPredShapeSvg = document.getElementById('predShapeSvg');
+  const elLblShapeMeta = document.getElementById('lblShapeMeta');
+  const elPredShapeMeta = document.getElementById('predShapeMeta');
 
   function setErr(msg){ elErr.textContent = msg || ""; }
 
@@ -231,16 +268,19 @@
       angry: "#ef4444",
       fear: "#8b5cf6",
       calm: "#10b981",
-      confused: "#a855f7",
-      action: "#111827",
+      happy_confused: "#f3c969",
+      sad_confused: "#8ab3ff",
+      angry_confused: "#f48c8c",
+      fear_confused: "#b69bff",
+      calm_confused: "#62d2ad",
     };
     return map[ty] || "#999";
   }
 
-  function renderLegend(){
+  function renderLegend(types){
     const lg = document.getElementById("legend");
     lg.innerHTML = "";
-    for(const ty of TYPES){
+    for(const ty of (types && types.length ? types : activeTypeMap)){
       const it = document.createElement("div");
       it.className = "it";
       const dot = document.createElement("span");
@@ -253,7 +293,7 @@
       lg.appendChild(it);
     }
   }
-  renderLegend();
+  renderLegend(activeTypeMap);
 
   function timeToX(t, w){
     if(duration <= 1e-6) return 0;
@@ -269,15 +309,16 @@
     return Math.max(0, Math.round(t * fps));
   }
 
-  function segmentsFromCurve(curve, fps){
+  function segmentsFromCurve(curve, fps, typeMapLocal){
     const segs = [];
     if(!curve || curve.length < 2) return segs;
+    const allowed = new Set((Array.isArray(typeMapLocal) && typeMapLocal.length ? typeMapLocal : activeTypeMap));
     for(let i=0;i<curve.length-1;i++){
       const a = curve[i], b = curve[i+1];
       const t0 = clamp(a.t, 0, duration);
       const t1 = clamp(b.t, 0, duration);
       if(t1 <= t0) continue;
-      const ty = (TYPES.includes(a.type) ? a.type : "calm");
+      const ty = (allowed.has(a.type) ? a.type : "calm");
       const val = Number(a.value ?? 5);
       const f0 = quantizeToFrame(t0, fps);
       const f1 = quantizeToFrame(t1, fps);
@@ -295,6 +336,20 @@
   }
 
   function preferPredSegments(obj, fpsCommonLocal){
+    if(obj && obj.cpp_sync && Array.isArray(obj.cpp_sync.segments) && obj.cpp_sync.segments.length){
+      const fpsC = Number(fpsCommonLocal || fpsCommon || FPS_DEFAULT);
+      return obj.cpp_sync.segments.map((s) => ({
+        t0: Number(s.t0 ?? (Number(s.f0 || 0) / fpsC)),
+        t1: Number(s.t1 ?? (Number(s.f1 || 0) / fpsC)),
+        f0: Number(s.f0 || 0),
+        f1: Number(s.f1 || 0),
+        type: String(s.type || typeNameFromId(s.type_id, activeTypeMap)),
+        value: Number(s.value ?? valueFromLevelId(s.level_id ?? 0)),
+        type_id: Number(s.type_id ?? 0),
+        level_id: Number(s.level_id ?? 0),
+      }));
+    }
+
     // pred.segments are in frame indices of obj.fps; convert to seconds, then re-quantize into fpsCommon
     const fpsPred = Number(obj?.fps || FPS_DEFAULT);
     const fpsC = Number(fpsCommonLocal || fpsCommon || FPS_DEFAULT);
@@ -311,6 +366,270 @@
       return segs;
     }
     return null;
+  }
+
+  function buildActiveTypeMap(lblObjLocal, predObjLocal){
+    const out = [];
+    const seen = new Set();
+    function pushType(ty){
+      if(!ty || seen.has(ty)) return;
+      seen.add(ty);
+      out.push(ty);
+    }
+    for(const ty of DEFAULT_TYPES) pushType(ty);
+    const predTypes = Array.isArray(predObjLocal?.type_map) ? predObjLocal.type_map : [];
+    for(const ty of predTypes) pushType(String(ty));
+    const lblCurve = Array.isArray(lblObjLocal?.curve) ? lblObjLocal.curve : [];
+    for(const pt of lblCurve) pushType(String(pt?.type || ""));
+    return out.length ? out : [...DEFAULT_TYPES];
+  }
+
+  function typeNameFromId(typeId, typeMapLocal){
+    const tm = Array.isArray(typeMapLocal) && typeMapLocal.length ? typeMapLocal : activeTypeMap;
+    const tid = Number(typeId);
+    if(Number.isInteger(tid) && tid >= 0 && tid < tm.length) return tm[tid];
+    return "calm";
+  }
+
+  function valueFromLevelId(levelId){
+    const lid = clamp(levelId, 0, LEVEL_TO_VALUE.length - 1);
+    return LEVEL_TO_VALUE[lid] ?? 5;
+  }
+
+  function majorityValue(items){
+    const cnt = new Map();
+    for(const v of items){
+      const key = Number(v);
+      cnt.set(key, (cnt.get(key) || 0) + 1);
+    }
+    let bestKey = null;
+    let bestCnt = -1;
+    for(const [key, c] of cnt.entries()){
+      if(c > bestCnt){
+        bestCnt = c;
+        bestKey = key;
+      }
+    }
+    return bestKey;
+  }
+
+  function segmentFromFrameWindow(frames, startFrame, endFrame, fpsSrc, fpsDst, typeMapLocal){
+    const chunk = frames.filter(fr => Number(fr?.i) >= startFrame && Number(fr?.i) < endFrame);
+    if(!chunk.length) return null;
+    const typeId = majorityValue(chunk.map(fr => Number(fr?.type_id ?? 4)));
+    const levelId = majorityValue(chunk.map(fr => Number(fr?.level_id ?? 0)));
+    const t0 = startFrame / fpsSrc;
+    const t1 = endFrame / fpsSrc;
+    return {
+      t0,
+      t1,
+      f0: quantizeToFrame(t0, fpsDst),
+      f1: quantizeToFrame(t1, fpsDst),
+      type: typeNameFromId(typeId, typeMapLocal),
+      value: valueFromLevelId(levelId),
+      type_id: Number(typeId),
+      level_id: Number(levelId),
+    };
+  }
+
+  function segmentsFromPredFrames(obj, fpsCommonLocal){
+    const frames = Array.isArray(obj?.frames) ? obj.frames : [];
+    if(!frames.length) return [];
+
+    const fpsPred = Number(obj?.fps || FPS_DEFAULT);
+    const fpsC = Number(fpsCommonLocal || fpsCommon || FPS_DEFAULT);
+    const typeMapLocal = Array.isArray(obj?.type_map) && obj.type_map.length ? obj.type_map : activeTypeMap;
+
+    const switchFrames = uniqSorted(
+      (Array.isArray(obj?.switch_frames) ? obj.switch_frames : [])
+        .map(x => Number(x))
+        .filter(x => Number.isFinite(x) && x > 0)
+    );
+
+    const segs = [];
+    if(switchFrames.length){
+      const totalFrames = Number.isFinite(Number(obj?.n_frames)) && Number(obj?.n_frames) > 0
+        ? Number(obj.n_frames)
+        : (Number(frames[frames.length - 1]?.i ?? -1) + 1);
+      const cuts = [0, ...switchFrames.filter(f => f < totalFrames), totalFrames];
+      for(let i=0;i<cuts.length-1;i++){
+        const seg = segmentFromFrameWindow(frames, cuts[i], cuts[i+1], fpsPred, fpsC, typeMapLocal);
+        if(seg && seg.f1 > seg.f0) segs.push(seg);
+      }
+      return segs;
+    }
+
+    let cur = null;
+    for(const fr of frames){
+      const fi = Number(fr?.i ?? 0);
+      const typeId = Number(fr?.type_id ?? 4);
+      const levelId = Number(fr?.level_id ?? 0);
+      if(!cur || cur.type_id !== typeId || cur.level_id !== levelId){
+        if(cur){
+          cur.t1 = fi / fpsPred;
+          cur.f1 = quantizeToFrame(cur.t1, fpsC);
+          if(cur.f1 > cur.f0) segs.push(cur);
+        }
+        cur = {
+          t0: fi / fpsPred,
+          t1: fi / fpsPred,
+          f0: quantizeToFrame(fi / fpsPred, fpsC),
+          f1: quantizeToFrame(fi / fpsPred, fpsC),
+          type: typeNameFromId(typeId, typeMapLocal),
+          value: valueFromLevelId(levelId),
+          type_id: typeId,
+          level_id: levelId,
+        };
+      }
+    }
+    if(cur){
+      const totalFrames = Number(frames[frames.length - 1]?.i ?? -1) + 1;
+      cur.t1 = totalFrames / fpsPred;
+      cur.f1 = quantizeToFrame(cur.t1, fpsC);
+      if(cur.f1 > cur.f0) segs.push(cur);
+    }
+    return segs;
+  }
+
+  function predBoundariesFromObject(obj, fpsCommonLocal){
+    const fpsPred = Number(obj?.fps || fpsCommonLocal || FPS_DEFAULT);
+    const fpsC = Number(fpsCommonLocal || fpsCommon || FPS_DEFAULT);
+    if(obj?.cpp_sync && Array.isArray(obj.cpp_sync.boundary_frames) && obj.cpp_sync.boundary_frames.length){
+      return obj.cpp_sync.boundary_frames
+        .map(x => Number(x))
+        .filter(x => Number.isFinite(x))
+        .map(fp => quantizeToFrame(fp / fpsPred, fpsC));
+    }
+    if(Array.isArray(obj?.boundaries) && obj.boundaries.length){
+      return obj.boundaries
+        .map(x => Number(x))
+        .filter(x => Number.isFinite(x))
+        .map(fp => quantizeToFrame(fp / fpsPred, fpsC));
+    }
+    if(Array.isArray(obj?.switch_frames) && obj.switch_frames.length){
+      return obj.switch_frames
+        .map(x => Number(x))
+        .filter(x => Number.isFinite(x))
+        .map(fp => quantizeToFrame(fp / fpsPred, fpsC));
+    }
+    return [];
+  }
+
+  function snapTemplateFrame(v){
+    let best = LEVEL_TO_VALUE[0];
+    let bestDist = Infinity;
+    for(const target of LEVEL_TO_VALUE){
+      const d = Math.abs(Number(v) - Number(target));
+      if(d < bestDist){
+        bestDist = d;
+        best = target;
+      }
+    }
+    return best;
+  }
+
+  function findSegAtTime(segs, t){
+    for(const s of segs){
+      if(t >= s.t0 && t < s.t1) return s;
+    }
+    if(segs.length && t >= segs[segs.length - 1].t1 - 1e-6) return segs[segs.length - 1];
+    return null;
+  }
+
+  async function getEmotionShape(type, frame){
+    const key = `${type}@${frame}`;
+    if(shapeCache.has(key)) return shapeCache.get(key);
+    const p = fetchJSON(`/api/emo_shape/${encodeURIComponent(type)}?frame=${encodeURIComponent(frame)}`)
+      .catch(() => null);
+    shapeCache.set(key, p);
+    return p;
+  }
+
+  function clearShape(svgEl, metaEl, emptyText){
+    svgEl.innerHTML = "";
+    metaEl.textContent = emptyText || "—";
+  }
+
+  function renderShapeTo(svgEl, groups, currentType){
+    svgEl.innerHTML = "";
+    if(!groups) return;
+    const processedGroups = groups.map((pts, i) => {
+      if(!pts.length) return [];
+      let newPts = pts.map(p => [p[0], -p[1]]);
+      if(i === 2 || i === 3){
+        const cx = newPts.reduce((sum, p) => sum + p[0], 0) / newPts.length;
+        const cy = newPts.reduce((sum, p) => sum + p[1], 0) / newPts.length;
+        newPts = newPts.map(p => [cx + (p[0] - cx) * 0.6, cy + (p[1] - cy) * 0.6]);
+      }
+      return newPts;
+    });
+
+    const allPts = processedGroups.flat();
+    if(!allPts.length) return;
+
+    let minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9;
+    allPts.forEach(([x, y]) => {
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    });
+    const pad = 20;
+    svgEl.setAttribute("viewBox", `${minX-pad} ${minY-pad} ${maxX-minX+pad*2} ${maxY-minY+pad*2}`);
+
+    processedGroups.forEach((pts, i) => {
+      if(!pts.length) return;
+      const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      const d = pts.map((p, j) => (j === 0 ? "M" : "L") + p.join(",")).join(" ");
+      path.setAttribute("d", d);
+      path.setAttribute("fill", "none");
+      path.setAttribute("stroke", i === 0 ? "#ccc" : (typeColor(currentType) || "#333"));
+      path.setAttribute("stroke-width", "4");
+      path.setAttribute("stroke-linecap", "round");
+      path.setAttribute("stroke-linejoin", "round");
+      svgEl.appendChild(path);
+    });
+  }
+
+  async function updateShapePreview(t){
+    const lblSeg = findSegAtTime(lblSegs, t);
+    const predSeg = findSegAtTime(predSegs, t);
+
+    if(!lblSeg){
+      lastLblShapeKey = "";
+      clearShape(elLblShapeSvg, elLblShapeMeta, "无 Label");
+    } else {
+      const frame = snapTemplateFrame(lblSeg.value);
+      const key = `${lblSeg.type}@${frame}`;
+      if(key !== lastLblShapeKey){
+        lastLblShapeKey = key;
+        const data = await getEmotionShape(lblSeg.type, frame);
+        if(data && data.groups){
+          renderShapeTo(elLblShapeSvg, data.groups, lblSeg.type);
+          elLblShapeMeta.textContent = `${lblSeg.type} @ ${data.frame}`;
+        } else {
+          clearShape(elLblShapeSvg, elLblShapeMeta, `${lblSeg.type} 无模板`);
+        }
+      }
+    }
+
+    if(!predSeg){
+      lastPredShapeKey = "";
+      clearShape(elPredShapeSvg, elPredShapeMeta, "无 Pred");
+    } else {
+      const frame = snapTemplateFrame(predSeg.value);
+      const key = `${predSeg.type}@${frame}`;
+      if(key !== lastPredShapeKey){
+        lastPredShapeKey = key;
+        const data = await getEmotionShape(predSeg.type, frame);
+        if(data && data.groups){
+          renderShapeTo(elPredShapeSvg, data.groups, predSeg.type);
+          elPredShapeMeta.textContent = `${predSeg.type} @ ${data.frame}`;
+        } else {
+          clearShape(elPredShapeSvg, elPredShapeMeta, `${predSeg.type} 无模板`);
+        }
+      }
+    }
   }
 
   function clearSVG(){
@@ -354,6 +673,9 @@
     const dash = style?.dash ?? "";
     const op = style?.opacity ?? 1.0;
     const sw = style?.width ?? 3;
+    const textOffset = style?.textOffset ?? -10;
+    const textPrefix = style?.textPrefix ?? "";
+    const showText = style?.showText !== false;
 
     for(let i=0;i<segs.length;i++){
       const s = segs[i];
@@ -373,6 +695,22 @@
       if(dash) line.setAttribute("stroke-dasharray", dash);
       line.setAttribute("opacity", String(op));
       svg.appendChild(line);
+
+      if(showText && (x1 - x0) > 42){
+        const txt = document.createElementNS("http://www.w3.org/2000/svg","text");
+        txt.setAttribute("x", String((x0 + x1) / 2));
+        txt.setAttribute("y", String(Math.max(12, y + textOffset)));
+        txt.setAttribute("text-anchor", "middle");
+        txt.setAttribute("font-size", "11");
+        txt.setAttribute("font-weight", "700");
+        txt.setAttribute("fill", col);
+        txt.setAttribute("stroke", "rgba(255,255,255,0.92)");
+        txt.setAttribute("stroke-width", "3");
+        txt.setAttribute("paint-order", "stroke");
+        txt.setAttribute("opacity", String(Math.min(1, op + 0.08)));
+        txt.textContent = `${textPrefix}${s.type}`;
+        svg.appendChild(txt);
+      }
 
       if(i < segs.length - 1){
         const next = segs[i+1];
@@ -409,8 +747,8 @@
 
     // curves
     // label solid (on top slightly)
-    drawSegments(predSegs, w, h, {dash:"7 6", opacity:0.75, width:3});
-    drawSegments(lblSegs,  w, h, {dash:"",     opacity:0.95, width:3.5});
+    drawSegments(predSegs, w, h, {dash:"7 6", opacity:0.75, width:3, textOffset:16, textPrefix:"Pred: "});
+    drawSegments(lblSegs,  w, h, {dash:"",     opacity:0.95, width:3.5, textOffset:-10, textPrefix:"Label: "});
   }
 
   function renderList(){
@@ -468,6 +806,11 @@
       elDur.textContent = duration.toFixed(3);
       redraw();
       recalcBndMetrics();
+      updateShapePreview(0);
+    });
+
+    wave.on('timeupdate', (t) => {
+      updateShapePreview(t);
     });
 
     // keyboard
@@ -553,13 +896,19 @@
     const tol = clamp(tolInp.value, 0, 10);
     tolInp.value = String(tol);
 
-    const m = matchBoundaries(lblBnds, predBnds, tol);
-
     elLblSeg.textContent = String(lblSegs.length);
     elPredSeg.textContent = String(predSegs.length);
     elLblBnd.textContent = String(lblBnds.length);
     elPredBnd.textContent = String(predBnds.length);
 
+    const hasLabel = lblSegs.length > 0 || lblBnds.length > 0;
+    if(!hasLabel){
+      elPBnd.textContent = "—";
+      elRFBnd.textContent = "—";
+      return;
+    }
+
+    const m = matchBoundaries(lblBnds, predBnds, tol);
     elPBnd.textContent = `${m.prec.toFixed(3)} (tp=${m.tp}, fp=${m.fp})`;
     elRFBnd.textContent = `${m.rec.toFixed(3)} / ${m.f1.toFixed(3)} (fn=${m.fn})`;
   }
@@ -587,6 +936,8 @@
     const pPred = fetchJSON(`/api/pred/${encodeURIComponent(wav)}`).catch(_=>null);
 
     [lblObj, predObj] = await Promise.all([pLbl, pPred]);
+    activeTypeMap = buildActiveTypeMap(lblObj, predObj);
+    renderLegend(activeTypeMap);
 
     // load audio
     try{
@@ -606,7 +957,7 @@
 
     // build label segs
     const lblCurve = Array.isArray(lblObj?.curve) ? lblObj.curve : [];
-    lblSegs = segmentsFromCurve(lblCurve, fpsCommon);
+    lblSegs = segmentsFromCurve(lblCurve, fpsCommon, activeTypeMap);
     if(!lblSegs.length && lblObj && lblObj.wav){
       // allow empty label
       lblSegs = [];
@@ -618,7 +969,9 @@
       if(preferred) predSegs = preferred;
       else{
         const predCurve = Array.isArray(predObj?.curve) ? predObj.curve : [];
-        predSegs = segmentsFromCurve(predCurve, fpsCommon);
+        predSegs = predCurve.length
+          ? segmentsFromCurve(predCurve, fpsCommon, activeTypeMap)
+          : segmentsFromPredFrames(predObj, fpsCommon);
       }
     }else{
       predSegs = [];
@@ -626,16 +979,8 @@
 
     // boundaries
     lblBnds = boundariesFromSegments(lblSegs);
-    if(predObj && Array.isArray(predObj.boundaries)){
-      // pred boundaries are in pred fps; convert to fpsCommon
-      const fpsPred = Number(predObj?.fps || fpsCommon || FPS_DEFAULT);
-      predBnds = predObj.boundaries
-        .map(x => Number(x))
-        .filter(x => Number.isFinite(x))
-        .map(fp => quantizeToFrame(fp / fpsPred, fpsCommon));
-    }else{
-      predBnds = boundariesFromSegments(predSegs);
-    }
+    predBnds = predObj ? predBoundariesFromObject(predObj, fpsCommon) : [];
+    if(!predBnds.length) predBnds = boundariesFromSegments(predSegs);
 
     // normalize
     lblBnds = uniqSorted(lblBnds);
@@ -644,6 +989,7 @@
     // redraw & metrics
     redraw();
     recalcBndMetrics();
+    updateShapePreview(0);
 
     // open annotater
     btnOpenAnn.onclick = () => {

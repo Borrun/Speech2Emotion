@@ -5,8 +5,9 @@ Layer 1 (in detector): dynamic w_text based on chunk sentiment magnitude.
 Layer 2 (here):  rule-based hard override for clear sentiment/structural mismatches.
 Layer 3 (here):  soft keyword-distribution blend when text signal is strong.
 
-type_map assumed: ["happy", "sad", "angry", "fear", "calm", "confused"]
-                    idx:       0       1       2       3       4          5
+type_map assumed:
+  ["happy", "sad", "angry", "fear", "calm",
+   "happy_confused", "sad_confused", "angry_confused", "fear_confused", "calm_confused"]
 
 Bilingual support (Chinese + English):
   - langdetect  : language detection (fallback: CJK character heuristic)
@@ -45,11 +46,25 @@ QUESTION_RE = re.compile(r"[？?]")
 EXCLAIM_RE  = re.compile(r"[！!]")
 
 # ── emotion indices (must match TYPE_MAP in infer_file.py) ──────────────────
-HAPPY, SAD, ANGRY, FEAR, CALM, CONFUSED = 0, 1, 2, 3, 4, 5
-N_TYPES = 6
+HAPPY, SAD, ANGRY, FEAR, CALM = 0, 1, 2, 3, 4
+HAPPY_CONFUSED, SAD_CONFUSED, ANGRY_CONFUSED, FEAR_CONFUSED, CALM_CONFUSED = 5, 6, 7, 8, 9
+N_TYPES = 10
 
-POSITIVE_TYPES = frozenset({HAPPY, CALM})
-NEGATIVE_TYPES = frozenset({SAD, ANGRY, FEAR})
+BASE_TYPES = (HAPPY, SAD, ANGRY, FEAR, CALM)
+BASE_TO_CONFUSED = {
+    HAPPY: HAPPY_CONFUSED,
+    SAD: SAD_CONFUSED,
+    ANGRY: ANGRY_CONFUSED,
+    FEAR: FEAR_CONFUSED,
+    CALM: CALM_CONFUSED,
+}
+CONFUSED_TO_BASE = {v: k for k, v in BASE_TO_CONFUSED.items()}
+CONFUSED_TYPES = frozenset(CONFUSED_TO_BASE.keys())
+
+POSITIVE_BASE_TYPES = frozenset({HAPPY, CALM})
+NEGATIVE_BASE_TYPES = frozenset({SAD, ANGRY, FEAR})
+POSITIVE_TYPES = frozenset(POSITIVE_BASE_TYPES | {BASE_TO_CONFUSED[x] for x in POSITIVE_BASE_TYPES})
+NEGATIVE_TYPES = frozenset(NEGATIVE_BASE_TYPES | {BASE_TO_CONFUSED[x] for x in NEGATIVE_BASE_TYPES})
 
 # ── keyword table ────────────────────────────────────────────────────────────
 EMOTION_KEYWORDS: Dict[int, set] = {
@@ -75,10 +90,11 @@ EMOTION_KEYWORDS: Dict[int, set] = {
         "平静", "好的", "嗯", "没问题", "好", "没事", "可以", "了解", "明白",
         "calm", "ok", "fine", "alright", "sure", "yes", "okay",
     },
-    CONFUSED: {
-        "不知道", "疑惑", "奇怪", "搞不懂", "为什么", "怎么", "什么",
-        "confused", "unsure", "why", "what", "how", "wonder", "huh",
-    },
+}
+
+CONFUSION_KEYWORDS = {
+    "不知道", "疑惑", "奇怪", "搞不懂", "为什么", "怎么", "什么", "吗", "呢",
+    "confused", "unsure", "why", "what", "how", "wonder", "huh", "maybe", "perhaps",
 }
 
 
@@ -94,7 +110,7 @@ _NRC_TO_IDX: Dict[str, tuple] = {
     "sadness":      (SAD,     1.0),
     "negative":     (SAD,     0.4),
     "fear":         (FEAR,    1.0),
-    "surprise":     (CONFUSED, 1.0),
+    "surprise":     (CALM,    0.6),
 }
 
 # NRCLex v4: instantiate once, reload text per call
@@ -173,6 +189,48 @@ def bilingual_sentiment_score(text: str) -> float:
         return (pos - neg) / float(total)
 
 
+def _base_type_id(type_id: int) -> int:
+    tid = int(type_id)
+    if tid in CONFUSED_TO_BASE:
+        return CONFUSED_TO_BASE[tid]
+    if tid in BASE_TYPES:
+        return tid
+    return CALM
+
+
+def _is_confused_type(type_id: int) -> bool:
+    return int(type_id) in CONFUSED_TYPES
+
+
+def _to_confused_variant(type_id: int) -> int:
+    return BASE_TO_CONFUSED.get(_base_type_id(type_id), CALM_CONFUSED)
+
+
+def _compose_scores(base_scores: Dict[int, float], confusion_signal: float) -> List[float]:
+    scores = [0.0] * N_TYPES
+    base_total = sum(float(base_scores.get(idx, 0.0)) for idx in BASE_TYPES)
+
+    if base_total < 1e-6:
+        scores[CALM_CONFUSED if confusion_signal > 0.0 else CALM] = max(1.0, float(confusion_signal))
+        return scores
+
+    confusion_ratio = 0.0
+    if confusion_signal > 1e-6:
+        confusion_ratio = min(0.85, confusion_signal / (base_total + confusion_signal + 1e-6))
+
+    for idx in BASE_TYPES:
+        score = float(base_scores.get(idx, 0.0))
+        if score <= 0.0:
+            continue
+        confused_share = score * confusion_ratio
+        scores[idx] += score - confused_share
+        scores[BASE_TO_CONFUSED[idx]] += confused_share
+
+    if confusion_signal > 1e-6:
+        scores[CALM_CONFUSED] += 0.25 * float(confusion_signal)
+    return scores
+
+
 def text_emotion_distribution(text: str) -> List[float]:
     """
     Layer 3: emotion distribution over N_TYPES.
@@ -182,28 +240,35 @@ def text_emotion_distribution(text: str) -> List[float]:
     Returns a uniform prior when no signal is detected.
     """
     t = (text or "").lower()
-    scores = [0.0] * N_TYPES
+    base_scores = {idx: 0.0 for idx in BASE_TYPES}
+    confusion_signal = 0.0
 
     lang = _detect_lang(text or "")
     if lang != "zh" and _HAS_NRCLEX:
         af = _nrc_affect(text)
         if af:
             for nrc_key, (type_idx, weight) in _NRC_TO_IDX.items():
-                scores[type_idx] += float(af.get(nrc_key, 0.0)) * weight
+                base_scores[type_idx] += float(af.get(nrc_key, 0.0)) * weight
 
-    if sum(scores) < 1e-6:
+    if sum(base_scores.values()) < 1e-6:
         # keyword fallback (Chinese or NRCLex unavailable)
         for eid, kws in EMOTION_KEYWORDS.items():
             for kw in kws:
                 if kw in t:
-                    scores[eid] += 1.0
+                    base_scores[eid] += 1.0
+
+    for kw in CONFUSION_KEYWORDS:
+        if kw in t:
+            confusion_signal += 1.0
 
     # structural boosts (language-agnostic)
     if QUESTION_RE.search(text or ""):
-        scores[CONFUSED] += 1.5
+        confusion_signal += 1.5
     if EXCLAIM_RE.search(text or ""):
-        scores[HAPPY]  += 0.5
-        scores[ANGRY]  += 0.3
+        base_scores[HAPPY] += 0.5
+        base_scores[ANGRY] += 0.3
+
+    scores = _compose_scores(base_scores, confusion_signal)
 
     total = sum(scores)
     if total < 1e-6:
@@ -211,14 +276,20 @@ def text_emotion_distribution(text: str) -> List[float]:
     return [s / total for s in scores]
 
 
+def _resize_distribution(dist: List[float], n_types: int) -> List[float]:
+    if int(n_types) <= len(dist):
+        return list(dist[: int(n_types)])
+    return list(dist) + [0.0] * (int(n_types) - len(dist))
+
+
 class TextEmotionConstraint:
     """
     Post-processes audio-model (type_id, level_id) with text-based constraints.
 
     Layer 2 — rule-based sentiment override:
-      - Strong positive text  + negative emotion  →  happy
-      - Strong negative text  + positive emotion  →  sad
-      - Question marker + low-level emotion       →  confused
+      - Strong positive text  + negative emotion  →  happy / happy_confused
+      - Strong negative text  + positive emotion  →  sad / sad_confused
+      - Question marker + low-level emotion       →  matching *_confused
 
     Layer 3 — soft keyword-distribution blend:
       - Builds a dist over emotion types from chunk text keywords.
@@ -257,26 +328,27 @@ class TextEmotionConstraint:
         """
         sentiment    = float(text_features.get("sentiment_score", 0.0))
         has_question = bool(QUESTION_RE.search(chunk_text or ""))
+        text_supported = 0 <= int(type_id) < min(int(self.n_types), int(N_TYPES))
 
         # ── Layer 2: rule-based hard constraints ─────────────────────────────
-        if sentiment > self.sentiment_thr and type_id in NEGATIVE_TYPES:
+        if text_supported and sentiment > self.sentiment_thr and type_id in NEGATIVE_TYPES:
             # positive text sentiment clashes with negative audio emotion
-            type_id = HAPPY
+            type_id = _to_confused_variant(HAPPY) if (has_question or _is_confused_type(type_id)) else HAPPY
 
-        elif sentiment < -self.sentiment_thr and type_id in POSITIVE_TYPES:
+        elif text_supported and sentiment < -self.sentiment_thr and type_id in POSITIVE_TYPES:
             # negative text sentiment clashes with positive audio emotion
-            type_id = SAD
+            type_id = _to_confused_variant(SAD) if (has_question or _is_confused_type(type_id)) else SAD
 
-        elif has_question and level_id <= 2 and type_id != CONFUSED:
-            # interrogative structure + low-intensity audio → confused
-            type_id = CONFUSED
+        elif text_supported and has_question and level_id <= 2 and not _is_confused_type(type_id):
+            # interrogative structure + low-intensity audio → matching confused variant
+            type_id = _to_confused_variant(type_id)
 
         # ── Layer 3: soft keyword-distribution blend ──────────────────────────
-        dist     = text_emotion_distribution(chunk_text)
+        dist     = _resize_distribution(text_emotion_distribution(chunk_text), self.n_types)
         text_top = int(max(range(self.n_types), key=lambda i: dist[i]))
         text_conf = dist[text_top]
 
-        if text_conf >= self.text_conf_thr and text_top != type_id:
+        if text_supported and text_conf >= self.text_conf_thr and text_top != type_id:
             # blend: audio contributes a unit spike; text contributes its distribution
             audio_w  = 1.0 - self.text_blend_w
             blended  = [self.text_blend_w * dist[i] for i in range(self.n_types)]
