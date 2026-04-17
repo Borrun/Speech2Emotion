@@ -1,10 +1,11 @@
 # config.yaml - 训练配置文件
-# 路径：/home/borrun/Speech2Emotion/train/config.yaml
+# 用法: python train/train_emotion_tcn.py --config train/config.yaml
+# 命令行参数优先级高于配置文件
 
-# ============ 必需参数 ============
-wav_dir: "/home/borrun/Speech2Emotion/annotater/wavs"          # 音频文件目录
-label_path: "/home/borrun/Speech2Emotion/annotater/labels_new.jsonl"  # 标签文件路径
-out_dir: "/home/borrun/Speech2Emotion/output"             # 输出目录
+# ============ 路径 ============
+wav_dir: "/home/borrun/Speech2Emotion/annotater/wavs"
+label_path: "/home/borrun/Speech2Emotion/annotater/labels_new.jsonl"
+out_dir: "/home/borrun/Speech2Emotion/output"
 
 # ============ 训练参数 ============
 epochs: 100
@@ -12,7 +13,6 @@ batch_size: 8
 lr: 0.0001
 weight_decay: 0.0001
 seed: 42
-val_ratio: 0.2
 
 # ============ 模型参数 ============
 channels: 128
@@ -23,11 +23,25 @@ dropout: 0.1
 use_boundary_head: true
 
 # ============ 损失函数权重 ============
-label_smoothing: 0.1
 w_type: 1.0
 w_lvl: 1.0
 w_bnd: 0.5
-
-# ============ 其他 ============
+label_smoothing: 0.1
 grad_clip: 1.0
 pos_weight_cap: 10.0
+
+# ============ 亲缘损失（type 分类） ============
+use_affinity_loss: true        # 启用后替代 type 的 CrossEntropy
+sibling_share: 0.08            # 兄弟类（如 angry↔angry_confused）分到的软标签概率
+base_smooth: 0.02              # 其他近邻类的基础平滑系数
+
+# ============ 验证集切分 ============
+val_category: "不确定基调"      # 从该目录随机取 n_val 条作验证集
+n_val: 15
+
+# ============ 数据增广 ============
+no_aug: false                  # true 则禁用增广
+aug_p_speed: 0.5
+aug_p_noise: 0.5
+aug_snr_min: 15.0
+aug_snr_max: 30.0

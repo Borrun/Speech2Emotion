@@ -2,6 +2,7 @@ import os
 import argparse
 import random
 
+import yaml
 import torch
 import torch.nn as nn
 from torch.utils.data import DataLoader
@@ -12,6 +13,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from train.emotion_data import (
     DataConfig, AugConfig, EmotionSeqDataset, collate, ALLOWED_TYPES, load_items,
+    AffinityAwareLoss,
 )
 from models.model_emotion_tcn import EmotionTCN
 
@@ -125,42 +127,100 @@ def evaluate(model, loader, device: str):
     }
 
 
+def load_config(path: str) -> dict:
+    """从 YAML 配置文件加载参数。"""
+    with open(path, "r", encoding="utf-8") as f:
+        return yaml.safe_load(f) or {}
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--wav_dir", required=True)
-    ap.add_argument("--label_path", required=True)
-    ap.add_argument("--out_dir", required=True)
-    ap.add_argument("--epochs", type=int, default=80)
-    ap.add_argument("--batch_size", type=int, default=4)
-    ap.add_argument("--lr", type=float, default=2e-4)
-    ap.add_argument("--weight_decay", type=float, default=1e-3)
-    ap.add_argument("--seed", type=int, default=1234)
-    ap.add_argument("--channels", type=int, default=128)
-    ap.add_argument("--layers", type=int, default=6)
-    ap.add_argument("--dropout", type=float, default=0.1)
-    ap.add_argument("--use_boundary_head", action="store_true")
-    ap.add_argument("--no_boundary_head", action="store_true")
-    ap.add_argument("--label_smoothing", type=float, default=0.05)
-    ap.add_argument("--w_type", type=float, default=1.0)
-    ap.add_argument("--w_lvl", type=float, default=0.7)
-    ap.add_argument("--w_bnd", type=float, default=0.3)
-    ap.add_argument("--grad_clip", type=float, default=1.0)
-    ap.add_argument("--pos_weight_cap", type=float, default=20.0)
+    ap.add_argument("--config", type=str, default=None,
+                    help="YAML 配置文件路径，命令行参数优先级更高")
+
+    # 路径
+    ap.add_argument("--wav_dir", default=None)
+    ap.add_argument("--label_path", default=None)
+    ap.add_argument("--out_dir", default=None)
+
+    # 训练
+    ap.add_argument("--epochs", type=int, default=None)
+    ap.add_argument("--batch_size", type=int, default=None)
+    ap.add_argument("--lr", type=float, default=None)
+    ap.add_argument("--weight_decay", type=float, default=None)
+    ap.add_argument("--seed", type=int, default=None)
+
+    # 模型
+    ap.add_argument("--channels", type=int, default=None)
+    ap.add_argument("--layers", type=int, default=None)
+    ap.add_argument("--dropout", type=float, default=None)
+    ap.add_argument("--use_boundary_head", action="store_true", default=None)
+    ap.add_argument("--no_boundary_head", action="store_true", default=None)
+
+    # 损失
+    ap.add_argument("--label_smoothing", type=float, default=None)
+    ap.add_argument("--w_type", type=float, default=None)
+    ap.add_argument("--w_lvl", type=float, default=None)
+    ap.add_argument("--w_bnd", type=float, default=None)
+    ap.add_argument("--grad_clip", type=float, default=None)
+    ap.add_argument("--pos_weight_cap", type=float, default=None)
+
+    # 亲缘损失
+    ap.add_argument("--use_affinity_loss", action="store_true", default=None,
+                    help="使用 AffinityAwareLoss 替代 type 的 CrossEntropy")
+    ap.add_argument("--sibling_share", type=float, default=None)
+    ap.add_argument("--base_smooth", type=float, default=None)
 
     # 验证集切分
-    ap.add_argument("--val_category", type=str, default="不确定基调",
-                    help="从该目录随机取 n_val 条作验证集，其余（含该目录剩余）作训练集")
-    ap.add_argument("--n_val", type=int, default=15,
-                    help="验证集条数")
+    ap.add_argument("--val_category", type=str, default=None)
+    ap.add_argument("--n_val", type=int, default=None)
 
     # 增广
-    ap.add_argument("--no_aug", action="store_true", help="禁用数据增广")
-    ap.add_argument("--aug_p_speed", type=float, default=0.5)
-    ap.add_argument("--aug_p_noise", type=float, default=0.5)
-    ap.add_argument("--aug_snr_min", type=float, default=15.0)
-    ap.add_argument("--aug_snr_max", type=float, default=30.0)
+    ap.add_argument("--no_aug", action="store_true", default=None)
+    ap.add_argument("--aug_p_speed", type=float, default=None)
+    ap.add_argument("--aug_p_noise", type=float, default=None)
+    ap.add_argument("--aug_snr_min", type=float, default=None)
+    ap.add_argument("--aug_snr_max", type=float, default=None)
 
-    args = ap.parse_args()
+    cli_args = ap.parse_args()
+
+    # --- 合并配置：YAML 默认值 → 硬编码默认值 → 命令行覆盖 ---
+    DEFAULTS = dict(
+        epochs=80, batch_size=4, lr=2e-4, weight_decay=1e-3, seed=1234,
+        channels=128, layers=6, dropout=0.1,
+        label_smoothing=0.05, w_type=1.0, w_lvl=0.7, w_bnd=0.3,
+        grad_clip=1.0, pos_weight_cap=20.0,
+        use_affinity_loss=False, sibling_share=0.08, base_smooth=0.02,
+        use_boundary_head=False, no_boundary_head=False,
+        val_category="不确定基调", n_val=15,
+        no_aug=False, aug_p_speed=0.5, aug_p_noise=0.5,
+        aug_snr_min=15.0, aug_snr_max=30.0,
+    )
+
+    cfg_from_file = {}
+    if cli_args.config:
+        cfg_from_file = load_config(cli_args.config)
+        print(f"[config] loaded from {cli_args.config}")
+
+    # 合并：硬编码默认 < YAML < 命令行
+    merged = {}
+    for key in set(list(DEFAULTS.keys()) + list(vars(cli_args).keys())):
+        if key == "config":
+            continue
+        cli_val = getattr(cli_args, key, None)
+        if cli_val is not None:
+            merged[key] = cli_val
+        elif key in cfg_from_file:
+            merged[key] = cfg_from_file[key]
+        elif key in DEFAULTS:
+            merged[key] = DEFAULTS[key]
+
+    args = argparse.Namespace(**merged)
+
+    # 必需参数检查
+    for req in ("wav_dir", "label_path", "out_dir"):
+        if not getattr(args, req, None):
+            ap.error(f"--{req} is required (via --config or command line)")
 
     device = "cuda" if torch.cuda.is_available() else "cpu"
     set_seed(args.seed)
@@ -217,7 +277,15 @@ def main():
 
     opt = torch.optim.AdamW(model.parameters(), lr=args.lr, weight_decay=args.weight_decay)
 
-    ce_type = nn.CrossEntropyLoss(ignore_index=-100, label_smoothing=args.label_smoothing)
+    if args.use_affinity_loss:
+        ce_type = AffinityAwareLoss(
+            num_classes=n_types,
+            sibling_share=args.sibling_share,
+            base_smooth=args.base_smooth,
+        ).to(device)
+        print(f"[loss] AffinityAwareLoss: sibling_share={args.sibling_share} base_smooth={args.base_smooth}")
+    else:
+        ce_type = nn.CrossEntropyLoss(ignore_index=-100, label_smoothing=args.label_smoothing)
     ce_lvl = nn.CrossEntropyLoss(ignore_index=-100, label_smoothing=args.label_smoothing)
 
     pos_ratio = float(tr_ds.bnd_pos_ratio)
@@ -286,6 +354,9 @@ def main():
                     "allowed_types": list(ALLOWED_TYPES),
                     "pos_weight_cap": float(args.pos_weight_cap),
                     "pos_weight_used": float(clipped_pos_weight),
+                    "use_affinity_loss": args.use_affinity_loss,
+                    "sibling_share": args.sibling_share if args.use_affinity_loss else None,
+                    "base_smooth": args.base_smooth if args.use_affinity_loss else None,
                 },
                 "pos_ratio": float(pos_ratio),
                 "raw_pos_weight": float(raw_pos_weight),

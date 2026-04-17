@@ -6,6 +6,8 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
 import torch
+import torch.nn as nn
+import torch.nn.functional as F
 import torchaudio
 
 # allow "from models..." when running as: python train/train_emotion_tcn.py
@@ -39,6 +41,111 @@ LEVEL_THRESHOLDS = {
     1: (11.0, 25.0),
     0: (0.0, 10.0),
 }
+
+
+# ---------------------------------------------------------------------------
+# 情感亲缘距离表（基于唤醒度 / 效价维度）
+# 值域 [0, 1]：0 = 完全相同，1 = 完全对立
+# 仅定义基础 5 类之间的距离，confused 变体继承对应基础类的距离
+# ---------------------------------------------------------------------------
+#                   happy  sad   angry  fear  calm
+_BASE_DISTANCE = [
+    [0.0,  0.9,  0.7,  0.8,  0.5],   # happy
+    [0.9,  0.0,  0.6,  0.5,  0.4],   # sad
+    [0.7,  0.6,  0.0,  0.4,  0.8],   # angry
+    [0.8,  0.5,  0.4,  0.0,  0.7],   # fear
+    [0.5,  0.4,  0.8,  0.7,  0.0],   # calm
+]
+
+
+class AffinityAwareLoss(nn.Module):
+    """
+    混淆矩阵感知的 type 分类损失。
+
+    将 hard one-hot 标签松弛为软标签，概率按类别间语义距离分配：
+      - 兄弟类（如 angry ↔ angry_confused）：分配 sibling_share
+      - 情感近邻（如 angry ↔ fear）：按距离反比分配
+      - 远距离类（如 angry ↔ calm）：几乎不分配
+
+    相比均匀 label_smoothing 的优势：
+      标准 smoothing：所有非目标类均分 → 不区分 angry_confused 和 calm 的错误代价
+      本方案：语义近的类多分 → "错得近"比"错得远"惩罚小
+    """
+
+    def __init__(
+        self,
+        num_classes: int = 10,
+        sibling_share: float = 0.08,
+        base_smooth: float = 0.02,
+        ignore_index: int = -100,
+    ):
+        super().__init__()
+        self.ignore_index = ignore_index
+        soft = self._build_soft_targets(num_classes, sibling_share, base_smooth)
+        self.register_buffer("soft_targets", soft)
+
+    @staticmethod
+    def _build_soft_targets(
+        num_classes: int, sibling_share: float, base_smooth: float
+    ) -> torch.Tensor:
+        """构建 [num_classes, num_classes] 的软标签查找表。"""
+        n_base = 5
+        dist = torch.tensor(_BASE_DISTANCE, dtype=torch.float32)
+
+        targets = torch.zeros(num_classes, num_classes)
+        for c in range(num_classes):
+            base_c = c % n_base
+            is_confused_c = c >= n_base
+
+            # 兄弟类（base ↔ confused 变体）
+            sibling = (c + n_base) % (2 * n_base)
+            targets[c, sibling] = sibling_share
+
+            # 其他类按距离反比分配
+            for j in range(num_classes):
+                if j == c or j == sibling:
+                    continue
+                base_j = j % n_base
+                d = dist[base_c, base_j]
+                # 同为 confused 或同为 base → 稍近；跨组 → 稍远
+                is_confused_j = j >= n_base
+                if is_confused_c == is_confused_j:
+                    d = d * 0.9  # 同组内稍近
+                # 亲缘度 = (1 - distance)，归一化后乘以 base_smooth
+                targets[c, j] = (1.0 - d) * base_smooth
+
+            # 主类别：剩余概率
+            targets[c, c] = 0.0  # 先置零
+            targets[c, c] = 1.0 - targets[c].sum()
+
+        return targets
+
+    def forward(self, logits: torch.Tensor, targets: torch.Tensor) -> torch.Tensor:
+        """
+        logits:  [N, C] 或 [B, T, C]
+        targets: [N] 或 [B, T]，值域 0~C-1 或 ignore_index
+        """
+        if logits.dim() == 3:
+            B, T, C = logits.shape
+            logits = logits.reshape(-1, C)
+            targets = targets.reshape(-1)
+        elif logits.dim() != 2:
+            raise ValueError(f"expected 2D or 3D logits, got {logits.dim()}D")
+
+        valid = targets != self.ignore_index
+        if not valid.any():
+            return logits.sum() * 0.0
+
+        logits = logits[valid]
+        targets = targets[valid]
+
+        soft = self.soft_targets[targets]  # [N_valid, C]
+        log_probs = F.log_softmax(logits, dim=-1)
+        loss = -(soft * log_probs).sum(dim=-1).mean()
+        return loss
+
+    def extra_repr(self) -> str:
+        return f"ignore_index={self.ignore_index}"
 
 
 @dataclass

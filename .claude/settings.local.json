@@ -6,7 +6,13 @@
       "Bash(python tools/scan_stream_all.py --tag tf --dynamic_w_text --text_emotion)",
       "Bash(python tools/eval_text_fusion.py --tags baseline tf)",
       "Bash(pip install:*)",
-      "Bash(python -c \":*)"
+      "Bash(python -c \":*)",
+      "Bash(python3 -c \":*)",
+      "Read(//Users/Zhuanz1/**)",
+      "Bash(pip3 list:*)",
+      "Bash(conda env:*)",
+      "Bash(conda run:*)",
+      "Bash(find ~/Library -path */python*/bin/python* -type f)"
     ]
   }
 }
